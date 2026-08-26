@@ -105,9 +105,8 @@ function NoticiaForm() {
 
 // ---------- Formulario para agregar un capítulo ----------
 function CapituloForm() {
-  const [numero, setNumero] = useState('')
   const [titulo, setTitulo] = useState('')
-  const [temporada, setTemporada] = useState('')
+  const [descripcion, setDescripcion] = useState('')
   const [miniatura, setMiniatura] = useState('')
   const [video, setVideo] = useState('')
 
@@ -116,37 +115,29 @@ function CapituloForm() {
     if (!titulo.trim()) return
     const nuevaRef = push(ref(db, 'capitulos'))
     await set(nuevaRef, {
-      numero: numero || '—',
       titulo,
-      temporada: temporada || 'Temporada 1',
+      descripcion: descripcion.trim(),
       miniatura: miniatura.trim(),
       video: video.trim(),
     })
-    setNumero('')
     setTitulo('')
-    setTemporada('')
+    setDescripcion('')
     setMiniatura('')
     setVideo('')
   }
 
   return (
     <form onSubmit={handleSubmit} className="admin-form admin-form-stacked">
-      <div className="admin-form-row">
-        <input
-          placeholder="N° (ej. 01)"
-          value={numero}
-          onChange={(e) => setNumero(e.target.value)}
-        />
-        <input
-          placeholder="Temporada (ej. Temporada 1)"
-          value={temporada}
-          onChange={(e) => setTemporada(e.target.value)}
-        />
-      </div>
       <input
         placeholder="Título del capítulo"
         value={titulo}
         onChange={(e) => setTitulo(e.target.value)}
+      />
+      <textarea
+        placeholder="Descripción del capítulo"
+        value={descripcion}
+        onChange={(e) => setDescripcion(e.target.value)}
+        rows={3}
       />
       <input
         placeholder="URL de la miniatura (imagen)"
@@ -293,7 +284,7 @@ function Panel({ user }) {
             path="capitulos"
             items={capitulos}
             renderLabel={(c) =>
-              `#${c.numero} ${c.titulo} (${c.temporada})${c.video ? ' 🎬' : ''}${c.miniatura ? ' 🖼️' : ''}`
+              `${c.titulo}${c.video ? ' 🎬' : ''}${c.miniatura ? ' 🖼️' : ''}${c.descripcion ? ' 📝' : ''}`
             }
           />
         </section>
