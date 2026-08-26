@@ -91,6 +91,14 @@
   flex-wrap:wrap;
   margin-bottom:18px;
 }
+.admin-form-stacked{
+  flex-direction:column;
+}
+.admin-form-row{
+  display:flex;
+  gap:10px;
+}
+.admin-form-row input{ flex:1; }
 .admin-form input{
   flex:1;
   min-width:140px;

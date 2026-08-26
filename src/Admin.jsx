@@ -108,6 +108,8 @@ function CapituloForm() {
   const [numero, setNumero] = useState('')
   const [titulo, setTitulo] = useState('')
   const [temporada, setTemporada] = useState('')
+  const [miniatura, setMiniatura] = useState('')
+  const [video, setVideo] = useState('')
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -117,28 +119,44 @@ function CapituloForm() {
       numero: numero || '—',
       titulo,
       temporada: temporada || 'Temporada 1',
+      miniatura: miniatura.trim(),
+      video: video.trim(),
     })
     setNumero('')
     setTitulo('')
     setTemporada('')
+    setMiniatura('')
+    setVideo('')
   }
 
   return (
-    <form onSubmit={handleSubmit} className="admin-form">
-      <input
-        placeholder="N° (ej. 01)"
-        value={numero}
-        onChange={(e) => setNumero(e.target.value)}
-      />
+    <form onSubmit={handleSubmit} className="admin-form admin-form-stacked">
+      <div className="admin-form-row">
+        <input
+          placeholder="N° (ej. 01)"
+          value={numero}
+          onChange={(e) => setNumero(e.target.value)}
+        />
+        <input
+          placeholder="Temporada (ej. Temporada 1)"
+          value={temporada}
+          onChange={(e) => setTemporada(e.target.value)}
+        />
+      </div>
       <input
         placeholder="Título del capítulo"
         value={titulo}
         onChange={(e) => setTitulo(e.target.value)}
       />
       <input
-        placeholder="Temporada (ej. Temporada 1)"
-        value={temporada}
-        onChange={(e) => setTemporada(e.target.value)}
+        placeholder="URL de la miniatura (imagen)"
+        value={miniatura}
+        onChange={(e) => setMiniatura(e.target.value)}
+      />
+      <input
+        placeholder="URL del video (ej. archive.org/download/.../CAP.mp4)"
+        value={video}
+        onChange={(e) => setVideo(e.target.value)}
       />
       <button type="submit">Agregar capítulo</button>
     </form>
@@ -274,7 +292,9 @@ function Panel({ user }) {
           <ListaConEliminar
             path="capitulos"
             items={capitulos}
-            renderLabel={(c) => `#${c.numero} ${c.titulo} (${c.temporada})`}
+            renderLabel={(c) =>
+              `#${c.numero} ${c.titulo} (${c.temporada})${c.video ? ' 🎬' : ''}${c.miniatura ? ' 🖼️' : ''}`
+            }
           />
         </section>
       )}

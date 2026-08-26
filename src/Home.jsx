@@ -20,14 +20,47 @@ function NewsCard({ item }) {
   )
 }
 
-function EpisodeCard({ item }) {
+function EpisodeCard({ item, onPlay }) {
   return (
-    <div className="ep-card">
-      <div className="ep-thumb">
-        <span className="num">{item.numero}</span>
+    <div className="ep-card" onClick={() => onPlay(item)}>
+      <div
+        className="ep-thumb"
+        style={
+          item.miniatura
+            ? { backgroundImage: `url(${item.miniatura})` }
+            : undefined
+        }
+      >
+        {!item.miniatura && <span className="ep-thumb-fallback">▶</span>}
       </div>
       <h5>{item.titulo}</h5>
-      <div className="season">{item.temporada}</div>
+      <div className="season">
+        {item.temporada} · Episodio {item.numero}
+      </div>
+    </div>
+  )
+}
+
+function PlayerModal({ item, onClose }) {
+  if (!item) return null
+  return (
+    <div className="player-overlay" onClick={onClose}>
+      <div className="player-box" onClick={(e) => e.stopPropagation()}>
+        <button className="player-close" onClick={onClose} aria-label="Cerrar">
+          ✕
+        </button>
+        {item.video ? (
+          <video src={item.video} controls autoPlay poster={item.miniatura || undefined} />
+        ) : (
+          <div className="player-empty">Este capítulo aún no tiene video agregado.</div>
+        )}
+        <div className="player-info">
+          <h3>{item.titulo}</h3>
+          <p>
+            {item.temporada} · Episodio {item.numero}
+          </p>
+        </div>
+      </div>
     </div>
   )
 }
@@ -37,6 +70,7 @@ export default function Home() {
   const [noticias, setNoticias] = useState([])
   const [capitulos, setCapitulos] = useState([])
   const [enVivo, setEnVivo] = useState(null)
+  const [reproduciendo, setReproduciendo] = useState(null)
 
   useEffect(() => {
     const unsubNoticias = onValue(ref(db, 'noticias'), (snap) => {
@@ -129,7 +163,7 @@ export default function Home() {
         {capitulos.length > 0 ? (
           <div className="episodes-rail">
             {capitulos.map((item) => (
-              <EpisodeCard key={item.id} item={item} />
+              <EpisodeCard key={item.id} item={item} onPlay={setReproduciendo} />
             ))}
           </div>
         ) : (
@@ -138,6 +172,8 @@ export default function Home() {
       </section>
 
       <footer>© 2026 La Rosa TV</footer>
+
+      <PlayerModal item={reproduciendo} onClose={() => setReproduciendo(null)} />
     </>
   )
 }
