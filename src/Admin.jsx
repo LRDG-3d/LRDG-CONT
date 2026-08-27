@@ -6,6 +6,7 @@ import {
 } from 'firebase/auth'
 import { ref, push, set, remove, onValue } from 'firebase/database'
 import { auth, db } from './firebase'
+import { capturarMiniatura } from './thumbnailCapture.js'
 import './Admin.css'
 
 function toArray(obj) {
@@ -133,6 +134,8 @@ function CapituloForm({ editing, onDone }) {
   const [video, setVideo] = useState('')
   const [duracion, setDuracion] = useState('')
   const [tipo, setTipo] = useState('Capítulo')
+  const [capturando, setCapturando] = useState(false)
+  const [errorCaptura, setErrorCaptura] = useState('')
 
   useEffect(() => {
     setTitulo(editing?.titulo || '')
@@ -141,7 +144,22 @@ function CapituloForm({ editing, onDone }) {
     setVideo(editing?.video || '')
     setDuracion(editing?.duracion || '')
     setTipo(editing?.tipo || 'Capítulo')
+    setErrorCaptura('')
   }, [editing])
+
+  const generarMiniatura = async () => {
+    if (!video.trim()) return
+    setCapturando(true)
+    setErrorCaptura('')
+    try {
+      const dataUrl = await capturarMiniatura(video.trim())
+      setMiniatura(dataUrl)
+    } catch (err) {
+      setErrorCaptura(err.message || 'No se pudo generar la miniatura.')
+    } finally {
+      setCapturando(false)
+    }
+  }
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -198,15 +216,28 @@ function CapituloForm({ editing, onDone }) {
         </select>
       </div>
       <input
-        placeholder="URL de la miniatura (imagen)"
-        value={miniatura}
-        onChange={(e) => setMiniatura(e.target.value)}
-      />
-      <input
         placeholder="URL del video (ej. archive.org/download/.../CAP.mp4)"
         value={video}
         onChange={(e) => setVideo(e.target.value)}
       />
+      <div className="admin-form-row">
+        <input
+          placeholder="URL de la miniatura (o genera una desde el video)"
+          value={miniatura}
+          onChange={(e) => setMiniatura(e.target.value)}
+        />
+        <button
+          type="button"
+          onClick={generarMiniatura}
+          disabled={!video.trim() || capturando}
+        >
+          {capturando ? 'Capturando…' : '🎲 Generar miniatura'}
+        </button>
+      </div>
+      {errorCaptura && <p className="admin-error">{errorCaptura}</p>}
+      {miniatura && (
+        <img src={miniatura} alt="Vista previa de la miniatura" className="admin-thumb-preview" />
+      )}
       <div className="admin-form-row">
         <button type="submit">
           {editing ? 'Guardar cambios' : 'Agregar capítulo'}
