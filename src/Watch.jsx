@@ -55,19 +55,17 @@ export default function Watch() {
 
           <div className="watch-body">
             <h1>{episodio.titulo}</h1>
-            {(episodio.duracion || episodio.tipo) && (
-              <div className="ep-meta watch-meta">
-                {episodio.duracion && (
+            <div className="ep-meta watch-meta">
+              {episodio.duracion && (
+                <>
                   <span className="ep-duracion">{episodio.duracion}</span>
-                )}
-                {episodio.duracion && episodio.tipo && (
                   <span className="ep-sep">·</span>
-                )}
-                {episodio.tipo && (
-                  <span className="ep-tipo">{episodio.tipo.toUpperCase()}</span>
-                )}
-              </div>
-            )}
+                </>
+              )}
+              <span className="ep-tipo">
+                {(episodio.tipo || 'Capítulo').toUpperCase()}
+              </span>
+            </div>
             {episodio.descripcion && (
               <p className="watch-description">{episodio.descripcion}</p>
             )}
@@ -96,19 +94,17 @@ export default function Watch() {
                       )}
                     </div>
                     <h5>{item.titulo}</h5>
-                    {(item.duracion || item.tipo) && (
-                      <div className="ep-meta">
-                        {item.duracion && (
+                    <div className="ep-meta">
+                      {item.duracion && (
+                        <>
                           <span className="ep-duracion">{item.duracion}</span>
-                        )}
-                        {item.duracion && item.tipo && (
                           <span className="ep-sep">·</span>
-                        )}
-                        {item.tipo && (
-                          <span className="ep-tipo">{item.tipo.toUpperCase()}</span>
-                        )}
-                      </div>
-                    )}
+                        </>
+                      )}
+                      <span className="ep-tipo">
+                        {(item.tipo || 'Capítulo').toUpperCase()}
+                      </span>
+                    </div>
                   </Link>
                 ))}
               </div>

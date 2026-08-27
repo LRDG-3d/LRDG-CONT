@@ -213,7 +213,7 @@ section{
 /* Episodes rail */
 .episodes-rail{
   display:grid;
-  grid-template-columns:repeat(auto-fill, minmax(150px, 1fr));
+  grid-template-columns:repeat(auto-fill, minmax(220px, 1fr));
   gap:16px;
 }
 .ep-card{
@@ -223,7 +223,7 @@ section{
   text-decoration:none;
 }
 .ep-thumb{
-  aspect-ratio:2/3;
+  aspect-ratio:16/9;
   background:#eee center/cover no-repeat;
   border-radius:3px;
   margin-bottom:8px;
@@ -364,4 +364,5 @@ footer{
 }
 @media (max-width:480px){
   .news-grid{ grid-template-columns:1fr; }
+  .episodes-rail{ grid-template-columns:repeat(2, 1fr); }
 }
