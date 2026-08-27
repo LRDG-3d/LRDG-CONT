@@ -14,9 +14,12 @@ function NewsCard({ item }) {
   return (
     <div className="news-card">
       <div className="news-thumb" />
-      <div className="tag">{item.tag}</div>
       <h4>{item.titulo}</h4>
-      <div className="meta">{item.fecha}</div>
+      <div className="ep-meta">
+        {item.tag && <span className="ep-tipo">{item.tag.toUpperCase()}</span>}
+        {item.tag && item.fecha && <span className="ep-sep">·</span>}
+        {item.fecha && <span className="ep-duracion">{item.fecha}</span>}
+      </div>
     </div>
   )
 }

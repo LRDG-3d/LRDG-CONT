@@ -204,23 +204,10 @@ section{
   transition:transform .25s;
 }
 .news-card:hover .news-thumb::after{ transform:scaleX(1); }
-.news-card .tag{
-  font-family:'Helvetica Neue', Arial, sans-serif;
-  font-size:0.68rem;
-  letter-spacing:0.08em;
-  text-transform:uppercase;
-  color:var(--pink);
-  margin-bottom:6px;
-}
 .news-card h4{
   font-size:1.02rem;
   line-height:1.35;
-  margin-bottom:6px;
-}
-.news-card .meta{
-  font-family:'Helvetica Neue', Arial, sans-serif;
-  font-size:0.78rem;
-  color:var(--gray);
+  margin-bottom:4px;
 }
 
 /* Episodes rail */
