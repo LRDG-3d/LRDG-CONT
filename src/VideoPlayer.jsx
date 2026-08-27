@@ -10,10 +10,12 @@ function formatTime(seconds) {
 export default function VideoPlayer({ src, poster }) {
   const containerRef = useRef(null)
   const videoRef = useRef(null)
+  const hideTimer = useRef(null)
   const [playing, setPlaying] = useState(false)
   const [current, setCurrent] = useState(0)
   const [duration, setDuration] = useState(0)
   const [isFullscreen, setIsFullscreen] = useState(false)
+  const [showControls, setShowControls] = useState(true)
 
   useEffect(() => {
     const onFsChange = () => {
@@ -21,6 +23,21 @@ export default function VideoPlayer({ src, poster }) {
     }
     document.addEventListener('fullscreenchange', onFsChange)
     return () => document.removeEventListener('fullscreenchange', onFsChange)
+  }, [])
+
+  const scheduleHide = () => {
+    clearTimeout(hideTimer.current)
+    hideTimer.current = setTimeout(() => setShowControls(false), 3000)
+  }
+
+  const wakeControls = () => {
+    setShowControls(true)
+    scheduleHide()
+  }
+
+  useEffect(() => {
+    scheduleHide()
+    return () => clearTimeout(hideTimer.current)
   }, [])
 
   const togglePlay = () => {
@@ -33,6 +50,7 @@ export default function VideoPlayer({ src, poster }) {
       v.pause()
       setPlaying(false)
     }
+    wakeControls()
   }
 
   const onSeek = (e) => {
@@ -41,6 +59,7 @@ export default function VideoPlayer({ src, poster }) {
     const value = Number(e.target.value)
     v.currentTime = value
     setCurrent(value)
+    wakeControls()
   }
 
   const toggleFullscreen = () => {
@@ -51,10 +70,16 @@ export default function VideoPlayer({ src, poster }) {
     } else {
       el.requestFullscreen?.()
     }
+    wakeControls()
   }
 
   return (
-    <div className="glass-player" ref={containerRef}>
+    <div
+      className="glass-player"
+      ref={containerRef}
+      onMouseMove={wakeControls}
+      onTouchStart={wakeControls}
+    >
       <video
         ref={videoRef}
         src={src}
@@ -67,7 +92,7 @@ export default function VideoPlayer({ src, poster }) {
         onLoadedMetadata={(e) => setDuration(e.currentTarget.duration)}
       />
 
-      <div className="glass-controls">
+      <div className={`glass-controls ${showControls ? '' : 'glass-controls-hidden'}`}>
         <button
           className="glass-btn"
           onClick={togglePlay}
