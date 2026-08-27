@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { ref, onValue } from 'firebase/database'
 import { db } from './firebase'
+import VideoPlayer from './VideoPlayer.jsx'
 
 // Convierte un objeto de Firebase ({ id1: {...}, id2: {...} }) en un
 // arreglo [{ id: 'id1', ... }, { id: 'id2', ... }] para poder mapearlo.
@@ -113,11 +114,11 @@ export default function Home() {
         </div>
 
         <div className="hero-player" id="live-container">
-          {enVivo ? (
-            <div className="now">
-              <div className="live">En vivo ahora</div>
-              <h3>{enVivo.titulo}</h3>
-            </div>
+          {enVivo?.video ? (
+            <>
+              <VideoPlayer src={enVivo.video} poster={enVivo.miniatura} />
+              <div className="live-badge">🔴 EN VIVO — {enVivo.titulo}</div>
+            </>
           ) : (
             <span className="placeholder">Aún no hay transmisión en vivo.</span>
           )}

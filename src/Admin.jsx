@@ -222,8 +222,11 @@ function CapituloForm({ editing, onDone }) {
 }
 
 // ---------- Control de "En Vivo" ----------
-function EnVivoControl() {
+function EnVivoControl({ capitulos }) {
   const [titulo, setTitulo] = useState('')
+  const [video, setVideo] = useState('')
+  const [miniatura, setMiniatura] = useState('')
+  const [origen, setOrigen] = useState('') // id del capítulo elegido, o '' si es manual
   const [activo, setActivo] = useState(false)
 
   useEffect(() => {
@@ -231,18 +234,39 @@ function EnVivoControl() {
       const val = snap.val()
       setActivo(!!val)
       setTitulo(val?.titulo || '')
+      setVideo(val?.video || '')
+      setMiniatura(val?.miniatura || '')
     })
     return () => unsub()
   }, [])
 
+  const elegirCapitulo = (id) => {
+    setOrigen(id)
+    if (!id) return
+    const c = capitulos.find((cap) => cap.id === id)
+    if (c) {
+      setTitulo(c.titulo)
+      setVideo(c.video || '')
+      setMiniatura(c.miniatura || '')
+    }
+  }
+
   const activar = async (e) => {
     e.preventDefault()
-    if (!titulo.trim()) return
-    await set(ref(db, 'enVivo'), { titulo })
+    if (!titulo.trim() || !video.trim()) return
+    await set(ref(db, 'enVivo'), {
+      titulo,
+      video: video.trim(),
+      miniatura: miniatura.trim(),
+    })
   }
 
   const desactivar = async () => {
     await remove(ref(db, 'enVivo'))
+    setTitulo('')
+    setVideo('')
+    setMiniatura('')
+    setOrigen('')
   }
 
   return (
@@ -250,11 +274,31 @@ function EnVivoControl() {
       <p className="admin-status">
         Estado actual: {activo ? '🔴 En vivo' : '⚪ Sin transmisión'}
       </p>
-      <form onSubmit={activar} className="admin-form">
+      <form onSubmit={activar} className="admin-form admin-form-stacked">
+        {capitulos.length > 0 && (
+          <select value={origen} onChange={(e) => elegirCapitulo(e.target.value)}>
+            <option value="">— Elegir un capítulo existente —</option>
+            {capitulos.map((c) => (
+              <option key={c.id} value={c.id}>
+                {c.titulo}
+              </option>
+            ))}
+          </select>
+        )}
         <input
           placeholder="Título de la transmisión"
           value={titulo}
           onChange={(e) => setTitulo(e.target.value)}
+        />
+        <input
+          placeholder="URL del video en vivo (mp4, stream, etc.)"
+          value={video}
+          onChange={(e) => setVideo(e.target.value)}
+        />
+        <input
+          placeholder="URL de la miniatura (opcional)"
+          value={miniatura}
+          onChange={(e) => setMiniatura(e.target.value)}
         />
         <button type="submit">Poner en vivo</button>
       </form>
@@ -374,7 +418,7 @@ function Panel({ user }) {
 
       {tab === 'envivo' && (
         <section>
-          <EnVivoControl />
+          <EnVivoControl capitulos={capitulos} />
         </section>
       )}
     </div>
