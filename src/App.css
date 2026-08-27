@@ -8,7 +8,14 @@
   --pink:#e0498c;
 }
 
-*{box-sizing:border-box; margin:0; padding:0;}
+*{
+  box-sizing:border-box; margin:0; padding:0;
+  -webkit-tap-highlight-color:transparent;
+}
+button, a, input, .ep-card, .news-card, .glass-btn, .glass-seek{
+  -webkit-tap-highlight-color:transparent;
+  outline:none;
+}
 
 body{
   background:var(--white);
@@ -270,7 +277,7 @@ section{
   font-family:'Helvetica Neue', Arial, sans-serif;
 }
 .watch-page{
-  max-width:1000px;
+  max-width:1240px;
   margin:0 auto;
   padding:0 0 40px;
 }

@@ -143,11 +143,20 @@
   border-bottom:1px solid var(--line);
   font-size:0.87rem;
 }
+.admin-list-actions{ display:flex; gap:14px; }
 .admin-list li button{
   background:none;
   border:none;
   color:var(--pink);
   cursor:pointer;
   font-size:0.78rem;
+}
+.admin-list li .admin-list-actions button:first-child{
+  color:var(--blue);
+}
+.admin-cancel{
+  background:transparent !important;
+  border:1px solid var(--line) !important;
+  color:var(--gray) !important;
 }
 .admin-empty{ color:var(--gray); font-size:0.85rem; }

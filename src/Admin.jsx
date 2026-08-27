@@ -64,26 +64,41 @@ function Login() {
   )
 }
 
-// ---------- Formulario genérico para agregar una noticia ----------
-function NoticiaForm() {
+// ---------- Formulario genérico para agregar/editar una noticia ----------
+function NoticiaForm({ editing, onDone }) {
   const [titulo, setTitulo] = useState('')
   const [tag, setTag] = useState('')
+
+  useEffect(() => {
+    setTitulo(editing?.titulo || '')
+    setTag(editing?.tag || '')
+  }, [editing])
 
   const handleSubmit = async (e) => {
     e.preventDefault()
     if (!titulo.trim()) return
-    const nuevaRef = push(ref(db, 'noticias'))
-    await set(nuevaRef, {
-      titulo,
-      tag: tag || 'General',
-      fecha: new Date().toLocaleDateString('es-MX', {
-        day: 'numeric',
-        month: 'long',
-        year: 'numeric',
-      }),
-    })
+
+    if (editing) {
+      await set(ref(db, `noticias/${editing.id}`), {
+        ...editing,
+        titulo,
+        tag: tag || 'General',
+      })
+    } else {
+      const nuevaRef = push(ref(db, 'noticias'))
+      await set(nuevaRef, {
+        titulo,
+        tag: tag || 'General',
+        fecha: new Date().toLocaleDateString('es-MX', {
+          day: 'numeric',
+          month: 'long',
+          year: 'numeric',
+        }),
+      })
+    }
     setTitulo('')
     setTag('')
+    onDone?.()
   }
 
   return (
@@ -98,13 +113,20 @@ function NoticiaForm() {
         value={tag}
         onChange={(e) => setTag(e.target.value)}
       />
-      <button type="submit">Agregar noticia</button>
+      <button type="submit">
+        {editing ? 'Guardar cambios' : 'Agregar noticia'}
+      </button>
+      {editing && (
+        <button type="button" className="admin-cancel" onClick={onDone}>
+          Cancelar
+        </button>
+      )}
     </form>
   )
 }
 
-// ---------- Formulario para agregar un capítulo ----------
-function CapituloForm() {
+// ---------- Formulario para agregar/editar un capítulo ----------
+function CapituloForm({ editing, onDone }) {
   const [titulo, setTitulo] = useState('')
   const [descripcion, setDescripcion] = useState('')
   const [miniatura, setMiniatura] = useState('')
@@ -112,24 +134,42 @@ function CapituloForm() {
   const [duracion, setDuracion] = useState('')
   const [tipo, setTipo] = useState('Capítulo')
 
+  useEffect(() => {
+    setTitulo(editing?.titulo || '')
+    setDescripcion(editing?.descripcion || '')
+    setMiniatura(editing?.miniatura || '')
+    setVideo(editing?.video || '')
+    setDuracion(editing?.duracion || '')
+    setTipo(editing?.tipo || 'Capítulo')
+  }, [editing])
+
   const handleSubmit = async (e) => {
     e.preventDefault()
     if (!titulo.trim()) return
-    const nuevaRef = push(ref(db, 'capitulos'))
-    await set(nuevaRef, {
+
+    const datos = {
       titulo,
       descripcion: descripcion.trim(),
       miniatura: miniatura.trim(),
       video: video.trim(),
       duracion: duracion.trim(),
       tipo,
-    })
+    }
+
+    if (editing) {
+      await set(ref(db, `capitulos/${editing.id}`), datos)
+    } else {
+      const nuevaRef = push(ref(db, 'capitulos'))
+      await set(nuevaRef, datos)
+    }
+
     setTitulo('')
     setDescripcion('')
     setMiniatura('')
     setVideo('')
     setDuracion('')
     setTipo('Capítulo')
+    onDone?.()
   }
 
   return (
@@ -167,7 +207,16 @@ function CapituloForm() {
         value={video}
         onChange={(e) => setVideo(e.target.value)}
       />
-      <button type="submit">Agregar capítulo</button>
+      <div className="admin-form-row">
+        <button type="submit">
+          {editing ? 'Guardar cambios' : 'Agregar capítulo'}
+        </button>
+        {editing && (
+          <button type="button" className="admin-cancel" onClick={onDone}>
+            Cancelar
+          </button>
+        )}
+      </div>
     </form>
   )
 }
@@ -218,8 +267,8 @@ function EnVivoControl() {
   )
 }
 
-// ---------- Lista con botón de eliminar, reutilizable ----------
-function ListaConEliminar({ path, items, renderLabel }) {
+// ---------- Lista con botones de editar/eliminar, reutilizable ----------
+function ListaConEliminar({ path, items, renderLabel, onEdit }) {
   const eliminar = (id) => remove(ref(db, `${path}/${id}`))
 
   if (items.length === 0) {
@@ -231,7 +280,12 @@ function ListaConEliminar({ path, items, renderLabel }) {
       {items.map((item) => (
         <li key={item.id}>
           <span>{renderLabel(item)}</span>
-          <button onClick={() => eliminar(item.id)}>Eliminar</button>
+          <span className="admin-list-actions">
+            {onEdit && (
+              <button onClick={() => onEdit(item)}>Editar</button>
+            )}
+            <button onClick={() => eliminar(item.id)}>Eliminar</button>
+          </span>
         </li>
       ))}
     </ul>
@@ -243,6 +297,8 @@ function Panel({ user }) {
   const [tab, setTab] = useState('noticias')
   const [noticias, setNoticias] = useState([])
   const [capitulos, setCapitulos] = useState([])
+  const [editandoNoticia, setEditandoNoticia] = useState(null)
+  const [editandoCapitulo, setEditandoCapitulo] = useState(null)
 
   useEffect(() => {
     const unsubN = onValue(ref(db, 'noticias'), (s) => setNoticias(toArray(s.val())))
@@ -286,24 +342,32 @@ function Panel({ user }) {
 
       {tab === 'noticias' && (
         <section>
-          <NoticiaForm />
+          <NoticiaForm
+            editing={editandoNoticia}
+            onDone={() => setEditandoNoticia(null)}
+          />
           <ListaConEliminar
             path="noticias"
             items={noticias}
             renderLabel={(n) => `${n.titulo} — ${n.tag}`}
+            onEdit={setEditandoNoticia}
           />
         </section>
       )}
 
       {tab === 'capitulos' && (
         <section>
-          <CapituloForm />
+          <CapituloForm
+            editing={editandoCapitulo}
+            onDone={() => setEditandoCapitulo(null)}
+          />
           <ListaConEliminar
             path="capitulos"
             items={capitulos}
             renderLabel={(c) =>
               `${c.titulo} — ${c.tipo || 'Capítulo'}${c.duracion ? ' · ' + c.duracion : ''}${c.video ? ' 🎬' : ''}${c.miniatura ? ' 🖼️' : ''}`
             }
+            onEdit={setEditandoCapitulo}
           />
         </section>
       )}

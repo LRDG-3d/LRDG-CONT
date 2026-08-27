@@ -85,7 +85,7 @@ export default function VideoPlayer({ src, poster }) {
         src={src}
         poster={poster || undefined}
         autoPlay
-        onClick={togglePlay}
+        onClick={wakeControls}
         onPlay={() => setPlaying(true)}
         onPause={() => setPlaying(false)}
         onTimeUpdate={(e) => setCurrent(e.currentTarget.currentTime)}
