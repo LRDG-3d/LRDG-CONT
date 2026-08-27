@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 
 function formatT(seconds) {
   if (!Number.isFinite(seconds)) return '00:00'
@@ -14,6 +14,21 @@ export default function MiniaturaSelector({ video, onCapture }) {
   const [duracion, setDuracion] = useState(0)
   const [tiempo, setTiempo] = useState(0)
   const [buscando, setBuscando] = useState(false)
+  const [cargando, setCargando] = useState(true)
+  const [errorCarga, setErrorCarga] = useState('')
+  // Primero intenta con crossOrigin (necesario para poder capturar el
+  // fotograma). Si el servidor no lo permite, reintenta sin él para que
+  // al menos se pueda previsualizar y mover la barra.
+  const [conCrossOrigin, setConCrossOrigin] = useState(true)
+
+  // Si cambia la URL del video, reinicia todo el estado
+  useEffect(() => {
+    setDuracion(0)
+    setTiempo(0)
+    setCargando(true)
+    setErrorCarga('')
+    setConCrossOrigin(true)
+  }, [video])
 
   if (!video || !video.trim()) {
     return <p className="admin-hint">Pega la URL del video para poder elegir el fotograma.</p>
@@ -23,6 +38,26 @@ export default function MiniaturaSelector({ video, onCapture }) {
     const v = Number(e.target.value)
     setTiempo(v)
     if (videoRef.current) videoRef.current.currentTime = v
+  }
+
+  const onLoadedMetadata = (e) => {
+    setDuracion(e.currentTarget.duration || 0)
+    setCargando(false)
+    setErrorCarga('')
+  }
+
+  const onVideoError = () => {
+    if (conCrossOrigin) {
+      // Reintenta sin crossOrigin: se podrá ver y mover la barra, aunque
+      // la captura del fotograma podría fallar más adelante por CORS.
+      setConCrossOrigin(false)
+      setCargando(true)
+    } else {
+      setCargando(false)
+      setErrorCarga(
+        'No se pudo cargar este video para previsualizarlo. Revisa que la URL sea correcta y abra directamente en el navegador.'
+      )
+    }
   }
 
   const capturar = () => {
@@ -40,7 +75,7 @@ export default function MiniaturaSelector({ video, onCapture }) {
       onCapture(
         null,
         new Error(
-          'No se pudo capturar el fotograma (posible restricción CORS del servidor de video).'
+          'No se pudo capturar el fotograma por una restricción CORS de este servidor de video. Puedes usar "Aleatoria" con otro video, o pegar una URL de imagen manualmente.'
         )
       )
     }
@@ -49,16 +84,22 @@ export default function MiniaturaSelector({ video, onCapture }) {
   return (
     <div className="miniatura-selector">
       <video
+        key={conCrossOrigin ? 'cors' : 'nocors'}
         ref={videoRef}
         src={video}
-        crossOrigin="anonymous"
+        crossOrigin={conCrossOrigin ? 'anonymous' : undefined}
         muted
         playsInline
         preload="metadata"
-        onLoadedMetadata={(e) => setDuracion(e.currentTarget.duration || 0)}
+        onLoadedMetadata={onLoadedMetadata}
+        onError={onVideoError}
         onSeeking={() => setBuscando(true)}
         onSeeked={() => setBuscando(false)}
       />
+      {cargando && !errorCarga && (
+        <p className="admin-hint">Cargando video…</p>
+      )}
+      {errorCarga && <p className="admin-error">{errorCarga}</p>}
       <input
         type="range"
         className="miniatura-selector-seek"
@@ -66,13 +107,18 @@ export default function MiniaturaSelector({ video, onCapture }) {
         max={duracion || 0}
         step="0.1"
         value={tiempo}
+        disabled={cargando || !!errorCarga}
         onChange={onSeekChange}
       />
       <div className="miniatura-selector-row">
         <span className="miniatura-selector-time">
           {formatT(tiempo)} / {formatT(duracion)}
         </span>
-        <button type="button" onClick={capturar} disabled={buscando}>
+        <button
+          type="button"
+          onClick={capturar}
+          disabled={buscando || cargando || !!errorCarga}
+        >
           {buscando ? 'Buscando…' : 'Usar este fotograma'}
         </button>
       </div>
