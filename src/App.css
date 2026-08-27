@@ -477,11 +477,11 @@ body.dark-mode{
   --line:#2a2a2c;
 }
 body.dark-mode .news-thumb{
-  background:linear-gradient(135deg, #1d1d1f, #262628);
+  background-image:linear-gradient(135deg, #1d1d1f, #262628);
   border:1px solid var(--line);
 }
 body.dark-mode .ep-thumb{
-  background:#1d1d1f;
+  background-color:#1d1d1f;
   border:1px solid var(--line);
 }
 body.dark-mode .empty-state{
