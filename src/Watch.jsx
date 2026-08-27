@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { ref, onValue } from 'firebase/database'
 import { db } from './firebase'
+import VideoPlayer from './VideoPlayer.jsx'
 
 function toArray(obj) {
   if (!obj) return []
@@ -40,12 +41,7 @@ export default function Watch() {
         <div className="watch-page">
           <div className="watch-player">
             {episodio.video ? (
-              <video
-                src={episodio.video}
-                controls
-                autoPlay
-                poster={episodio.miniatura || undefined}
-              />
+              <VideoPlayer src={episodio.video} poster={episodio.miniatura} />
             ) : (
               <div className="watch-player-empty">
                 Este capítulo aún no tiene video agregado.
