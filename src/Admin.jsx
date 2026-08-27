@@ -109,6 +109,8 @@ function CapituloForm() {
   const [descripcion, setDescripcion] = useState('')
   const [miniatura, setMiniatura] = useState('')
   const [video, setVideo] = useState('')
+  const [duracion, setDuracion] = useState('')
+  const [tipo, setTipo] = useState('Capítulo')
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -119,11 +121,15 @@ function CapituloForm() {
       descripcion: descripcion.trim(),
       miniatura: miniatura.trim(),
       video: video.trim(),
+      duracion: duracion.trim(),
+      tipo,
     })
     setTitulo('')
     setDescripcion('')
     setMiniatura('')
     setVideo('')
+    setDuracion('')
+    setTipo('Capítulo')
   }
 
   return (
@@ -139,6 +145,18 @@ function CapituloForm() {
         onChange={(e) => setDescripcion(e.target.value)}
         rows={3}
       />
+      <div className="admin-form-row">
+        <input
+          placeholder="Duración (ej. 40:00)"
+          value={duracion}
+          onChange={(e) => setDuracion(e.target.value)}
+        />
+        <select value={tipo} onChange={(e) => setTipo(e.target.value)}>
+          <option value="Capítulo">Capítulo</option>
+          <option value="Video">Video</option>
+          <option value="Promoción">Promoción</option>
+        </select>
+      </div>
       <input
         placeholder="URL de la miniatura (imagen)"
         value={miniatura}
@@ -284,7 +302,7 @@ function Panel({ user }) {
             path="capitulos"
             items={capitulos}
             renderLabel={(c) =>
-              `${c.titulo}${c.video ? ' 🎬' : ''}${c.miniatura ? ' 🖼️' : ''}${c.descripcion ? ' 📝' : ''}`
+              `${c.titulo} — ${c.tipo || 'Capítulo'}${c.duracion ? ' · ' + c.duracion : ''}${c.video ? ' 🎬' : ''}${c.miniatura ? ' 🖼️' : ''}`
             }
           />
         </section>

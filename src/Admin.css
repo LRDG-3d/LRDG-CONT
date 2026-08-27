@@ -100,7 +100,8 @@
 }
 .admin-form-row input{ flex:1; }
 .admin-form input,
-.admin-form textarea{
+.admin-form textarea,
+.admin-form select{
   flex:1;
   min-width:140px;
   padding:10px;
@@ -109,6 +110,7 @@
   font-size:0.85rem;
   font-family:inherit;
   resize:vertical;
+  background:var(--white);
 }
 .admin-form button{
   padding:10px 18px;
