@@ -136,6 +136,18 @@
   color:var(--gray);
   margin-bottom:10px;
 }
+.admin-file-btn{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:10px 16px;
+  background:linear-gradient(90deg, var(--blue), var(--pink));
+  color:var(--white);
+  border-radius:3px;
+  cursor:pointer;
+  font-size:0.82rem;
+  white-space:nowrap;
+}
 .miniatura-selector{
   margin-bottom:14px;
   padding:12px;

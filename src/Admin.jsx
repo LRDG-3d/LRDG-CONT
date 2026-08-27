@@ -6,8 +6,7 @@ import {
 } from 'firebase/auth'
 import { ref, push, set, remove, onValue } from 'firebase/database'
 import { auth, db } from './firebase'
-import { capturarMiniatura } from './thumbnailCapture.js'
-import MiniaturaSelector from './MiniaturaSelector.jsx'
+import { archivoAMiniatura } from './thumbnailCapture.js'
 import './Admin.css'
 
 function toArray(obj) {
@@ -135,9 +134,7 @@ function CapituloForm({ editing, onDone }) {
   const [video, setVideo] = useState('')
   const [duracion, setDuracion] = useState('')
   const [tipo, setTipo] = useState('Capítulo')
-  const [capturando, setCapturando] = useState(false)
   const [errorCaptura, setErrorCaptura] = useState('')
-  const [showSelector, setShowSelector] = useState(false)
 
   useEffect(() => {
     setTitulo(editing?.titulo || '')
@@ -149,17 +146,17 @@ function CapituloForm({ editing, onDone }) {
     setErrorCaptura('')
   }, [editing])
 
-  const generarMiniatura = async () => {
-    if (!video.trim()) return
-    setCapturando(true)
+  const subirImagen = async (e) => {
+    const file = e.target.files?.[0]
+    if (!file) return
     setErrorCaptura('')
     try {
-      const dataUrl = await capturarMiniatura(video.trim())
+      const dataUrl = await archivoAMiniatura(file)
       setMiniatura(dataUrl)
     } catch (err) {
-      setErrorCaptura(err.message || 'No se pudo generar la miniatura.')
+      setErrorCaptura(err.message || 'No se pudo procesar la imagen.')
     } finally {
-      setCapturando(false)
+      e.target.value = ''
     }
   }
 
@@ -224,39 +221,21 @@ function CapituloForm({ editing, onDone }) {
       />
       <div className="admin-form-row">
         <input
-          placeholder="URL de la miniatura (o genera una desde el video)"
+          placeholder="URL de la miniatura (o sube/genera una)"
           value={miniatura}
           onChange={(e) => setMiniatura(e.target.value)}
         />
-        <button
-          type="button"
-          onClick={generarMiniatura}
-          disabled={!video.trim() || capturando}
-        >
-          {capturando ? 'Capturando…' : '🎲 Aleatoria'}
-        </button>
-        <button
-          type="button"
-          onClick={() => setShowSelector((s) => !s)}
-          disabled={!video.trim()}
-        >
-          {showSelector ? 'Ocultar selector' : '🎯 Elegir parte del video'}
-        </button>
+        <label className="admin-file-btn">
+          📷 Subir imagen
+          <input type="file" accept="image/*" onChange={subirImagen} hidden />
+        </label>
       </div>
+      <p className="admin-hint">
+        Toma una captura de pantalla del momento que quieras del video (desde
+        tu galería o el reproductor) y súbela aquí, o pega la URL de una
+        imagen ya existente arriba.
+      </p>
       {errorCaptura && <p className="admin-error">{errorCaptura}</p>}
-      {showSelector && (
-        <MiniaturaSelector
-          video={video}
-          onCapture={(dataUrl, err) => {
-            if (err) {
-              setErrorCaptura(err.message)
-              return
-            }
-            setMiniatura(dataUrl)
-            setErrorCaptura('')
-          }}
-        />
-      )}
       {miniatura && (
         <img src={miniatura} alt="Vista previa de la miniatura" className="admin-thumb-preview" />
       )}
