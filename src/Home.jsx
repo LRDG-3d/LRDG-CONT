@@ -109,14 +109,16 @@ export default function Home() {
           <a href="#capitulos">Capítulos</a>
           <a href="#en-vivo">En Vivo</a>
         </nav>
-        <button
-          className="menu-toggle"
-          aria-label="Abrir menú"
-          onClick={() => setMenuOpen(!menuOpen)}
-        >
-          ☰
-        </button>
-        <ThemeToggle />
+        <div className="header-actions">
+          <ThemeToggle />
+          <button
+            className="menu-toggle"
+            aria-label="Abrir menú"
+            onClick={() => setMenuOpen(!menuOpen)}
+          >
+            ☰
+          </button>
+        </div>
       </header>
       <div className="stripe" />
 

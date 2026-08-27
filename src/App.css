@@ -6,6 +6,11 @@
   --line:#ececec;
   --blue:#3d6fe0;
   --pink:#e0498c;
+  /* Color de texto/íconos sobre superficies que siempre son negras
+     (header, footer, video, botones oscuros). No cambia con el modo
+     nocturno, a diferencia de --white que sí representa el fondo de la
+     página y se invierte. */
+  --on-dark:#ffffff;
 }
 
 *{
@@ -27,7 +32,7 @@ body{
 /* ===== TOP BAR ===== */
 header.topbar{
   background:var(--black);
-  color:var(--white);
+  color:var(--on-dark);
   display:flex;
   align-items:center;
   justify-content:space-between;
@@ -64,25 +69,29 @@ nav.topnav a{
   text-decoration:none;
   transition:color .2s;
 }
-nav.topnav a:hover, nav.topnav a.active{ color:var(--white); }
+nav.topnav a:hover, nav.topnav a.active{ color:var(--on-dark); }
 
 .menu-toggle{
   display:none;
-  background:none; border:none; color:var(--white);
+  background:none; border:none; color:var(--on-dark);
   font-size:1.4rem; cursor:pointer;
 }
 .theme-toggle{
   background:none;
   border:1px solid rgba(255,255,255,0.3);
-  color:var(--white);
+  color:var(--on-dark);
   width:32px; height:32px;
   border-radius:50%;
   display:flex;
   align-items:center;
   justify-content:center;
   cursor:pointer;
-  margin-left:14px;
   flex-shrink:0;
+}
+.header-actions{
+  display:flex;
+  align-items:center;
+  gap:14px;
 }
 
 /* thin gradient strip under top bar */
@@ -135,7 +144,7 @@ nav.topnav a:hover, nav.topnav a.active{ color:var(--white); }
   border:none;
   cursor:pointer;
 }
-.btn-primary{ background:var(--black); color:var(--white); }
+.btn-primary{ background:var(--black); color:var(--on-dark); }
 .btn-ghost{ background:transparent; color:var(--ink); border:1px solid var(--ink); }
 
 .hero-player{
@@ -161,13 +170,7 @@ nav.topnav a:hover, nav.topnav a.active{ color:var(--white); }
   background:rgba(0,0,0,0.55);
   backdrop-filter:blur(8px);
   -webkit-backdrop-filter:blur(8px);
-  color:var(--white);
-  font-family:'Helvetica Neue', Arial, sans-serif;
-  font-size:0.72rem;
-  letter-spacing:0.03em;
-  padding:6px 10px;
-  border-radius:20px;
-  pointer-events:none;
+  color:var(--on-dark);
 }
 
 /* ===== SECTIONS ===== */
