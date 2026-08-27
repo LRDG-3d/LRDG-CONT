@@ -7,6 +7,7 @@ import {
 import { ref, push, set, remove, onValue } from 'firebase/database'
 import { auth, db } from './firebase'
 import { capturarMiniatura } from './thumbnailCapture.js'
+import MiniaturaSelector from './MiniaturaSelector.jsx'
 import './Admin.css'
 
 function toArray(obj) {
@@ -136,6 +137,7 @@ function CapituloForm({ editing, onDone }) {
   const [tipo, setTipo] = useState('Capítulo')
   const [capturando, setCapturando] = useState(false)
   const [errorCaptura, setErrorCaptura] = useState('')
+  const [showSelector, setShowSelector] = useState(false)
 
   useEffect(() => {
     setTitulo(editing?.titulo || '')
@@ -231,10 +233,30 @@ function CapituloForm({ editing, onDone }) {
           onClick={generarMiniatura}
           disabled={!video.trim() || capturando}
         >
-          {capturando ? 'Capturando…' : '🎲 Generar miniatura'}
+          {capturando ? 'Capturando…' : '🎲 Aleatoria'}
+        </button>
+        <button
+          type="button"
+          onClick={() => setShowSelector((s) => !s)}
+          disabled={!video.trim()}
+        >
+          {showSelector ? 'Ocultar selector' : '🎯 Elegir parte del video'}
         </button>
       </div>
       {errorCaptura && <p className="admin-error">{errorCaptura}</p>}
+      {showSelector && (
+        <MiniaturaSelector
+          video={video}
+          onCapture={(dataUrl, err) => {
+            if (err) {
+              setErrorCaptura(err.message)
+              return
+            }
+            setMiniatura(dataUrl)
+            setErrorCaptura('')
+          }}
+        />
+      )}
       {miniatura && (
         <img src={miniatura} alt="Vista previa de la miniatura" className="admin-thumb-preview" />
       )}

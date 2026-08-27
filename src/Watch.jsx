@@ -3,6 +3,7 @@ import { useParams, Link } from 'react-router-dom'
 import { ref, onValue } from 'firebase/database'
 import { db } from './firebase'
 import VideoPlayer from './VideoPlayer.jsx'
+import ThemeToggle from './ThemeToggle.jsx'
 
 function toArray(obj) {
   if (!obj) return []
@@ -32,6 +33,7 @@ export default function Watch() {
         <nav className="topnav">
           <Link to="/" className="active">Inicio</Link>
         </nav>
+        <ThemeToggle />
       </header>
       <div className="stripe" />
 

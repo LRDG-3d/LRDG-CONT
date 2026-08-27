@@ -4,6 +4,7 @@ import { ref, onValue } from 'firebase/database'
 import { db } from './firebase'
 import VideoPlayer from './VideoPlayer.jsx'
 import { getLiveState } from './liveSchedule.js'
+import ThemeToggle from './ThemeToggle.jsx'
 
 // Convierte un objeto de Firebase ({ id1: {...}, id2: {...} }) en un
 // arreglo [{ id: 'id1', ... }, { id: 'id2', ... }] para poder mapearlo.
@@ -115,6 +116,7 @@ export default function Home() {
         >
           ☰
         </button>
+        <ThemeToggle />
       </header>
       <div className="stripe" />
 

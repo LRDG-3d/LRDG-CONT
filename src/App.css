@@ -71,6 +71,19 @@ nav.topnav a:hover, nav.topnav a.active{ color:var(--white); }
   background:none; border:none; color:var(--white);
   font-size:1.4rem; cursor:pointer;
 }
+.theme-toggle{
+  background:none;
+  border:1px solid rgba(255,255,255,0.3);
+  color:var(--white);
+  width:32px; height:32px;
+  border-radius:50%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  cursor:pointer;
+  margin-left:14px;
+  flex-shrink:0;
+}
 
 /* thin gradient strip under top bar */
 .stripe{
@@ -449,4 +462,27 @@ footer{
 @media (max-width:480px){
   .news-grid{ grid-template-columns:1fr; }
   .episodes-rail{ grid-template-columns:repeat(2, 1fr); }
+}
+
+/* Modo nocturno: solo cambian fondo/texto/bordes. Los acentos de color
+   (--blue y --pink) no se redefinen aquí, así que quedan igual en ambos
+   modos, tal como se pidió. */
+body.dark-mode{
+  --white:#0b0b0d;
+  --ink:#f1f1f1;
+  --gray:#9a9a9a;
+  --line:#2a2a2c;
+}
+body.dark-mode .news-thumb{
+  background:linear-gradient(135deg, #1d1d1f, #262628);
+}
+body.dark-mode .ep-thumb{
+  background:#1d1d1f;
+}
+body.dark-mode .empty-state{
+  border-color:var(--line);
+}
+body.dark-mode .filters button{
+  background:var(--white);
+  color:var(--ink);
 }

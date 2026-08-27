@@ -131,6 +131,40 @@
   border:1px solid var(--line);
   margin-bottom:10px;
 }
+.admin-hint{
+  font-size:0.8rem;
+  color:var(--gray);
+  margin-bottom:10px;
+}
+.miniatura-selector{
+  margin-bottom:14px;
+  padding:12px;
+  border:1px solid var(--line);
+  border-radius:6px;
+}
+.miniatura-selector video{
+  width:100%;
+  max-width:360px;
+  border-radius:4px;
+  display:block;
+  margin-bottom:8px;
+  background:#000;
+}
+.miniatura-selector-seek{
+  width:100%;
+  max-width:360px;
+  display:block;
+  margin-bottom:8px;
+}
+.miniatura-selector-row{
+  display:flex;
+  align-items:center;
+  gap:12px;
+}
+.miniatura-selector-time{
+  font-size:0.78rem;
+  color:var(--gray);
+}
 .admin-status{ font-size:0.9rem; margin-bottom:12px; }
 .admin-danger{
   background:transparent;
