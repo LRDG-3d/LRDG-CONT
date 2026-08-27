@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import { ref, onValue } from 'firebase/database'
 import { db } from './firebase'
 import VideoPlayer from './VideoPlayer.jsx'
+import { getLiveState } from './liveSchedule.js'
 
 // Convierte un objeto de Firebase ({ id1: {...}, id2: {...} }) en un
 // arreglo [{ id: 'id1', ... }, { id: 'id2', ... }] para poder mapearlo.
@@ -57,6 +58,7 @@ export default function Home() {
   const [noticias, setNoticias] = useState([])
   const [capitulos, setCapitulos] = useState([])
   const [enVivo, setEnVivo] = useState(null)
+  const [liveState, setLiveState] = useState(null)
 
   useEffect(() => {
     const unsubNoticias = onValue(ref(db, 'noticias'), (snap) => {
@@ -76,6 +78,23 @@ export default function Home() {
       unsubEnVivo()
     }
   }, [])
+
+  // Recalcula, cada pocos segundos, qué capítulo "toca" ahora en la cola
+  // en vivo según el reloj, para que avance solo cuando corresponda.
+  useEffect(() => {
+    if (!enVivo?.queue?.length || !capitulos.length) {
+      setLiveState(null)
+      return
+    }
+    const episodios = enVivo.queue
+      .map((id) => capitulos.find((c) => c.id === id))
+      .filter(Boolean)
+
+    const recalcular = () => setLiveState(getLiveState(episodios, enVivo.startedAt))
+    recalcular()
+    const interval = setInterval(recalcular, 5000)
+    return () => clearInterval(interval)
+  }, [enVivo, capitulos])
 
   return (
     <>
@@ -114,10 +133,16 @@ export default function Home() {
         </div>
 
         <div className="hero-player" id="live-container">
-          {enVivo?.video ? (
+          {liveState?.episodio ? (
             <>
-              <VideoPlayer src={enVivo.video} poster={enVivo.miniatura} />
-              <div className="live-badge">🔴 EN VIVO — {enVivo.titulo}</div>
+              <VideoPlayer
+                key={liveState.episodio.id}
+                src={liveState.episodio.video}
+                poster={liveState.episodio.miniatura}
+                live
+                startOffset={liveState.offset}
+              />
+              <div className="live-badge">🔴 EN VIVO — {liveState.episodio.titulo}</div>
             </>
           ) : (
             <span className="placeholder">Aún no hay transmisión en vivo.</span>

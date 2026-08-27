@@ -144,6 +144,8 @@
   font-size:0.87rem;
 }
 .admin-list-actions{ display:flex; gap:14px; }
+.admin-list li button:disabled{ opacity:0.3; cursor:default; }
+.admin-danger{ margin-left:10px; }
 .admin-list li button{
   background:none;
   border:none;

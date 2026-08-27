@@ -221,91 +221,111 @@ function CapituloForm({ editing, onDone }) {
   )
 }
 
-// ---------- Control de "En Vivo" ----------
+// ---------- Control de "En Vivo" (cola de capítulos con horario real) ----------
 function EnVivoControl({ capitulos }) {
-  const [titulo, setTitulo] = useState('')
-  const [video, setVideo] = useState('')
-  const [miniatura, setMiniatura] = useState('')
-  const [origen, setOrigen] = useState('') // id del capítulo elegido, o '' si es manual
-  const [activo, setActivo] = useState(false)
+  const [queue, setQueue] = useState([])
+  const [startedAt, setStartedAt] = useState(null)
+  const [agregar, setAgregar] = useState('')
 
   useEffect(() => {
     const unsub = onValue(ref(db, 'enVivo'), (snap) => {
       const val = snap.val()
-      setActivo(!!val)
-      setTitulo(val?.titulo || '')
-      setVideo(val?.video || '')
-      setMiniatura(val?.miniatura || '')
+      setQueue(val?.queue || [])
+      setStartedAt(val?.startedAt || null)
     })
     return () => unsub()
   }, [])
 
-  const elegirCapitulo = (id) => {
-    setOrigen(id)
-    if (!id) return
-    const c = capitulos.find((cap) => cap.id === id)
-    if (c) {
-      setTitulo(c.titulo)
-      setVideo(c.video || '')
-      setMiniatura(c.miniatura || '')
-    }
-  }
-
-  const activar = async (e) => {
-    e.preventDefault()
-    if (!titulo.trim() || !video.trim()) return
-    await set(ref(db, 'enVivo'), {
-      titulo,
-      video: video.trim(),
-      miniatura: miniatura.trim(),
+  const guardarQueue = (nuevaQueue) => {
+    set(ref(db, 'enVivo'), {
+      queue: nuevaQueue,
+      startedAt: startedAt || Date.now(),
     })
   }
 
-  const desactivar = async () => {
-    await remove(ref(db, 'enVivo'))
-    setTitulo('')
-    setVideo('')
-    setMiniatura('')
-    setOrigen('')
+  const agregarCapitulo = () => {
+    if (!agregar) return
+    guardarQueue([...queue, agregar])
+    setAgregar('')
   }
+
+  const quitar = (index) => {
+    guardarQueue(queue.filter((_, i) => i !== index))
+  }
+
+  const mover = (index, dir) => {
+    const nueva = [...queue]
+    const destino = index + dir
+    if (destino < 0 || destino >= nueva.length) return
+    ;[nueva[index], nueva[destino]] = [nueva[destino], nueva[index]]
+    guardarQueue(nueva)
+  }
+
+  const reiniciarHorario = () => {
+    set(ref(db, 'enVivo'), { queue, startedAt: Date.now() })
+  }
+
+  const terminar = async () => {
+    await remove(ref(db, 'enVivo'))
+    setQueue([])
+    setStartedAt(null)
+  }
+
+  const tituloDe = (id) => capitulos.find((c) => c.id === id)?.titulo || '(eliminado)'
 
   return (
     <div className="admin-form-block">
       <p className="admin-status">
-        Estado actual: {activo ? '🔴 En vivo' : '⚪ Sin transmisión'}
+        Estado actual:{' '}
+        {queue.length > 0 ? '🔴 En vivo, reproduciendo en cola' : '⚪ Sin transmisión'}
       </p>
-      <form onSubmit={activar} className="admin-form admin-form-stacked">
-        {capitulos.length > 0 && (
-          <select value={origen} onChange={(e) => elegirCapitulo(e.target.value)}>
-            <option value="">— Elegir un capítulo existente —</option>
-            {capitulos.map((c) => (
-              <option key={c.id} value={c.id}>
-                {c.titulo}
-              </option>
-            ))}
-          </select>
-        )}
-        <input
-          placeholder="Título de la transmisión"
-          value={titulo}
-          onChange={(e) => setTitulo(e.target.value)}
-        />
-        <input
-          placeholder="URL del video en vivo (mp4, stream, etc.)"
-          value={video}
-          onChange={(e) => setVideo(e.target.value)}
-        />
-        <input
-          placeholder="URL de la miniatura (opcional)"
-          value={miniatura}
-          onChange={(e) => setMiniatura(e.target.value)}
-        />
-        <button type="submit">Poner en vivo</button>
-      </form>
-      {activo && (
-        <button className="admin-danger" onClick={desactivar}>
-          Terminar transmisión
+
+      <div className="admin-form-row">
+        <select value={agregar} onChange={(e) => setAgregar(e.target.value)}>
+          <option value="">— Elegir capítulo para agregar a la cola —</option>
+          {capitulos.map((c) => (
+            <option key={c.id} value={c.id}>
+              {c.titulo}
+            </option>
+          ))}
+        </select>
+        <button type="button" onClick={agregarCapitulo}>
+          Agregar a la cola
         </button>
+      </div>
+
+      {queue.length > 0 ? (
+        <ul className="admin-list">
+          {queue.map((id, i) => (
+            <li key={`${id}-${i}`}>
+              <span>
+                {i + 1}. {tituloDe(id)}
+              </span>
+              <span className="admin-list-actions">
+                <button onClick={() => mover(i, -1)} disabled={i === 0}>
+                  ↑
+                </button>
+                <button onClick={() => mover(i, 1)} disabled={i === queue.length - 1}>
+                  ↓
+                </button>
+                <button onClick={() => quitar(i)}>Quitar</button>
+              </span>
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <p className="admin-empty">La cola está vacía.</p>
+      )}
+
+      {queue.length > 0 && (
+        <>
+          <button className="admin-cancel" onClick={reiniciarHorario}>
+            Reiniciar horario (empezar desde el primero, ahora)
+          </button>
+          <button className="admin-danger" onClick={terminar}>
+            Terminar transmisión
+          </button>
+        </>
       )}
     </div>
   )

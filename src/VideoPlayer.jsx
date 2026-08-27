@@ -7,7 +7,7 @@ function formatTime(seconds) {
   return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`
 }
 
-export default function VideoPlayer({ src, poster }) {
+export default function VideoPlayer({ src, poster, live, startOffset, onEnded }) {
   const containerRef = useRef(null)
   const videoRef = useRef(null)
   const hideTimer = useRef(null)
@@ -54,12 +54,27 @@ export default function VideoPlayer({ src, poster }) {
   }
 
   const onSeek = (e) => {
+    if (live) return // en vivo: no se permite adelantar/atrasar
     const v = videoRef.current
     if (!v) return
     const value = Number(e.target.value)
     v.currentTime = value
     setCurrent(value)
     wakeControls()
+  }
+
+  // Evita saltar con las flechas del teclado mientras está en vivo
+  const onKeyDown = (e) => {
+    if (live && (e.key === 'ArrowLeft' || e.key === 'ArrowRight')) {
+      e.preventDefault()
+    }
+  }
+
+  const onLoadedMetadata = (e) => {
+    setDuration(e.currentTarget.duration)
+    if (live && startOffset) {
+      e.currentTarget.currentTime = startOffset
+    }
   }
 
   const toggleFullscreen = () => {
@@ -86,10 +101,12 @@ export default function VideoPlayer({ src, poster }) {
         poster={poster || undefined}
         autoPlay
         onClick={wakeControls}
+        onKeyDown={onKeyDown}
         onPlay={() => setPlaying(true)}
         onPause={() => setPlaying(false)}
+        onEnded={onEnded}
         onTimeUpdate={(e) => setCurrent(e.currentTarget.currentTime)}
-        onLoadedMetadata={(e) => setDuration(e.currentTarget.duration)}
+        onLoadedMetadata={onLoadedMetadata}
       />
 
       <div className={`glass-controls ${showControls ? '' : 'glass-controls-hidden'}`}>
@@ -110,19 +127,23 @@ export default function VideoPlayer({ src, poster }) {
           )}
         </button>
 
-        <span className="glass-time">{formatTime(current)}</span>
-
-        <input
-          className="glass-seek"
-          type="range"
-          min="0"
-          max={duration || 0}
-          step="0.1"
-          value={current}
-          onChange={onSeek}
-        />
-
-        <span className="glass-time">{formatTime(duration)}</span>
+        {live ? (
+          <span className="glass-live-tag">🔴 EN VIVO</span>
+        ) : (
+          <>
+            <span className="glass-time">{formatTime(current)}</span>
+            <input
+              className="glass-seek"
+              type="range"
+              min="0"
+              max={duration || 0}
+              step="0.1"
+              value={current}
+              onChange={onSeek}
+            />
+            <span className="glass-time">{formatTime(duration)}</span>
+          </>
+        )}
 
         <button
           className="glass-btn"
