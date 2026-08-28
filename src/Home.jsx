@@ -16,7 +16,10 @@ function toArray(obj) {
 function NewsCard({ item }) {
   return (
     <Link to={`/noticia/${item.id}`} className="news-card">
-      <div className="news-thumb" />
+      <div
+        className="news-thumb"
+        style={item.imagen ? { backgroundImage: `url(${item.imagen})` } : undefined}
+      />
       <h4>{item.titulo}</h4>
       <div className="ep-meta">
         {item.tag && <span className="ep-tipo">{item.tag.toUpperCase()}</span>}

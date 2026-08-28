@@ -68,12 +68,22 @@ function Login() {
 // ---------- Formulario genérico para agregar/editar una noticia ----------
 function NoticiaForm({ editing, onDone }) {
   const [titulo, setTitulo] = useState('')
+  const [subtitulo, setSubtitulo] = useState('')
   const [tag, setTag] = useState('')
+  const [autor, setAutor] = useState('')
+  const [autorImagen, setAutorImagen] = useState('')
+  const [imagen, setImagen] = useState('')
+  const [imagenCredito, setImagenCredito] = useState('')
   const [contenido, setContenido] = useState('')
 
   useEffect(() => {
     setTitulo(editing?.titulo || '')
+    setSubtitulo(editing?.subtitulo || '')
     setTag(editing?.tag || '')
+    setAutor(editing?.autor || '')
+    setAutorImagen(editing?.autorImagen || '')
+    setImagen(editing?.imagen || '')
+    setImagenCredito(editing?.imagenCredito || '')
     setContenido(editing?.contenido || '')
   }, [editing])
 
@@ -81,19 +91,26 @@ function NoticiaForm({ editing, onDone }) {
     e.preventDefault()
     if (!titulo.trim()) return
 
+    const datosComunes = {
+      titulo,
+      subtitulo: subtitulo.trim(),
+      tag: tag || 'General',
+      autor: autor.trim(),
+      autorImagen: autorImagen.trim(),
+      imagen: imagen.trim(),
+      imagenCredito: imagenCredito.trim(),
+      contenido: contenido.trim(),
+    }
+
     if (editing) {
       await set(ref(db, `noticias/${editing.id}`), {
         ...editing,
-        titulo,
-        tag: tag || 'General',
-        contenido: contenido.trim(),
+        ...datosComunes,
       })
     } else {
       const nuevaRef = push(ref(db, 'noticias'))
       await set(nuevaRef, {
-        titulo,
-        tag: tag || 'General',
-        contenido: contenido.trim(),
+        ...datosComunes,
         fecha: new Date().toLocaleDateString('es-MX', {
           day: 'numeric',
           month: 'long',
@@ -102,7 +119,12 @@ function NoticiaForm({ editing, onDone }) {
       })
     }
     setTitulo('')
+    setSubtitulo('')
     setTag('')
+    setAutor('')
+    setAutorImagen('')
+    setImagen('')
+    setImagenCredito('')
     setContenido('')
     onDone?.()
   }
@@ -115,15 +137,42 @@ function NoticiaForm({ editing, onDone }) {
         onChange={(e) => setTitulo(e.target.value)}
       />
       <input
+        placeholder="Subtítulo o bajada (opcional)"
+        value={subtitulo}
+        onChange={(e) => setSubtitulo(e.target.value)}
+      />
+      <input
         placeholder="Etiqueta (ej. Entretenimiento)"
         value={tag}
         onChange={(e) => setTag(e.target.value)}
       />
+      <div className="admin-form-row">
+        <input
+          placeholder="Nombre del autor (opcional)"
+          value={autor}
+          onChange={(e) => setAutor(e.target.value)}
+        />
+        <input
+          placeholder="URL de la foto del autor (opcional)"
+          value={autorImagen}
+          onChange={(e) => setAutorImagen(e.target.value)}
+        />
+      </div>
+      <input
+        placeholder="URL de la imagen principal"
+        value={imagen}
+        onChange={(e) => setImagen(e.target.value)}
+      />
+      <input
+        placeholder="Crédito de la imagen (ej. Imagen: Televisa)"
+        value={imagenCredito}
+        onChange={(e) => setImagenCredito(e.target.value)}
+      />
       <textarea
-        placeholder="Contenido completo de la noticia (opcional)"
+        placeholder="Contenido completo de la noticia (usa saltos de línea para separar párrafos)"
         value={contenido}
         onChange={(e) => setContenido(e.target.value)}
-        rows={4}
+        rows={6}
       />
       <div className="admin-form-row">
         <button type="submit">
