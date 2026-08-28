@@ -4,6 +4,7 @@ import { ref, onValue } from 'firebase/database'
 import { db } from './firebase'
 import VideoPlayer from './VideoPlayer.jsx'
 import ThemeToggle from './ThemeToggle.jsx'
+import Comments from './Comments.jsx'
 
 function toArray(obj) {
   if (!obj) return []
@@ -68,6 +69,8 @@ export default function Watch() {
               <p className="watch-description">{episodio.descripcion}</p>
             )}
           </div>
+
+          <Comments node={`comentarios/capitulo_${episodio.id}`} />
 
           {relacionados.length > 0 && (
             <div className="watch-related">

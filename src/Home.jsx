@@ -15,7 +15,7 @@ function toArray(obj) {
 
 function NewsCard({ item }) {
   return (
-    <div className="news-card">
+    <Link to={`/noticia/${item.id}`} className="news-card">
       <div className="news-thumb" />
       <h4>{item.titulo}</h4>
       <div className="ep-meta">
@@ -23,7 +23,7 @@ function NewsCard({ item }) {
         {item.tag && item.fecha && <span className="ep-sep">·</span>}
         {item.fecha && <span className="ep-duracion">{item.fecha}</span>}
       </div>
-    </div>
+    </Link>
   )
 }
 

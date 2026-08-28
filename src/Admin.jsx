@@ -69,10 +69,12 @@ function Login() {
 function NoticiaForm({ editing, onDone }) {
   const [titulo, setTitulo] = useState('')
   const [tag, setTag] = useState('')
+  const [contenido, setContenido] = useState('')
 
   useEffect(() => {
     setTitulo(editing?.titulo || '')
     setTag(editing?.tag || '')
+    setContenido(editing?.contenido || '')
   }, [editing])
 
   const handleSubmit = async (e) => {
@@ -84,12 +86,14 @@ function NoticiaForm({ editing, onDone }) {
         ...editing,
         titulo,
         tag: tag || 'General',
+        contenido: contenido.trim(),
       })
     } else {
       const nuevaRef = push(ref(db, 'noticias'))
       await set(nuevaRef, {
         titulo,
         tag: tag || 'General',
+        contenido: contenido.trim(),
         fecha: new Date().toLocaleDateString('es-MX', {
           day: 'numeric',
           month: 'long',
@@ -99,11 +103,12 @@ function NoticiaForm({ editing, onDone }) {
     }
     setTitulo('')
     setTag('')
+    setContenido('')
     onDone?.()
   }
 
   return (
-    <form onSubmit={handleSubmit} className="admin-form">
+    <form onSubmit={handleSubmit} className="admin-form admin-form-stacked">
       <input
         placeholder="Título de la noticia"
         value={titulo}
@@ -114,14 +119,22 @@ function NoticiaForm({ editing, onDone }) {
         value={tag}
         onChange={(e) => setTag(e.target.value)}
       />
-      <button type="submit">
-        {editing ? 'Guardar cambios' : 'Agregar noticia'}
-      </button>
-      {editing && (
-        <button type="button" className="admin-cancel" onClick={onDone}>
-          Cancelar
+      <textarea
+        placeholder="Contenido completo de la noticia (opcional)"
+        value={contenido}
+        onChange={(e) => setContenido(e.target.value)}
+        rows={4}
+      />
+      <div className="admin-form-row">
+        <button type="submit">
+          {editing ? 'Guardar cambios' : 'Agregar noticia'}
         </button>
-      )}
+        {editing && (
+          <button type="button" className="admin-cancel" onClick={onDone}>
+            Cancelar
+          </button>
+        )}
+      </div>
     </form>
   )
 }
@@ -388,6 +401,47 @@ function ListaConEliminar({ path, items, renderLabel, onEdit }) {
   )
 }
 
+// ---------- Moderación de comentarios ----------
+function ModeracionComentarios() {
+  const [comentarios, setComentarios] = useState([])
+
+  useEffect(() => {
+    const unsub = onValue(ref(db, 'comentarios'), (snap) => {
+      const val = snap.val() || {}
+      const lista = []
+      Object.entries(val).forEach(([grupo, items]) => {
+        Object.entries(items || {}).forEach(([id, c]) => {
+          lista.push({ grupo, id, ...c })
+        })
+      })
+      lista.sort((a, b) => (b.fecha || 0) - (a.fecha || 0))
+      setComentarios(lista)
+    })
+    return () => unsub()
+  }, [])
+
+  const eliminar = (grupo, id) => remove(ref(db, `comentarios/${grupo}/${id}`))
+
+  if (comentarios.length === 0) {
+    return <p className="admin-empty">No hay comentarios todavía.</p>
+  }
+
+  return (
+    <ul className="admin-list">
+      {comentarios.map((c) => (
+        <li key={`${c.grupo}-${c.id}`}>
+          <span>
+            <strong>{c.nombre}:</strong> {c.texto}
+            <br />
+            <span className="admin-hint">{c.grupo}</span>
+          </span>
+          <button onClick={() => eliminar(c.grupo, c.id)}>Eliminar</button>
+        </li>
+      ))}
+    </ul>
+  )
+}
+
 // ---------- Panel principal (una vez con sesión iniciada) ----------
 function Panel({ user }) {
   const [tab, setTab] = useState('noticias')
@@ -434,6 +488,12 @@ function Panel({ user }) {
         >
           En Vivo
         </button>
+        <button
+          className={tab === 'comentarios' ? 'active' : ''}
+          onClick={() => setTab('comentarios')}
+        >
+          Comentarios
+        </button>
       </nav>
 
       {tab === 'noticias' && (
@@ -471,6 +531,12 @@ function Panel({ user }) {
       {tab === 'envivo' && (
         <section>
           <EnVivoControl capitulos={capitulos} />
+        </section>
+      )}
+
+      {tab === 'comentarios' && (
+        <section>
+          <ModeracionComentarios />
         </section>
       )}
     </div>
