@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react'
-import { useParams, Link } from 'react-router-dom'
+import { useParams } from 'react-router-dom'
 import { ref, onValue } from 'firebase/database'
 import { db } from './firebase'
-import ThemeToggle from './ThemeToggle.jsx'
 import Comments from './Comments.jsx'
+import SiteHeader from './SiteHeader.jsx'
 
 function toArray(obj) {
   if (!obj) return []
@@ -38,18 +38,7 @@ export default function Noticia() {
 
   return (
     <>
-      <header className="topbar">
-        <div className="brand">
-          <span className="dot" /> La Rosa TV
-        </div>
-        <nav className="topnav">
-          <Link to="/" className="active">Inicio</Link>
-        </nav>
-        <div className="header-actions">
-          <ThemeToggle />
-        </div>
-      </header>
-      <div className="stripe" />
+      <SiteHeader />
 
       {!noticia ? (
         <div className="watch-loading">Cargando noticia…</div>

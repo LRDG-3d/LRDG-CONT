@@ -195,6 +195,7 @@ function CapituloForm({ editing, onDone }) {
   const [miniatura, setMiniatura] = useState('')
   const [video, setVideo] = useState('')
   const [duracion, setDuracion] = useState('')
+  const [detectandoDuracion, setDetectandoDuracion] = useState(false)
   const [tipo, setTipo] = useState('Capítulo')
   const [errorCaptura, setErrorCaptura] = useState('')
 
@@ -207,6 +208,27 @@ function CapituloForm({ editing, onDone }) {
     setTipo(editing?.tipo || 'Capítulo')
     setErrorCaptura('')
   }, [editing])
+
+  // Detecta la duración real del video leyendo sus metadatos, sin
+  // necesidad de que la persona la escriba a mano.
+  const detectarDuracion = (url) => {
+    if (!url.trim()) {
+      setDuracion('')
+      return
+    }
+    setDetectandoDuracion(true)
+    const v = document.createElement('video')
+    v.preload = 'metadata'
+    v.onloadedmetadata = () => {
+      const total = Math.round(v.duration)
+      const m = Math.floor(total / 60)
+      const s = total % 60
+      setDuracion(`${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`)
+      setDetectandoDuracion(false)
+    }
+    v.onerror = () => setDetectandoDuracion(false)
+    v.src = url.trim()
+  }
 
   const subirImagen = async (e) => {
     const file = e.target.files?.[0]
@@ -265,11 +287,6 @@ function CapituloForm({ editing, onDone }) {
         rows={3}
       />
       <div className="admin-form-row">
-        <input
-          placeholder="Duración (ej. 40:00)"
-          value={duracion}
-          onChange={(e) => setDuracion(e.target.value)}
-        />
         <select value={tipo} onChange={(e) => setTipo(e.target.value)}>
           <option value="Capítulo">Capítulo</option>
           <option value="Video">Video</option>
@@ -280,7 +297,15 @@ function CapituloForm({ editing, onDone }) {
         placeholder="URL del video (ej. archive.org/download/.../CAP.mp4)"
         value={video}
         onChange={(e) => setVideo(e.target.value)}
+        onBlur={(e) => detectarDuracion(e.target.value)}
       />
+      <p className="admin-hint">
+        {detectandoDuracion
+          ? 'Detectando duración del video…'
+          : duracion
+          ? `Duración detectada: ${duracion}`
+          : 'La duración se detecta automáticamente al salir del campo de video.'}
+      </p>
       <div className="admin-form-row">
         <input
           placeholder="URL de la miniatura (o sube/genera una)"

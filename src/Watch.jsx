@@ -1,10 +1,11 @@
 import { useState, useEffect } from 'react'
-import { useParams, Link } from 'react-router-dom'
+import { useParams } from 'react-router-dom'
 import { ref, onValue } from 'firebase/database'
 import { db } from './firebase'
 import VideoPlayer from './VideoPlayer.jsx'
-import ThemeToggle from './ThemeToggle.jsx'
 import Comments from './Comments.jsx'
+import { EpisodeCard } from './Cards.jsx'
+import SiteHeader from './SiteHeader.jsx'
 
 function toArray(obj) {
   if (!obj) return []
@@ -27,16 +28,7 @@ export default function Watch() {
 
   return (
     <>
-      <header className="topbar">
-        <div className="brand">
-          <span className="dot" /> La Rosa TV
-        </div>
-        <nav className="topnav">
-          <Link to="/" className="active">Inicio</Link>
-        </nav>
-        <ThemeToggle />
-      </header>
-      <div className="stripe" />
+      <SiteHeader />
 
       {!episodio ? (
         <div className="watch-loading">Cargando capítulo…</div>
@@ -44,7 +36,11 @@ export default function Watch() {
         <div className="watch-page">
           <div className="watch-player">
             {episodio.video ? (
-              <VideoPlayer src={episodio.video} poster={episodio.miniatura} />
+              <VideoPlayer
+                src={episodio.video}
+                poster={episodio.miniatura}
+                titulo={episodio.titulo}
+              />
             ) : (
               <div className="watch-player-empty">
                 Este capítulo aún no tiene video agregado.
@@ -77,36 +73,7 @@ export default function Watch() {
               <h2>Más capítulos</h2>
               <div className="episodes-rail">
                 {relacionados.map((item) => (
-                  <Link
-                    key={item.id}
-                    to={`/capitulo/${item.id}`}
-                    className="ep-card"
-                  >
-                    <div
-                      className="ep-thumb"
-                      style={
-                        item.miniatura
-                          ? { backgroundImage: `url(${item.miniatura})` }
-                          : undefined
-                      }
-                    >
-                      {!item.miniatura && (
-                        <span className="ep-thumb-fallback">▶</span>
-                      )}
-                    </div>
-                    <h5>{item.titulo}</h5>
-                    <div className="ep-meta">
-                      {item.duracion && (
-                        <>
-                          <span className="ep-duracion">{item.duracion}</span>
-                          <span className="ep-sep">·</span>
-                        </>
-                      )}
-                      <span className="ep-tipo">
-                        {(item.tipo || 'Capítulo').toUpperCase()}
-                      </span>
-                    </div>
-                  </Link>
+                  <EpisodeCard key={item.id} item={item} />
                 ))}
               </div>
             </div>
