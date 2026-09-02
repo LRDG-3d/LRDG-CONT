@@ -34,39 +34,41 @@ export default function Watch() {
         <div className="watch-loading">Cargando capítulo…</div>
       ) : (
         <div className="watch-page">
-          <div className="watch-player">
-            {episodio.video ? (
-              <VideoPlayer
-                src={episodio.video}
-                poster={episodio.miniatura}
-                titulo={episodio.titulo}
-              />
-            ) : (
-              <div className="watch-player-empty">
-                Este capítulo aún no tiene video agregado.
-              </div>
-            )}
-          </div>
-
-          <div className="watch-body">
-            <h1>{episodio.titulo}</h1>
-            <div className="ep-meta watch-meta">
-              {episodio.duracion && (
-                <>
-                  <span className="ep-duracion">{episodio.duracion}</span>
-                  <span className="ep-sep">·</span>
-                </>
+          <div className="watch-main">
+            <div className="watch-player">
+              {episodio.video ? (
+                <VideoPlayer
+                  src={episodio.video}
+                  poster={episodio.miniatura}
+                  titulo={episodio.titulo}
+                />
+              ) : (
+                <div className="watch-player-empty">
+                  Este capítulo aún no tiene video agregado.
+                </div>
               )}
-              <span className="ep-tipo">
-                {(episodio.tipo || 'Capítulo').toUpperCase()}
-              </span>
             </div>
-            {episodio.descripcion && (
-              <p className="watch-description">{episodio.descripcion}</p>
-            )}
-          </div>
 
-          <Comments node={`comentarios/capitulo_${episodio.id}`} />
+            <div className="watch-body">
+              <h1>{episodio.titulo}</h1>
+              <div className="ep-meta watch-meta">
+                {episodio.duracion && (
+                  <>
+                    <span className="ep-duracion">{episodio.duracion}</span>
+                    <span className="ep-sep">·</span>
+                  </>
+                )}
+                <span className="ep-tipo">
+                  {(episodio.tipo || 'Capítulo').toUpperCase()}
+                </span>
+              </div>
+              {episodio.descripcion && (
+                <p className="watch-description">{episodio.descripcion}</p>
+              )}
+            </div>
+
+            <Comments node={`comentarios/capitulo_${episodio.id}`} />
+          </div>
 
           {relacionados.length > 0 && (
             <div className="watch-related">

@@ -720,3 +720,45 @@ body.dark-mode .empty-state{
   font-weight:500;
   max-width:80%;
 }
+
+/* Interfaz de capítulo en pantallas grandes: video + info a la
+   izquierda, lista de "más capítulos" en una columna lateral a la
+   derecha (como en sitios de streaming de escritorio). En móvil no
+   cambia nada, sigue todo en una sola columna. */
+@media (min-width:900px){
+  .watch-page{
+    display:grid;
+    grid-template-columns:1fr 340px;
+    align-items:start;
+    gap:32px;
+    max-width:1400px;
+    padding:24px 24px 40px;
+  }
+  .watch-main{ min-width:0; }
+  .watch-related{
+    position:sticky;
+    top:80px;
+    max-height:calc(100vh - 100px);
+    overflow-y:auto;
+  }
+  .watch-related .episodes-rail{
+    display:flex;
+    flex-direction:column;
+    gap:14px;
+  }
+  .watch-related .ep-card{
+    display:flex;
+    flex-direction:row;
+    align-items:center;
+    gap:10px;
+  }
+  .watch-related .ep-thumb{
+    width:130px;
+    flex-shrink:0;
+    margin-bottom:0;
+  }
+  .watch-related .ep-card h5{
+    font-size:0.85rem;
+    margin-bottom:4px;
+  }
+}
