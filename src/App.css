@@ -325,10 +325,10 @@ section{
 }
 .glass-seek{
   flex:1;
-  height:3px;
+  height:4px;
   appearance:none;
   -webkit-appearance:none;
-  background:rgba(255,255,255,0.3);
+  background:rgba(0,0,0,0.9);
   border-radius:2px;
   outline:none;
   cursor:pointer;
