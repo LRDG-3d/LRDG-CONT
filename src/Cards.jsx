@@ -30,15 +30,17 @@ export function EpisodeCard({ item }) {
       >
         {!item.miniatura && <span className="ep-thumb-fallback">▶</span>}
       </div>
-      <h5>{item.titulo}</h5>
-      <div className="ep-meta">
-        {item.duracion && (
-          <>
-            <span className="ep-duracion">{item.duracion}</span>
-            <span className="ep-sep">·</span>
-          </>
-        )}
-        <span className="ep-tipo">{(item.tipo || 'Capítulo').toUpperCase()}</span>
+      <div className="ep-info">
+        <h5>{item.titulo}</h5>
+        <div className="ep-meta">
+          {item.duracion && (
+            <>
+              <span className="ep-duracion">{item.duracion}</span>
+              <span className="ep-sep">·</span>
+            </>
+          )}
+          <span className="ep-tipo">{(item.tipo || 'Capítulo').toUpperCase()}</span>
+        </div>
       </div>
     </Link>
   )
