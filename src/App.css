@@ -282,9 +282,7 @@ section{
   align-items:center;
   gap:10px;
   padding:10px 14px;
-  background:rgba(20,20,25,0.35);
-  backdrop-filter:blur(14px) saturate(160%);
-  -webkit-backdrop-filter:blur(14px) saturate(160%);
+  background:rgba(0,0,0,0.1);
   border-bottom:1px solid rgba(255,255,255,0.12);
   transition:transform .35s ease, opacity .35s ease;
   transform:translateY(0);
@@ -328,7 +326,7 @@ section{
   height:4px;
   appearance:none;
   -webkit-appearance:none;
-  background:#bebcbd;
+  background:#8f8d8e;
   border-radius:2px;
   outline:none;
   cursor:pointer;
