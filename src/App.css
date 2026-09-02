@@ -340,12 +340,6 @@ section{
   border-radius:2px;
   overflow:hidden;
 }
-.glass-seek-fill{
-  position:absolute;
-  left:0; top:0; bottom:0;
-  background:#e21b3c;
-  border-radius:2px;
-}
 .glass-seek-thumb{
   position:absolute;
   top:50%;

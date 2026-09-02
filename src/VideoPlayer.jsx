@@ -149,10 +149,6 @@ export default function VideoPlayer({ src, poster, titulo, live, startOffset, on
             <div className="glass-seek-wrap">
               <div className="glass-seek-track">
                 <div
-                  className="glass-seek-fill"
-                  style={{ width: `${duration ? (current / duration) * 100 : 0}%` }}
-                />
-                <div
                   className="glass-seek-thumb"
                   style={{ left: `${duration ? (current / duration) * 100 : 0}%` }}
                 />
