@@ -17,7 +17,7 @@
   box-sizing:border-box; margin:0; padding:0;
   -webkit-tap-highlight-color:transparent;
 }
-button, a, input, .ep-card, .news-card, .glass-btn, .glass-seek{
+button, a, input, .ep-card, .news-card, .glass-btn, .glass-seek-input{
   -webkit-tap-highlight-color:transparent;
   outline:none;
 }
@@ -323,28 +323,60 @@ section{
   font-weight:700;
   letter-spacing:0.04em;
 }
-.glass-seek{
+.glass-seek-wrap{
+  position:relative;
   flex:1;
+  height:20px;
+  display:flex;
+  align-items:center;
+}
+.glass-seek-track{
+  position:absolute;
+  left:0; right:0;
+  top:50%;
+  transform:translateY(-50%);
   height:4px;
+  background:#000;
+  border-radius:2px;
+  overflow:hidden;
+}
+.glass-seek-fill{
+  position:absolute;
+  left:0; top:0; bottom:0;
+  background:#e21b3c;
+  border-radius:2px;
+}
+.glass-seek-thumb{
+  position:absolute;
+  top:50%;
+  width:13px; height:13px;
+  background:#fff;
+  border-radius:50%;
+  box-shadow:0 0 0 1px rgba(255,255,255,0.4);
+  transform:translate(-50%, -50%);
+  pointer-events:none;
+}
+.glass-seek-input{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  margin:0;
+  opacity:0;
+  cursor:pointer;
   appearance:none;
   -webkit-appearance:none;
-  background:rgba(0,0,0,0.9);
-  border-radius:2px;
-  outline:none;
-  cursor:pointer;
+  background:transparent;
 }
-.glass-seek::-webkit-slider-thumb{
+.glass-seek-input::-webkit-slider-thumb{
   -webkit-appearance:none;
-  width:13px; height:13px;
-  border-radius:50%;
-  background:#fff;
-  box-shadow:0 0 0 1px rgba(255,255,255,0.4);
+  width:20px; height:20px;
+  opacity:0;
 }
-.glass-seek::-moz-range-thumb{
-  width:13px; height:13px;
+.glass-seek-input::-moz-range-thumb{
+  width:20px; height:20px;
   border:none;
-  border-radius:50%;
-  background:#fff;
+  opacity:0;
 }
 .watch-body{
   padding:24px 24px 8px;

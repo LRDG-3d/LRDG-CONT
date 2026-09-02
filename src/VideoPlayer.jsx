@@ -146,20 +146,27 @@ export default function VideoPlayer({ src, poster, titulo, live, startOffset, on
         ) : (
           <>
             <span className="glass-time">{formatTime(current)}</span>
-            <input
-              className="glass-seek"
-              type="range"
-              min="0"
-              max={duration || 0}
-              step="0.1"
-              value={current}
-              style={{
-                background: `linear-gradient(to right, #e21b3c ${
-                  duration ? (current / duration) * 100 : 0
-                }%, rgba(0,0,0,0.9) 0)`,
-              }}
-              onChange={onSeek}
-            />
+            <div className="glass-seek-wrap">
+              <div className="glass-seek-track">
+                <div
+                  className="glass-seek-fill"
+                  style={{ width: `${duration ? (current / duration) * 100 : 0}%` }}
+                />
+                <div
+                  className="glass-seek-thumb"
+                  style={{ left: `${duration ? (current / duration) * 100 : 0}%` }}
+                />
+              </div>
+              <input
+                className="glass-seek-input"
+                type="range"
+                min="0"
+                max={duration || 0}
+                step="0.1"
+                value={current}
+                onChange={onSeek}
+              />
+            </div>
             <span className="glass-time">{formatTime(duration)}</span>
           </>
         )}
