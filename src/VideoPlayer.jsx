@@ -156,7 +156,7 @@ export default function VideoPlayer({ src, poster, titulo, live, startOffset, on
               style={{
                 background: `linear-gradient(to right, #e21b3c ${
                   duration ? (current / duration) * 100 : 0
-                }%, rgba(0,0,0,0.9) 0)`,
+                }%, #ffffff 0)`,
               }}
               onChange={onSeek}
             />

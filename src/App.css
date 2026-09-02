@@ -328,7 +328,7 @@ section{
   height:4px;
   appearance:none;
   -webkit-appearance:none;
-  background:rgba(0,0,0,0.9);
+  background:#ffffff;
   border-radius:2px;
   outline:none;
   cursor:pointer;
