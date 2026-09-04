@@ -28,13 +28,14 @@ export default function Watch() {
   // Los IDs que genera Firebase (push) se pueden ordenar como texto y
   // quedan en orden cronológico, así que sirven para saber cuáles son
   // los capítulos más nuevos sin necesitar un campo de fecha aparte.
+  // No importa el día en que se hayan subido, solo el orden.
   const masNuevos = [...capitulos]
     .sort((a, b) => a.id.localeCompare(b.id))
-    .slice(-5)
+    .slice(-10)
     .reverse()
 
   const relacionados = episodio
-    ? [episodio, ...masNuevos.filter((c) => c.id !== episodio.id)].slice(0, 5)
+    ? [episodio, ...masNuevos.filter((c) => c.id !== episodio.id)].slice(0, 10)
     : []
 
   return (
@@ -78,19 +79,19 @@ export default function Watch() {
               )}
             </div>
 
+            {relacionados.length > 0 && (
+              <div className="watch-related">
+                <h2>Más capítulos</h2>
+                <div className="episodes-rail">
+                  {relacionados.map((item) => (
+                    <EpisodeCard key={item.id} item={item} actual={item.id === episodio.id} />
+                  ))}
+                </div>
+              </div>
+            )}
+
             <Comments node={`comentarios/capitulo_${episodio.id}`} />
           </div>
-
-          {relacionados.length > 0 && (
-            <div className="watch-related">
-              <h2>Más capítulos</h2>
-              <div className="episodes-rail">
-                {relacionados.map((item) => (
-                  <EpisodeCard key={item.id} item={item} actual={item.id === episodio.id} />
-                ))}
-              </div>
-            </div>
-          )}
         </div>
       )}
 
