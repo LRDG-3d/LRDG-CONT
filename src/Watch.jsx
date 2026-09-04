@@ -1,10 +1,11 @@
 import { useState, useEffect } from 'react'
-import { useParams, Link } from 'react-router-dom'
+import { useParams } from 'react-router-dom'
 import { ref, onValue } from 'firebase/database'
 import { db } from './firebase'
 import VideoPlayer from './VideoPlayer.jsx'
-import ThemeToggle from './ThemeToggle.jsx'
 import Comments from './Comments.jsx'
+import { EpisodeCard } from './Cards.jsx'
+import SiteHeader from './SiteHeader.jsx'
 
 function toArray(obj) {
   if (!obj) return []
@@ -23,90 +24,69 @@ export default function Watch() {
   }, [])
 
   const episodio = capitulos.find((c) => c.id === id)
-  const relacionados = capitulos.filter((c) => c.id !== id)
+
+  // Los IDs que genera Firebase (push) se pueden ordenar como texto y
+  // quedan en orden cronológico, así que sirven para saber cuáles son
+  // los capítulos más nuevos sin necesitar un campo de fecha aparte.
+  const masNuevos = [...capitulos]
+    .sort((a, b) => a.id.localeCompare(b.id))
+    .slice(-5)
+    .reverse()
+
+  const relacionados = episodio
+    ? [episodio, ...masNuevos.filter((c) => c.id !== episodio.id)].slice(0, 5)
+    : []
 
   return (
     <>
-      <header className="topbar">
-        <div className="brand">
-          <span className="dot" /> La Rosa TV
-        </div>
-        <nav className="topnav">
-          <Link to="/" className="active">Inicio</Link>
-        </nav>
-        <ThemeToggle />
-      </header>
-      <div className="stripe" />
+      <SiteHeader />
 
       {!episodio ? (
         <div className="watch-loading">Cargando capítulo…</div>
       ) : (
         <div className="watch-page">
-          <div className="watch-player">
-            {episodio.video ? (
-              <VideoPlayer src={episodio.video} poster={episodio.miniatura} />
-            ) : (
-              <div className="watch-player-empty">
-                Este capítulo aún no tiene video agregado.
-              </div>
-            )}
-          </div>
-
-          <div className="watch-body">
-            <h1>{episodio.titulo}</h1>
-            <div className="ep-meta watch-meta">
-              {episodio.duracion && (
-                <>
-                  <span className="ep-duracion">{episodio.duracion}</span>
-                  <span className="ep-sep">·</span>
-                </>
+          <div className="watch-main">
+            <div className="watch-player">
+              {episodio.video ? (
+                <VideoPlayer
+                  src={episodio.video}
+                  poster={episodio.miniatura}
+                  titulo={episodio.titulo}
+                />
+              ) : (
+                <div className="watch-player-empty">
+                  Este capítulo aún no tiene video agregado.
+                </div>
               )}
-              <span className="ep-tipo">
-                {(episodio.tipo || 'Capítulo').toUpperCase()}
-              </span>
             </div>
-            {episodio.descripcion && (
-              <p className="watch-description">{episodio.descripcion}</p>
-            )}
-          </div>
 
-          <Comments node={`comentarios/capitulo_${episodio.id}`} />
+            <div className="watch-body">
+              <h1>{episodio.titulo}</h1>
+              <div className="ep-meta watch-meta">
+                {episodio.duracion && (
+                  <>
+                    <span className="ep-duracion">{episodio.duracion}</span>
+                    <span className="ep-sep">·</span>
+                  </>
+                )}
+                <span className="ep-tipo">
+                  {(episodio.tipo || 'Capítulo').toUpperCase()}
+                </span>
+              </div>
+              {episodio.descripcion && (
+                <p className="watch-description">{episodio.descripcion}</p>
+              )}
+            </div>
+
+            <Comments node={`comentarios/capitulo_${episodio.id}`} />
+          </div>
 
           {relacionados.length > 0 && (
             <div className="watch-related">
               <h2>Más capítulos</h2>
               <div className="episodes-rail">
                 {relacionados.map((item) => (
-                  <Link
-                    key={item.id}
-                    to={`/capitulo/${item.id}`}
-                    className="ep-card"
-                  >
-                    <div
-                      className="ep-thumb"
-                      style={
-                        item.miniatura
-                          ? { backgroundImage: `url(${item.miniatura})` }
-                          : undefined
-                      }
-                    >
-                      {!item.miniatura && (
-                        <span className="ep-thumb-fallback">▶</span>
-                      )}
-                    </div>
-                    <h5>{item.titulo}</h5>
-                    <div className="ep-meta">
-                      {item.duracion && (
-                        <>
-                          <span className="ep-duracion">{item.duracion}</span>
-                          <span className="ep-sep">·</span>
-                        </>
-                      )}
-                      <span className="ep-tipo">
-                        {(item.tipo || 'Capítulo').toUpperCase()}
-                      </span>
-                    </div>
-                  </Link>
+                  <EpisodeCard key={item.id} item={item} actual={item.id === episodio.id} />
                 ))}
               </div>
             </div>

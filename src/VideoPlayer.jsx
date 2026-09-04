@@ -7,7 +7,7 @@ function formatTime(seconds) {
   return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`
 }
 
-export default function VideoPlayer({ src, poster, live, startOffset, onEnded }) {
+export default function VideoPlayer({ src, poster, titulo, live, startOffset, onEnded }) {
   const containerRef = useRef(null)
   const videoRef = useRef(null)
   const hideTimer = useRef(null)
@@ -16,6 +16,11 @@ export default function VideoPlayer({ src, poster, live, startOffset, onEnded })
   const [duration, setDuration] = useState(0)
   const [isFullscreen, setIsFullscreen] = useState(false)
   const [showControls, setShowControls] = useState(true)
+  const [cargando, setCargando] = useState(true)
+
+  useEffect(() => {
+    setCargando(true)
+  }, [src])
 
   useEffect(() => {
     const onFsChange = () => {
@@ -94,6 +99,7 @@ export default function VideoPlayer({ src, poster, live, startOffset, onEnded })
       ref={containerRef}
       onMouseMove={wakeControls}
       onTouchStart={wakeControls}
+      style={poster ? { backgroundImage: `url(${poster})` } : undefined}
     >
       <video
         ref={videoRef}
@@ -105,9 +111,17 @@ export default function VideoPlayer({ src, poster, live, startOffset, onEnded })
         onPlay={() => setPlaying(true)}
         onPause={() => setPlaying(false)}
         onEnded={onEnded}
+        onCanPlay={() => setCargando(false)}
         onTimeUpdate={(e) => setCurrent(e.currentTarget.currentTime)}
         onLoadedMetadata={onLoadedMetadata}
       />
+
+      {cargando && (
+        <div className="glass-loading">
+          <span className="glass-spinner" />
+          {titulo && <span className="glass-loading-title">{titulo}</span>}
+        </div>
+      )}
 
       <div className={`glass-controls ${showControls ? '' : 'glass-controls-hidden'}`}>
         <button
@@ -139,6 +153,11 @@ export default function VideoPlayer({ src, poster, live, startOffset, onEnded })
               max={duration || 0}
               step="0.1"
               value={current}
+              style={{
+                background: `linear-gradient(to right, #e21b3c ${
+                  duration ? (current / duration) * 100 : 0
+                }%, rgba(120,118,119,0.9) 0)`,
+              }}
               onChange={onSeek}
             />
             <span className="glass-time">{formatTime(duration)}</span>
