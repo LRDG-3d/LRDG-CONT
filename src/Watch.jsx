@@ -1,10 +1,9 @@
 import { useState, useEffect } from 'react'
-import { useParams, Link } from 'react-router-dom'
+import { useParams } from 'react-router-dom'
 import { ref, onValue } from 'firebase/database'
 import { db } from './firebase'
 import VideoPlayer from './VideoPlayer.jsx'
 import Comments from './Comments.jsx'
-import { EpisodeCard } from './Cards.jsx'
 import SiteHeader from './SiteHeader.jsx'
 
 function toArray(obj) {
@@ -12,68 +11,18 @@ function toArray(obj) {
   return Object.entries(obj).map(([id, value]) => ({ id, ...value }))
 }
 
-function esMismoDia(timestamp) {
-  if (!timestamp) return false
-  const a = new Date(timestamp)
-  const b = new Date()
-  return (
-    a.getFullYear() === b.getFullYear() &&
-    a.getMonth() === b.getMonth() &&
-    a.getDate() === b.getDate()
-  )
-}
-
 export default function Watch() {
   const { id } = useParams()
   const [capitulos, setCapitulos] = useState([])
-  const [destacadosIds, setDestacadosIds] = useState([])
 
   useEffect(() => {
     const unsub = onValue(ref(db, 'capitulos'), (snap) => {
       setCapitulos(toArray(snap.val()))
     })
-    const unsubDest = onValue(ref(db, 'destacados'), (snap) => {
-      setDestacadosIds(snap.val() || [])
-    })
-    return () => {
-      unsub()
-      unsubDest()
-    }
+    return () => unsub()
   }, [])
 
   const episodio = capitulos.find((c) => c.id === id)
-
-  // Los IDs que genera Firebase (push) se pueden ordenar como texto y
-  // quedan en orden cronológico, así que sirven para saber cuáles son
-  // los capítulos más nuevos sin necesitar un campo de fecha aparte.
-  const ordenados = [...capitulos].sort((a, b) => b.id.localeCompare(a.id))
-
-  // "Recientes": solo los capítulos subidos el día de hoy (según el
-  // reloj del dispositivo), sin importar cuántos días lleve la página.
-  const recientes = ordenados.filter((c) => esMismoDia(c.creadoEn)).slice(0, 4)
-
-  // "No te pierdas de ver estos capítulos": elegidos a mano en el admin.
-  const destacados = destacadosIds
-    .map((did) => capitulos.find((c) => c.id === did))
-    .filter(Boolean)
-
-  // "Y Más": el resto de capítulos subidos anteriormente (los que no
-  // entraron en "Recientes"), del más nuevo al más viejo.
-  const idsRecientes = new Set(recientes.map((c) => c.id))
-  let yMas = ordenados.filter((c) => !idsRecientes.has(c.id)).slice(0, 10)
-
-  // Si el capítulo actual no aparece en ninguna de las secciones de
-  // arriba, lo agregamos al principio de "Y Más" para que siempre se
-  // pueda ver marcado como "Estás viendo".
-  if (episodio) {
-    const yaVisible =
-      recientes.some((c) => c.id === episodio.id) ||
-      destacados.some((c) => c.id === episodio.id) ||
-      yMas.some((c) => c.id === episodio.id)
-    if (!yaVisible) {
-      yMas = [episodio, ...yMas].slice(0, 10)
-    }
-  }
 
   return (
     <>
@@ -115,42 +64,6 @@ export default function Watch() {
                 <p className="watch-description">{episodio.descripcion}</p>
               )}
             </div>
-
-            {recientes.length > 0 && (
-              <div className="watch-related">
-                <h2>Recientes</h2>
-                <div className="episodes-rail">
-                  {recientes.map((item) => (
-                    <EpisodeCard key={item.id} item={item} actual={item.id === episodio.id} />
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {destacados.length > 0 && (
-              <div className="watch-related">
-                <h2>No te pierdas de ver estos capítulos</h2>
-                <div className="episodes-rail">
-                  {destacados.map((item) => (
-                    <EpisodeCard key={item.id} item={item} actual={item.id === episodio.id} />
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {yMas.length > 0 && (
-              <div className="watch-related">
-                <div className="section-head">
-                  <h2>Y Más</h2>
-                  <Link to="/capitulos">Más capítulos</Link>
-                </div>
-                <div className="episodes-rail">
-                  {yMas.map((item) => (
-                    <EpisodeCard key={item.id} item={item} actual={item.id === episodio.id} />
-                  ))}
-                </div>
-              </div>
-            )}
 
             <Comments node={`comentarios/capitulo_${episodio.id}`} />
           </div>

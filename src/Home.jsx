@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { Link } from 'react-router-dom'
 import { ref, onValue } from 'firebase/database'
 import { db } from './firebase'
 import VideoPlayer from './VideoPlayer.jsx'
@@ -11,9 +12,21 @@ function toArray(obj) {
   return Object.entries(obj).map(([id, value]) => ({ id, ...value }))
 }
 
+function esMismoDia(timestamp) {
+  if (!timestamp) return false
+  const a = new Date(timestamp)
+  const b = new Date()
+  return (
+    a.getFullYear() === b.getFullYear() &&
+    a.getMonth() === b.getMonth() &&
+    a.getDate() === b.getDate()
+  )
+}
+
 export default function Home() {
   const [noticias, setNoticias] = useState([])
   const [capitulos, setCapitulos] = useState([])
+  const [destacadosIds, setDestacadosIds] = useState([])
   const [enVivo, setEnVivo] = useState(null)
   const [liveState, setLiveState] = useState(null)
 
@@ -24,6 +37,9 @@ export default function Home() {
     const unsubCapitulos = onValue(ref(db, 'capitulos'), (snap) => {
       setCapitulos(toArray(snap.val()))
     })
+    const unsubDestacados = onValue(ref(db, 'destacados'), (snap) => {
+      setDestacadosIds(snap.val() || [])
+    })
     const unsubEnVivo = onValue(ref(db, 'enVivo'), (snap) => {
       setEnVivo(snap.val())
     })
@@ -31,6 +47,7 @@ export default function Home() {
     return () => {
       unsubNoticias()
       unsubCapitulos()
+      unsubDestacados()
       unsubEnVivo()
     }
   }, [])
@@ -49,6 +66,23 @@ export default function Home() {
     const interval = setInterval(recalcular, 5000)
     return () => clearInterval(interval)
   }, [enVivo, capitulos])
+
+  // Los IDs que genera Firebase (push) se pueden ordenar como texto y
+  // quedan en orden cronológico, así que sirven para saber cuáles son
+  // los capítulos más nuevos sin necesitar un campo de fecha aparte.
+  const ordenados = [...capitulos].sort((a, b) => b.id.localeCompare(a.id))
+
+  // "Recientes": solo los capítulos subidos el día de hoy.
+  const recientes = ordenados.filter((c) => esMismoDia(c.creadoEn)).slice(0, 4)
+
+  // "No te pierdas de ver estos capítulos": elegidos a mano en el admin.
+  const destacados = destacadosIds
+    .map((did) => capitulos.find((c) => c.id === did))
+    .filter(Boolean)
+
+  // "Y Más": el resto de capítulos subidos anteriormente.
+  const idsRecientes = new Set(recientes.map((c) => c.id))
+  const yMas = ordenados.filter((c) => !idsRecientes.has(c.id)).slice(0, 10)
 
   return (
     <>
@@ -83,10 +117,52 @@ export default function Home() {
         </div>
       </div>
 
+      {recientes.length > 0 && (
+        <section>
+          <div className="section-head">
+            <h2>Recientes</h2>
+          </div>
+          <div className="episodes-rail">
+            {recientes.map((item) => (
+              <EpisodeCard key={item.id} item={item} />
+            ))}
+          </div>
+        </section>
+      )}
+
+      {destacados.length > 0 && (
+        <section>
+          <div className="section-head">
+            <h2>No te pierdas de ver estos capítulos</h2>
+          </div>
+          <div className="episodes-rail">
+            {destacados.map((item) => (
+              <EpisodeCard key={item.id} item={item} />
+            ))}
+          </div>
+        </section>
+      )}
+
+      <section>
+        <div className="section-head">
+          <h2>Y Más</h2>
+          <Link to="/capitulos">Más capítulos</Link>
+        </div>
+        {yMas.length > 0 ? (
+          <div className="episodes-rail">
+            {yMas.map((item) => (
+              <EpisodeCard key={item.id} item={item} />
+            ))}
+          </div>
+        ) : (
+          <div className="empty-state">Aún no hay capítulos agregados.</div>
+        )}
+      </section>
+
       <section id="noticias">
         <div className="section-head">
           <h2>Noticias</h2>
-          <a href="#/noticias">Ver todas</a>
+          <Link to="/noticias">Ver todas</Link>
         </div>
         {noticias.length > 0 ? (
           <div className="news-grid">
@@ -96,22 +172,6 @@ export default function Home() {
           </div>
         ) : (
           <div className="empty-state">Aún no hay noticias agregadas.</div>
-        )}
-      </section>
-
-      <section id="capitulos">
-        <div className="section-head">
-          <h2>Capítulos completos</h2>
-          <a href="#/capitulos">Ver todas las temporadas</a>
-        </div>
-        {capitulos.length > 0 ? (
-          <div className="episodes-rail">
-            {capitulos.map((item) => (
-              <EpisodeCard key={item.id} item={item} />
-            ))}
-          </div>
-        ) : (
-          <div className="empty-state">Aún no hay capítulos agregados.</div>
         )}
       </section>
 
