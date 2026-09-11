@@ -43,17 +43,28 @@ export default function Watch() {
 
   const episodio = capitulos.find((c) => c.id === id)
 
+  // Los IDs que genera Firebase (push) se pueden ordenar como texto y
+  // quedan en orden cronológico, así que sirven para saber cuáles son
+  // los capítulos más nuevos sin necesitar un campo de fecha aparte.
   const ordenados = [...capitulos].sort((a, b) => b.id.localeCompare(a.id))
 
+  // "Recientes": solo los capítulos subidos el día de hoy (según el
+  // reloj del dispositivo), sin importar cuántos días lleve la página.
   const recientes = ordenados.filter((c) => esMismoDia(c.creadoEn)).slice(0, 4)
 
+  // "No te pierdas de ver estos capítulos": elegidos a mano en el admin.
   const destacados = destacadosIds
     .map((did) => capitulos.find((c) => c.id === did))
     .filter(Boolean)
 
+  // "Y Más": el resto de capítulos subidos anteriormente (los que no
+  // entraron en "Recientes"), del más nuevo al más viejo.
   const idsRecientes = new Set(recientes.map((c) => c.id))
   let yMas = ordenados.filter((c) => !idsRecientes.has(c.id)).slice(0, 10)
 
+  // Si el capítulo actual no aparece en ninguna de las secciones de
+  // arriba, lo agregamos al principio de "Y Más" para que siempre se
+  // pueda ver marcado como "Estás viendo".
   if (episodio) {
     const yaVisible =
       recientes.some((c) => c.id === episodio.id) ||
