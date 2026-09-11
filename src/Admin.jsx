@@ -195,8 +195,10 @@ function CapituloForm({ editing, onDone }) {
   const [miniatura, setMiniatura] = useState('')
   const [video, setVideo] = useState('')
   const [duracion, setDuracion] = useState('')
+  const [detectandoDuracion, setDetectandoDuracion] = useState(false)
   const [tipo, setTipo] = useState('Capítulo')
   const [errorCaptura, setErrorCaptura] = useState('')
+  const [guardando, setGuardando] = useState(false)
 
   useEffect(() => {
     setTitulo(editing?.titulo || '')
@@ -207,6 +209,27 @@ function CapituloForm({ editing, onDone }) {
     setTipo(editing?.tipo || 'Capítulo')
     setErrorCaptura('')
   }, [editing])
+
+  // Detecta la duración real del video leyendo sus metadatos, sin
+  // necesidad de que la persona la escriba a mano.
+  const detectarDuracion = (url) => {
+    if (!url.trim()) {
+      setDuracion('')
+      return
+    }
+    setDetectandoDuracion(true)
+    const v = document.createElement('video')
+    v.preload = 'metadata'
+    v.onloadedmetadata = () => {
+      const total = Math.round(v.duration)
+      const m = Math.floor(total / 60)
+      const s = total % 60
+      setDuracion(`${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`)
+      setDetectandoDuracion(false)
+    }
+    v.onerror = () => setDetectandoDuracion(false)
+    v.src = url.trim()
+  }
 
   const subirImagen = async (e) => {
     const file = e.target.files?.[0]
@@ -224,7 +247,8 @@ function CapituloForm({ editing, onDone }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault()
-    if (!titulo.trim()) return
+    if (!titulo.trim() || guardando) return
+    setGuardando(true)
 
     const datos = {
       titulo,
@@ -233,22 +257,29 @@ function CapituloForm({ editing, onDone }) {
       video: video.trim(),
       duracion: duracion.trim(),
       tipo,
+      creadoEn: editing?.creadoEn || Date.now(),
     }
 
-    if (editing) {
-      await set(ref(db, `capitulos/${editing.id}`), datos)
-    } else {
-      const nuevaRef = push(ref(db, 'capitulos'))
-      await set(nuevaRef, datos)
-    }
+    try {
+      if (editing) {
+        await set(ref(db, `capitulos/${editing.id}`), datos)
+      } else {
+        const nuevaRef = push(ref(db, 'capitulos'))
+        await set(nuevaRef, datos)
+      }
 
-    setTitulo('')
-    setDescripcion('')
-    setMiniatura('')
-    setVideo('')
-    setDuracion('')
-    setTipo('Capítulo')
-    onDone?.()
+      setTitulo('')
+      setDescripcion('')
+      setMiniatura('')
+      setVideo('')
+      setDuracion('')
+      setTipo('Capítulo')
+      onDone?.()
+    } catch (err) {
+      setErrorCaptura('No se pudo guardar el capítulo. Intenta de nuevo.')
+    } finally {
+      setGuardando(false)
+    }
   }
 
   return (
@@ -265,11 +296,6 @@ function CapituloForm({ editing, onDone }) {
         rows={3}
       />
       <div className="admin-form-row">
-        <input
-          placeholder="Duración (ej. 40:00)"
-          value={duracion}
-          onChange={(e) => setDuracion(e.target.value)}
-        />
         <select value={tipo} onChange={(e) => setTipo(e.target.value)}>
           <option value="Capítulo">Capítulo</option>
           <option value="Video">Video</option>
@@ -280,7 +306,15 @@ function CapituloForm({ editing, onDone }) {
         placeholder="URL del video (ej. archive.org/download/.../CAP.mp4)"
         value={video}
         onChange={(e) => setVideo(e.target.value)}
+        onBlur={(e) => detectarDuracion(e.target.value)}
       />
+      <p className="admin-hint">
+        {detectandoDuracion
+          ? 'Detectando duración del video…'
+          : duracion
+          ? `Duración detectada: ${duracion}`
+          : 'La duración se detecta automáticamente al salir del campo de video.'}
+      </p>
       <div className="admin-form-row">
         <input
           placeholder="URL de la miniatura (o sube/genera una)"
@@ -302,8 +336,8 @@ function CapituloForm({ editing, onDone }) {
         <img src={miniatura} alt="Vista previa de la miniatura" className="admin-thumb-preview" />
       )}
       <div className="admin-form-row">
-        <button type="submit">
-          {editing ? 'Guardar cambios' : 'Agregar capítulo'}
+        <button type="submit" disabled={guardando}>
+          {guardando ? 'Guardando…' : editing ? 'Guardar cambios' : 'Agregar capítulo'}
         </button>
         {editing && (
           <button type="button" className="admin-cancel" onClick={onDone}>
@@ -425,6 +459,86 @@ function EnVivoControl({ capitulos }) {
   )
 }
 
+// ---------- Control de "NO TE PIERDAS DE VER ESTOS CAPÍTULOS" (destacados) ----------
+function DestacadosControl({ capitulos }) {
+  const [queue, setQueue] = useState([])
+  const [agregar, setAgregar] = useState('')
+
+  useEffect(() => {
+    const unsub = onValue(ref(db, 'destacados'), (snap) => {
+      setQueue(snap.val() || [])
+    })
+    return () => unsub()
+  }, [])
+
+  const guardar = (nueva) => set(ref(db, 'destacados'), nueva)
+
+  const agregarCapitulo = () => {
+    if (!agregar || queue.includes(agregar)) return
+    guardar([...queue, agregar])
+    setAgregar('')
+  }
+
+  const quitar = (index) => guardar(queue.filter((_, i) => i !== index))
+
+  const mover = (index, dir) => {
+    const nueva = [...queue]
+    const destino = index + dir
+    if (destino < 0 || destino >= nueva.length) return
+    ;[nueva[index], nueva[destino]] = [nueva[destino], nueva[index]]
+    guardar(nueva)
+  }
+
+  const tituloDe = (id) => capitulos.find((c) => c.id === id)?.titulo || '(eliminado)'
+
+  return (
+    <div className="admin-form-block">
+      <p className="admin-hint">
+        Elige capítulos ya existentes para mostrarlos en la sección
+        "No te pierdas de ver estos capítulos" dentro de la página de cada
+        capítulo.
+      </p>
+
+      <div className="admin-form-row">
+        <select value={agregar} onChange={(e) => setAgregar(e.target.value)}>
+          <option value="">— Elegir capítulo para agregar —</option>
+          {capitulos.map((c) => (
+            <option key={c.id} value={c.id}>
+              {c.titulo}
+            </option>
+          ))}
+        </select>
+        <button type="button" onClick={agregarCapitulo}>
+          Agregar
+        </button>
+      </div>
+
+      {queue.length > 0 ? (
+        <ul className="admin-list">
+          {queue.map((id, i) => (
+            <li key={`${id}-${i}`}>
+              <span>
+                {i + 1}. {tituloDe(id)}
+              </span>
+              <span className="admin-list-actions">
+                <button onClick={() => mover(i, -1)} disabled={i === 0}>
+                  ↑
+                </button>
+                <button onClick={() => mover(i, 1)} disabled={i === queue.length - 1}>
+                  ↓
+                </button>
+                <button onClick={() => quitar(i)}>Quitar</button>
+              </span>
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <p className="admin-empty">Todavía no hay capítulos destacados.</p>
+      )}
+    </div>
+  )
+}
+
 // ---------- Lista con botones de editar/eliminar, reutilizable ----------
 function ListaConEliminar({ path, items, renderLabel, onEdit }) {
   const eliminar = (id) => remove(ref(db, `${path}/${id}`))
@@ -538,6 +652,12 @@ function Panel({ user }) {
           En Vivo
         </button>
         <button
+          className={tab === 'destacados' ? 'active' : ''}
+          onClick={() => setTab('destacados')}
+        >
+          Destacados
+        </button>
+        <button
           className={tab === 'comentarios' ? 'active' : ''}
           onClick={() => setTab('comentarios')}
         >
@@ -580,6 +700,12 @@ function Panel({ user }) {
       {tab === 'envivo' && (
         <section>
           <EnVivoControl capitulos={capitulos} />
+        </section>
+      )}
+
+      {tab === 'destacados' && (
+        <section>
+          <DestacadosControl capitulos={capitulos} />
         </section>
       )}
 
