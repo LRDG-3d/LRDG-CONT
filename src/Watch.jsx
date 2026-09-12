@@ -5,6 +5,10 @@ import { db } from './firebase'
 import VideoPlayer from './VideoPlayer.jsx'
 import Comments from './Comments.jsx'
 import SiteHeader from './SiteHeader.jsx'
+<<<<<<< HEAD
+=======
+import { yaEstrenado, formatFechaEstreno } from './estreno.js'
+>>>>>>> 00196f7 (Agregar programacion de fecha de estreno para capitulos)
 
 function toArray(obj) {
   if (!obj) return []
@@ -30,6 +34,10 @@ export default function Watch() {
 
       {!episodio ? (
         <div className="watch-loading">Cargando capítulo…</div>
+      ) : !yaEstrenado(episodio) ? (
+        <div className="watch-loading">
+          🕒 Este capítulo se estrena el {formatFechaEstreno(episodio.estrenoEn)}.
+        </div>
       ) : (
         <div className="watch-page">
           <div className="watch-main">

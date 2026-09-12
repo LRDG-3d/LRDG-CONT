@@ -7,6 +7,7 @@ import {
 import { ref, push, set, remove, onValue } from 'firebase/database'
 import { auth, db } from './firebase'
 import { archivoAMiniatura } from './thumbnailCapture.js'
+import { formatFechaEstreno } from './estreno.js'
 import './Admin.css'
 
 function toArray(obj) {
@@ -189,6 +190,15 @@ function NoticiaForm({ editing, onDone }) {
 }
 
 // ---------- Formulario para agregar/editar un capítulo ----------
+function timestampAInput(ts) {
+  if (!ts) return ''
+  const d = new Date(ts)
+  const pad = (n) => String(n).padStart(2, '0')
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(
+    d.getHours()
+  )}:${pad(d.getMinutes())}`
+}
+
 function CapituloForm({ editing, onDone }) {
   const [titulo, setTitulo] = useState('')
   const [descripcion, setDescripcion] = useState('')
@@ -197,6 +207,7 @@ function CapituloForm({ editing, onDone }) {
   const [duracion, setDuracion] = useState('')
   const [detectandoDuracion, setDetectandoDuracion] = useState(false)
   const [tipo, setTipo] = useState('Capítulo')
+  const [estrenoEn, setEstrenoEn] = useState('')
   const [errorCaptura, setErrorCaptura] = useState('')
   const [guardando, setGuardando] = useState(false)
 
@@ -207,6 +218,7 @@ function CapituloForm({ editing, onDone }) {
     setVideo(editing?.video || '')
     setDuracion(editing?.duracion || '')
     setTipo(editing?.tipo || 'Capítulo')
+    setEstrenoEn(timestampAInput(editing?.estrenoEn))
     setErrorCaptura('')
   }, [editing])
 
@@ -258,6 +270,10 @@ function CapituloForm({ editing, onDone }) {
       duracion: duracion.trim(),
       tipo,
       creadoEn: editing?.creadoEn || Date.now(),
+<<<<<<< HEAD
+=======
+      estrenoEn: estrenoEn ? new Date(estrenoEn).getTime() : null,
+>>>>>>> 00196f7 (Agregar programacion de fecha de estreno para capitulos)
     }
 
     try {
@@ -274,6 +290,10 @@ function CapituloForm({ editing, onDone }) {
       setVideo('')
       setDuracion('')
       setTipo('Capítulo')
+<<<<<<< HEAD
+=======
+      setEstrenoEn('')
+>>>>>>> 00196f7 (Agregar programacion de fecha de estreno para capitulos)
       onDone?.()
     } catch (err) {
       setErrorCaptura('No se pudo guardar el capítulo. Intenta de nuevo.')
@@ -335,6 +355,20 @@ function CapituloForm({ editing, onDone }) {
       {miniatura && (
         <img src={miniatura} alt="Vista previa de la miniatura" className="admin-thumb-preview" />
       )}
+      <label className="admin-hint" htmlFor="estrenoEn">
+        Fecha y hora de estreno (opcional)
+      </label>
+      <input
+        id="estrenoEn"
+        type="datetime-local"
+        value={estrenoEn}
+        onChange={(e) => setEstrenoEn(e.target.value)}
+      />
+      <p className="admin-hint">
+        {estrenoEn
+          ? 'No aparecerá en el sitio público hasta esa fecha y hora.'
+          : 'Si lo dejas vacío, el capítulo se muestra de inmediato.'}
+      </p>
       <div className="admin-form-row">
         <button type="submit" disabled={guardando}>
           {guardando ? 'Guardando…' : editing ? 'Guardar cambios' : 'Agregar capítulo'}
@@ -495,7 +529,11 @@ function DestacadosControl({ capitulos }) {
     <div className="admin-form-block">
       <p className="admin-hint">
         Elige capítulos ya existentes para mostrarlos en la sección
+<<<<<<< HEAD
         "No te pierdas de ver estos capítulos" dentro de la página de cada
+=======
+        "Lo mejor de La Rosa" dentro de la página principal
+>>>>>>> 00196f7 (Agregar programacion de fecha de estreno para capitulos)
         capítulo.
       </p>
 
@@ -690,7 +728,11 @@ function Panel({ user }) {
             path="capitulos"
             items={capitulos}
             renderLabel={(c) =>
-              `${c.titulo} — ${c.tipo || 'Capítulo'}${c.duracion ? ' · ' + c.duracion : ''}${c.video ? ' 🎬' : ''}${c.miniatura ? ' 🖼️' : ''}`
+              `${c.titulo} — ${c.tipo || 'Capítulo'}${c.duracion ? ' · ' + c.duracion : ''}${c.video ? ' 🎬' : ''}${c.miniatura ? ' 🖼️' : ''}${
+                c.estrenoEn && c.estrenoEn > Date.now()
+                  ? ` 🕒 Programado: ${formatFechaEstreno(c.estrenoEn)}`
+                  : ''
+              }`
             }
             onEdit={setEditandoCapitulo}
           />

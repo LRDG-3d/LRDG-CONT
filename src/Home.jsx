@@ -6,12 +6,17 @@ import VideoPlayer from './VideoPlayer.jsx'
 import { getLiveState } from './liveSchedule.js'
 import { NewsCard, EpisodeCard } from './Cards.jsx'
 import SiteHeader from './SiteHeader.jsx'
+<<<<<<< HEAD
+=======
+import { yaEstrenado } from './estreno.js'
+>>>>>>> 00196f7 (Agregar programacion de fecha de estreno para capitulos)
 
 function toArray(obj) {
   if (!obj) return []
   return Object.entries(obj).map(([id, value]) => ({ id, ...value }))
 }
 
+<<<<<<< HEAD
 function esMismoDia(timestamp) {
   if (!timestamp) return false
   const a = new Date(timestamp)
@@ -23,6 +28,8 @@ function esMismoDia(timestamp) {
   )
 }
 
+=======
+>>>>>>> 00196f7 (Agregar programacion de fecha de estreno para capitulos)
 export default function Home() {
   const [noticias, setNoticias] = useState([])
   const [capitulos, setCapitulos] = useState([])
@@ -70,6 +77,7 @@ export default function Home() {
   // Los IDs que genera Firebase (push) se pueden ordenar como texto y
   // quedan en orden cronológico, así que sirven para saber cuáles son
   // los capítulos más nuevos sin necesitar un campo de fecha aparte.
+<<<<<<< HEAD
   const ordenados = [...capitulos].sort((a, b) => b.id.localeCompare(a.id))
 
   // "Recientes": solo los capítulos subidos el día de hoy.
@@ -79,6 +87,21 @@ export default function Home() {
   const destacados = destacadosIds
     .map((did) => capitulos.find((c) => c.id === did))
     .filter(Boolean)
+=======
+  const ordenados = [...capitulos]
+    .filter(yaEstrenado)
+    .sort((a, b) => b.id.localeCompare(a.id))
+
+  // "MÁS RECIENTES": siempre los 4 capítulos más nuevos que haya, sin
+  // importar el día en que se subieron. Cuando agregas uno nuevo, el
+  // más viejo de estos 4 sale de aquí (pero sigue en "Y Más").
+  const recientes = ordenados.slice(0, 4)
+
+  // "LO MEJOR DE LA ROSA": elegidos a mano en el admin.
+  const destacados = destacadosIds
+    .map((did) => capitulos.find((c) => c.id === did))
+    .filter((c) => c && yaEstrenado(c))
+>>>>>>> 00196f7 (Agregar programacion de fecha de estreno para capitulos)
 
   // "Y Más": el resto de capítulos subidos anteriormente.
   const idsRecientes = new Set(recientes.map((c) => c.id))
@@ -120,7 +143,11 @@ export default function Home() {
       {recientes.length > 0 && (
         <section>
           <div className="section-head">
+<<<<<<< HEAD
             <h2>Recientes</h2>
+=======
+            <h2>MÁS RECIENTES</h2>
+>>>>>>> 00196f7 (Agregar programacion de fecha de estreno para capitulos)
           </div>
           <div className="episodes-rail">
             {recientes.map((item) => (
@@ -133,7 +160,11 @@ export default function Home() {
       {destacados.length > 0 && (
         <section>
           <div className="section-head">
+<<<<<<< HEAD
             <h2>No te pierdas de ver estos capítulos</h2>
+=======
+            <h2>LO MEJOR DE LA ROSA</h2>
+>>>>>>> 00196f7 (Agregar programacion de fecha de estreno para capitulos)
           </div>
           <div className="episodes-rail">
             {destacados.map((item) => (
