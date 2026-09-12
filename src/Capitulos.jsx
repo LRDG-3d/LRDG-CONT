@@ -3,10 +3,7 @@ import { ref, onValue } from 'firebase/database'
 import { db } from './firebase'
 import { EpisodeCard } from './Cards.jsx'
 import SiteHeader from './SiteHeader.jsx'
-<<<<<<< HEAD
-=======
 import { yaEstrenado } from './estreno.js'
->>>>>>> 00196f7 (Agregar programacion de fecha de estreno para capitulos)
 
 function toArray(obj) {
   if (!obj) return []
@@ -18,11 +15,7 @@ export default function Capitulos() {
 
   useEffect(() => {
     const unsub = onValue(ref(db, 'capitulos'), (snap) => {
-<<<<<<< HEAD
-      setCapitulos(toArray(snap.val()))
-=======
       setCapitulos(toArray(snap.val()).filter(yaEstrenado))
->>>>>>> 00196f7 (Agregar programacion de fecha de estreno para capitulos)
     })
     return () => unsub()
   }, [])

@@ -270,10 +270,7 @@ function CapituloForm({ editing, onDone }) {
       duracion: duracion.trim(),
       tipo,
       creadoEn: editing?.creadoEn || Date.now(),
-<<<<<<< HEAD
-=======
       estrenoEn: estrenoEn ? new Date(estrenoEn).getTime() : null,
->>>>>>> 00196f7 (Agregar programacion de fecha de estreno para capitulos)
     }
 
     try {
@@ -290,10 +287,7 @@ function CapituloForm({ editing, onDone }) {
       setVideo('')
       setDuracion('')
       setTipo('Capítulo')
-<<<<<<< HEAD
-=======
       setEstrenoEn('')
->>>>>>> 00196f7 (Agregar programacion de fecha de estreno para capitulos)
       onDone?.()
     } catch (err) {
       setErrorCaptura('No se pudo guardar el capítulo. Intenta de nuevo.')
@@ -529,11 +523,7 @@ function DestacadosControl({ capitulos }) {
     <div className="admin-form-block">
       <p className="admin-hint">
         Elige capítulos ya existentes para mostrarlos en la sección
-<<<<<<< HEAD
-        "No te pierdas de ver estos capítulos" dentro de la página de cada
-=======
         "Lo mejor de La Rosa" dentro de la página principal
->>>>>>> 00196f7 (Agregar programacion de fecha de estreno para capitulos)
         capítulo.
       </p>
 
