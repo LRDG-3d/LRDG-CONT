@@ -17,7 +17,7 @@ export function NewsCard({ item }) {
   )
 }
 
-export function EpisodeCard({ item, actual }) {
+export function EpisodeCard({ item, actual, badge }) {
   return (
     <Link to={`/capitulo/${item.id}`} className="ep-card">
       <div
@@ -30,6 +30,7 @@ export function EpisodeCard({ item, actual }) {
       >
         {!item.miniatura && <span className="ep-thumb-fallback">▶</span>}
         {actual && <span className="ep-badge-actual">Estás viendo</span>}
+        {!actual && badge && <span className="ep-badge-actual">{badge}</span>}
       </div>
       <div className="ep-info">
         <h5>{item.titulo}</h5>

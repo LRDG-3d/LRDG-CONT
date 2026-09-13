@@ -1,12 +1,13 @@
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { ref, onValue } from 'firebase/database'
-import { db } from './firebase'
+import { db, auth } from './firebase'
+import { onAuthStateChanged } from 'firebase/auth'
 import VideoPlayer from './VideoPlayer.jsx'
 import { getLiveState } from './liveSchedule.js'
 import { NewsCard, EpisodeCard } from './Cards.jsx'
 import SiteHeader from './SiteHeader.jsx'
-import { yaEstrenado } from './estreno.js'
+import { yaEstrenado, formatFechaEstreno } from './estreno.js'
 
 function toArray(obj) {
   if (!obj) return []
@@ -19,6 +20,12 @@ export default function Home() {
   const [destacadosIds, setDestacadosIds] = useState([])
   const [enVivo, setEnVivo] = useState(null)
   const [liveState, setLiveState] = useState(null)
+  const [esAdmin, setEsAdmin] = useState(false)
+
+  useEffect(() => {
+    const unsubAuth = onAuthStateChanged(auth, (user) => setEsAdmin(!!user))
+    return () => unsubAuth()
+  }, [])
 
   useEffect(() => {
     const unsubNoticias = onValue(ref(db, 'noticias'), (snap) => {
@@ -78,6 +85,12 @@ export default function Home() {
   const idsRecientes = new Set(recientes.map((c) => c.id))
   const yMas = ordenados.filter((c) => !idsRecientes.has(c.id)).slice(0, 10)
 
+  // Solo para administradores con sesión iniciada: capítulos programados
+  // que todavía no son públicos, ordenados por el más próximo a salir.
+  const proximamente = [...capitulos]
+    .filter((c) => c.estrenoEn && c.estrenoEn > Date.now())
+    .sort((a, b) => a.estrenoEn - b.estrenoEn)
+
   return (
     <>
       <SiteHeader />
@@ -110,6 +123,24 @@ export default function Home() {
           )}
         </div>
       </div>
+
+      {esAdmin && proximamente.length > 0 && (
+        <section>
+          <div className="section-head">
+            <h2>Próximamente</h2>
+            <span className="admin-hint">Solo tú lo ves (sesión de admin)</span>
+          </div>
+          <div className="episodes-rail">
+            {proximamente.map((item) => (
+              <EpisodeCard
+                key={item.id}
+                item={item}
+                badge={`🕒 ${formatFechaEstreno(item.estrenoEn)}`}
+              />
+            ))}
+          </div>
+        </section>
+      )}
 
       {recientes.length > 0 && (
         <section>
