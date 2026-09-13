@@ -714,15 +714,29 @@ function Panel({ user }) {
             editing={editandoCapitulo}
             onDone={() => setEditandoCapitulo(null)}
           />
+
+          {capitulos.some((c) => c.estrenoEn && c.estrenoEn > Date.now()) && (
+            <>
+              <h3 className="admin-subheading">
+                🕒 Próximamente (solo visible aquí, no en el sitio público)
+              </h3>
+              <ListaConEliminar
+                path="capitulos"
+                items={capitulos.filter((c) => c.estrenoEn && c.estrenoEn > Date.now())}
+                renderLabel={(c) =>
+                  `${c.titulo} — Se estrena: ${formatFechaEstreno(c.estrenoEn)}`
+                }
+                onEdit={setEditandoCapitulo}
+              />
+            </>
+          )}
+
+          <h3 className="admin-subheading">Publicados</h3>
           <ListaConEliminar
             path="capitulos"
-            items={capitulos}
+            items={capitulos.filter((c) => !c.estrenoEn || c.estrenoEn <= Date.now())}
             renderLabel={(c) =>
-              `${c.titulo} — ${c.tipo || 'Capítulo'}${c.duracion ? ' · ' + c.duracion : ''}${c.video ? ' 🎬' : ''}${c.miniatura ? ' 🖼️' : ''}${
-                c.estrenoEn && c.estrenoEn > Date.now()
-                  ? ` 🕒 Programado: ${formatFechaEstreno(c.estrenoEn)}`
-                  : ''
-              }`
+              `${c.titulo} — ${c.tipo || 'Capítulo'}${c.duracion ? ' · ' + c.duracion : ''}${c.video ? ' 🎬' : ''}${c.miniatura ? ' 🖼️' : ''}`
             }
             onEdit={setEditandoCapitulo}
           />

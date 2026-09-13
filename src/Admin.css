@@ -216,3 +216,9 @@
   color:var(--gray) !important;
 }
 .admin-empty{ color:var(--gray); font-size:0.85rem; }
+.admin-subheading{
+  font-size:0.9rem;
+  margin:20px 0 10px;
+  padding-top:14px;
+  border-top:1px solid var(--line);
+}
