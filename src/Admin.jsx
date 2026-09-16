@@ -7,10 +7,7 @@ import {
 import { ref, push, set, remove, onValue } from 'firebase/database'
 import { auth, db } from './firebase'
 import { archivoAMiniatura } from './thumbnailCapture.js'
-<<<<<<< HEAD
-=======
 import { subirAArchiveOrg } from './iaUpload.js'
->>>>>>> d9b9d90 (Agregar carpetas de estreno para programar varios capitulos juntos)
 import { formatFechaEstreno } from './estreno.js'
 import './Admin.css'
 
@@ -214,11 +211,8 @@ function CapituloForm({ editing, onDone }) {
   const [estrenoEn, setEstrenoEn] = useState('')
   const [errorCaptura, setErrorCaptura] = useState('')
   const [guardando, setGuardando] = useState(false)
-<<<<<<< HEAD
-=======
   const [identifierIA, setIdentifierIA] = useState('')
   const [subiendoIA, setSubiendoIA] = useState(false)
->>>>>>> d9b9d90 (Agregar carpetas de estreno para programar varios capitulos juntos)
 
   useEffect(() => {
     setTitulo(editing?.titulo || '')
@@ -616,8 +610,6 @@ function DestacadosControl({ capitulos }) {
   )
 }
 
-<<<<<<< HEAD
-=======
 // ---------- Carpetas de estreno: agrupan varios capítulos bajo una
 // misma fecha/hora, para que se estrenen todos juntos ----------
 function CarpetasControl({ capitulos }) {
@@ -764,7 +756,6 @@ function CarpetasControl({ capitulos }) {
   )
 }
 
->>>>>>> d9b9d90 (Agregar carpetas de estreno para programar varios capitulos juntos)
 // ---------- Lista con botones de editar/eliminar, reutilizable ----------
 function ListaConEliminar({ path, items, renderLabel, onEdit }) {
   const eliminar = (id) => remove(ref(db, `${path}/${id}`))
@@ -884,15 +875,12 @@ function Panel({ user }) {
           Destacados
         </button>
         <button
-<<<<<<< HEAD
-=======
           className={tab === 'carpetas' ? 'active' : ''}
           onClick={() => setTab('carpetas')}
         >
           Carpetas
         </button>
         <button
->>>>>>> d9b9d90 (Agregar carpetas de estreno para programar varios capitulos juntos)
           className={tab === 'comentarios' ? 'active' : ''}
           onClick={() => setTab('comentarios')}
         >
@@ -962,15 +950,12 @@ function Panel({ user }) {
         </section>
       )}
 
-<<<<<<< HEAD
-=======
       {tab === 'carpetas' && (
         <section>
           <CarpetasControl capitulos={capitulos} />
         </section>
       )}
 
->>>>>>> d9b9d90 (Agregar carpetas de estreno para programar varios capitulos juntos)
       {tab === 'comentarios' && (
         <section>
           <ModeracionComentarios />
