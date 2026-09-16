@@ -7,6 +7,10 @@ import {
 import { ref, push, set, remove, onValue } from 'firebase/database'
 import { auth, db } from './firebase'
 import { archivoAMiniatura } from './thumbnailCapture.js'
+<<<<<<< HEAD
+=======
+import { subirAArchiveOrg } from './iaUpload.js'
+>>>>>>> d9b9d90 (Agregar carpetas de estreno para programar varios capitulos juntos)
 import { formatFechaEstreno } from './estreno.js'
 import './Admin.css'
 
@@ -210,6 +214,11 @@ function CapituloForm({ editing, onDone }) {
   const [estrenoEn, setEstrenoEn] = useState('')
   const [errorCaptura, setErrorCaptura] = useState('')
   const [guardando, setGuardando] = useState(false)
+<<<<<<< HEAD
+=======
+  const [identifierIA, setIdentifierIA] = useState('')
+  const [subiendoIA, setSubiendoIA] = useState(false)
+>>>>>>> d9b9d90 (Agregar carpetas de estreno para programar varios capitulos juntos)
 
   useEffect(() => {
     setTitulo(editing?.titulo || '')
@@ -253,6 +262,27 @@ function CapituloForm({ editing, onDone }) {
     } catch (err) {
       setErrorCaptura(err.message || 'No se pudo procesar la imagen.')
     } finally {
+      e.target.value = ''
+    }
+  }
+
+  const subirImagenAIA = async (e) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+    if (!identifierIA.trim()) {
+      setErrorCaptura('Escribe primero el identificador del item de Internet Archive.')
+      e.target.value = ''
+      return
+    }
+    setErrorCaptura('')
+    setSubiendoIA(true)
+    try {
+      const url = await subirAArchiveOrg(file, identifierIA.trim())
+      setMiniatura(url)
+    } catch (err) {
+      setErrorCaptura(err.message || 'No se pudo subir la imagen a Internet Archive.')
+    } finally {
+      setSubiendoIA(false)
       e.target.value = ''
     }
   }
@@ -340,10 +370,29 @@ function CapituloForm({ editing, onDone }) {
           <input type="file" accept="image/*" onChange={subirImagen} hidden />
         </label>
       </div>
+      <div className="admin-form-row">
+        <input
+          placeholder="Identificador del item en Internet Archive"
+          value={identifierIA}
+          onChange={(e) => setIdentifierIA(e.target.value)}
+        />
+        <label className="admin-file-btn">
+          {subiendoIA ? 'Subiendo…' : '☁️ Subir a Internet Archive'}
+          <input
+            type="file"
+            accept="image/*"
+            onChange={subirImagenAIA}
+            disabled={subiendoIA}
+            hidden
+          />
+        </label>
+      </div>
       <p className="admin-hint">
         Toma una captura de pantalla del momento que quieras del video (desde
         tu galería o el reproductor) y súbela aquí, o pega la URL de una
-        imagen ya existente arriba.
+        imagen ya existente arriba. También puedes escribir el identificador
+        de tu item (ej. LRDG-WEB-20260826) y subirla directo a Internet
+        Archive.
       </p>
       {errorCaptura && <p className="admin-error">{errorCaptura}</p>}
       {miniatura && (
@@ -567,6 +616,155 @@ function DestacadosControl({ capitulos }) {
   )
 }
 
+<<<<<<< HEAD
+=======
+// ---------- Carpetas de estreno: agrupan varios capítulos bajo una
+// misma fecha/hora, para que se estrenen todos juntos ----------
+function CarpetasControl({ capitulos }) {
+  const [carpetas, setCarpetas] = useState([])
+  const [nombre, setNombre] = useState('')
+  const [fechaHora, setFechaHora] = useState('')
+  const [agregarPorCarpeta, setAgregarPorCarpeta] = useState({})
+
+  useEffect(() => {
+    const unsub = onValue(ref(db, 'carpetas'), (snap) => {
+      const val = snap.val() || {}
+      setCarpetas(Object.entries(val).map(([id, c]) => ({ id, ...c })))
+    })
+    return () => unsub()
+  }, [])
+
+  const crearCarpeta = async (e) => {
+    e.preventDefault()
+    if (!nombre.trim() || !fechaHora) return
+    const nuevaRef = push(ref(db, 'carpetas'))
+    await set(nuevaRef, {
+      nombre: nombre.trim(),
+      fechaHora: new Date(fechaHora).getTime(),
+    })
+    setNombre('')
+    setFechaHora('')
+  }
+
+  const eliminarCarpeta = async (carpeta) => {
+    const miembros = capitulos.filter((c) => c.carpetaId === carpeta.id)
+    await Promise.all(
+      miembros.map((c) =>
+        set(ref(db, `capitulos/${c.id}`), { ...c, carpetaId: null, estrenoEn: null })
+      )
+    )
+    await remove(ref(db, `carpetas/${carpeta.id}`))
+  }
+
+  const cambiarFecha = async (carpeta, nuevaFechaHoraStr) => {
+    if (!nuevaFechaHoraStr) return
+    const nuevoTs = new Date(nuevaFechaHoraStr).getTime()
+    await set(ref(db, `carpetas/${carpeta.id}/fechaHora`), nuevoTs)
+    const miembros = capitulos.filter((c) => c.carpetaId === carpeta.id)
+    await Promise.all(
+      miembros.map((c) => set(ref(db, `capitulos/${c.id}/estrenoEn`), nuevoTs))
+    )
+  }
+
+  const agregarCapituloACarpeta = async (carpeta) => {
+    const capId = agregarPorCarpeta[carpeta.id]
+    if (!capId) return
+    await set(ref(db, `capitulos/${capId}/carpetaId`), carpeta.id)
+    await set(ref(db, `capitulos/${capId}/estrenoEn`), carpeta.fechaHora)
+    setAgregarPorCarpeta((prev) => ({ ...prev, [carpeta.id]: '' }))
+  }
+
+  const quitarDeCarpeta = async (capId) => {
+    await set(ref(db, `capitulos/${capId}/carpetaId`), null)
+    await set(ref(db, `capitulos/${capId}/estrenoEn`), null)
+  }
+
+  return (
+    <div className="admin-form-block">
+      <p className="admin-hint">
+        Crea una carpeta con una fecha y hora, y agrégale los capítulos que
+        quieras que se estrenen todos juntos en ese momento. Si cambias la
+        fecha de la carpeta, se actualiza en todos los capítulos que tenga
+        adentro.
+      </p>
+
+      <form onSubmit={crearCarpeta} className="admin-form admin-form-stacked">
+        <input
+          placeholder="Nombre de la carpeta (ej. Estreno de temporada 3)"
+          value={nombre}
+          onChange={(e) => setNombre(e.target.value)}
+        />
+        <input
+          type="datetime-local"
+          value={fechaHora}
+          onChange={(e) => setFechaHora(e.target.value)}
+        />
+        <button type="submit">Crear carpeta</button>
+      </form>
+
+      {carpetas.length === 0 && (
+        <p className="admin-empty">Todavía no hay carpetas de estreno.</p>
+      )}
+
+      {carpetas.map((carpeta) => {
+        const miembros = capitulos.filter((c) => c.carpetaId === carpeta.id)
+        const disponibles = capitulos.filter((c) => c.carpetaId !== carpeta.id)
+        return (
+          <div key={carpeta.id} className="admin-carpeta">
+            <div className="admin-carpeta-head">
+              <strong>{carpeta.nombre}</strong>
+              <button className="admin-cancel" onClick={() => eliminarCarpeta(carpeta)}>
+                Eliminar carpeta
+              </button>
+            </div>
+            <div className="admin-form-row">
+              <input
+                type="datetime-local"
+                defaultValue={timestampAInput(carpeta.fechaHora)}
+                onBlur={(e) => cambiarFecha(carpeta, e.target.value)}
+              />
+              <span className="admin-hint">{formatFechaEstreno(carpeta.fechaHora)}</span>
+            </div>
+
+            <div className="admin-form-row">
+              <select
+                value={agregarPorCarpeta[carpeta.id] || ''}
+                onChange={(e) =>
+                  setAgregarPorCarpeta((prev) => ({ ...prev, [carpeta.id]: e.target.value }))
+                }
+              >
+                <option value="">— Elegir capítulo para agregar —</option>
+                {disponibles.map((c) => (
+                  <option key={c.id} value={c.id}>
+                    {c.titulo}
+                  </option>
+                ))}
+              </select>
+              <button type="button" onClick={() => agregarCapituloACarpeta(carpeta)}>
+                Agregar
+              </button>
+            </div>
+
+            {miembros.length > 0 ? (
+              <ul className="admin-list">
+                {miembros.map((c) => (
+                  <li key={c.id}>
+                    <span>{c.titulo}</span>
+                    <button onClick={() => quitarDeCarpeta(c.id)}>Quitar</button>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p className="admin-empty">Esta carpeta todavía no tiene capítulos.</p>
+            )}
+          </div>
+        )
+      })}
+    </div>
+  )
+}
+
+>>>>>>> d9b9d90 (Agregar carpetas de estreno para programar varios capitulos juntos)
 // ---------- Lista con botones de editar/eliminar, reutilizable ----------
 function ListaConEliminar({ path, items, renderLabel, onEdit }) {
   const eliminar = (id) => remove(ref(db, `${path}/${id}`))
@@ -686,6 +884,15 @@ function Panel({ user }) {
           Destacados
         </button>
         <button
+<<<<<<< HEAD
+=======
+          className={tab === 'carpetas' ? 'active' : ''}
+          onClick={() => setTab('carpetas')}
+        >
+          Carpetas
+        </button>
+        <button
+>>>>>>> d9b9d90 (Agregar carpetas de estreno para programar varios capitulos juntos)
           className={tab === 'comentarios' ? 'active' : ''}
           onClick={() => setTab('comentarios')}
         >
@@ -755,6 +962,15 @@ function Panel({ user }) {
         </section>
       )}
 
+<<<<<<< HEAD
+=======
+      {tab === 'carpetas' && (
+        <section>
+          <CarpetasControl capitulos={capitulos} />
+        </section>
+      )}
+
+>>>>>>> d9b9d90 (Agregar carpetas de estreno para programar varios capitulos juntos)
       {tab === 'comentarios' && (
         <section>
           <ModeracionComentarios />

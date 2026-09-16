@@ -216,6 +216,21 @@
   color:var(--gray) !important;
 }
 .admin-empty{ color:var(--gray); font-size:0.85rem; }
+<<<<<<< HEAD
+=======
+.admin-carpeta{
+  border:1px solid var(--line);
+  border-radius:6px;
+  padding:14px;
+  margin-bottom:16px;
+}
+.admin-carpeta-head{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:10px;
+}
+>>>>>>> d9b9d90 (Agregar carpetas de estreno para programar varios capitulos juntos)
 .admin-subheading{
   font-size:0.9rem;
   margin:20px 0 10px;
