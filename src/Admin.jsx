@@ -213,8 +213,6 @@ function CapituloForm({ editing, onDone }) {
   const [guardando, setGuardando] = useState(false)
   const [identifierIA, setIdentifierIA] = useState('')
   const [subiendoIA, setSubiendoIA] = useState(false)
-<<<<<<< HEAD
-=======
   const [temporadaId, setTemporadaId] = useState('')
   const [temporadas, setTemporadas] = useState([])
 
@@ -225,7 +223,6 @@ function CapituloForm({ editing, onDone }) {
     })
     return () => unsub()
   }, [])
->>>>>>> 5c3fce0 (Conectar ruta de temporada y agregar estilos faltantes)
 
   useEffect(() => {
     setTitulo(editing?.titulo || '')
@@ -235,10 +232,7 @@ function CapituloForm({ editing, onDone }) {
     setDuracion(editing?.duracion || '')
     setTipo(editing?.tipo || 'Capítulo')
     setEstrenoEn(timestampAInput(editing?.estrenoEn))
-<<<<<<< HEAD
-=======
     setTemporadaId(editing?.temporadaId || '')
->>>>>>> 5c3fce0 (Conectar ruta de temporada y agregar estilos faltantes)
     setErrorCaptura('')
   }, [editing])
 
@@ -312,10 +306,7 @@ function CapituloForm({ editing, onDone }) {
       tipo,
       creadoEn: editing?.creadoEn || Date.now(),
       estrenoEn: estrenoEn ? new Date(estrenoEn).getTime() : null,
-<<<<<<< HEAD
-=======
       temporadaId: temporadaId || null,
->>>>>>> 5c3fce0 (Conectar ruta de temporada y agregar estilos faltantes)
     }
 
     try {
@@ -333,10 +324,7 @@ function CapituloForm({ editing, onDone }) {
       setDuracion('')
       setTipo('Capítulo')
       setEstrenoEn('')
-<<<<<<< HEAD
-=======
       setTemporadaId('')
->>>>>>> 5c3fce0 (Conectar ruta de temporada y agregar estilos faltantes)
       onDone?.()
     } catch (err) {
       setErrorCaptura('No se pudo guardar el capítulo. Intenta de nuevo.')
@@ -563,16 +551,6 @@ function EnVivoControl({ capitulos }) {
   )
 }
 
-<<<<<<< HEAD
-// ---------- Control de "NO TE PIERDAS DE VER ESTOS CAPÍTULOS" (destacados) ----------
-function DestacadosControl({ capitulos }) {
-  const [queue, setQueue] = useState([])
-  const [agregar, setAgregar] = useState('')
-
-  useEffect(() => {
-    const unsub = onValue(ref(db, 'destacados'), (snap) => {
-      setQueue(snap.val() || [])
-=======
 // ---------- Control de Temporadas: crear/eliminar temporadas ----------
 function TemporadasControl({ capitulos }) {
   const [temporadas, setTemporadas] = useState([])
@@ -582,71 +560,10 @@ function TemporadasControl({ capitulos }) {
     const unsub = onValue(ref(db, 'temporadas'), (snap) => {
       const val = snap.val() || {}
       setTemporadas(Object.entries(val).map(([id, t]) => ({ id, ...t })))
->>>>>>> 5c3fce0 (Conectar ruta de temporada y agregar estilos faltantes)
     })
     return () => unsub()
   }, [])
 
-<<<<<<< HEAD
-  const guardar = (nueva) => set(ref(db, 'destacados'), nueva)
-
-  const agregarCapitulo = () => {
-    if (!agregar || queue.includes(agregar)) return
-    guardar([...queue, agregar])
-    setAgregar('')
-  }
-
-  const quitar = (index) => guardar(queue.filter((_, i) => i !== index))
-
-  const mover = (index, dir) => {
-    const nueva = [...queue]
-    const destino = index + dir
-    if (destino < 0 || destino >= nueva.length) return
-    ;[nueva[index], nueva[destino]] = [nueva[destino], nueva[index]]
-    guardar(nueva)
-  }
-
-  const tituloDe = (id) => capitulos.find((c) => c.id === id)?.titulo || '(eliminado)'
-
-  return (
-    <div className="admin-form-block">
-      <p className="admin-hint">
-        Elige capítulos ya existentes para mostrarlos en la sección
-        "Lo mejor de La Rosa" dentro de la página principal
-        capítulo.
-      </p>
-
-      <div className="admin-form-row">
-        <select value={agregar} onChange={(e) => setAgregar(e.target.value)}>
-          <option value="">— Elegir capítulo para agregar —</option>
-          {capitulos.map((c) => (
-            <option key={c.id} value={c.id}>
-              {c.titulo}
-            </option>
-          ))}
-        </select>
-        <button type="button" onClick={agregarCapitulo}>
-          Agregar
-        </button>
-      </div>
-
-      {queue.length > 0 ? (
-        <ul className="admin-list">
-          {queue.map((id, i) => (
-            <li key={`${id}-${i}`}>
-              <span>
-                {i + 1}. {tituloDe(id)}
-              </span>
-              <span className="admin-list-actions">
-                <button onClick={() => mover(i, -1)} disabled={i === 0}>
-                  ↑
-                </button>
-                <button onClick={() => mover(i, 1)} disabled={i === queue.length - 1}>
-                  ↓
-                </button>
-                <button onClick={() => quitar(i)}>Quitar</button>
-              </span>
-=======
   const crear = async (e) => {
     e.preventDefault()
     if (!nombre.trim()) return
@@ -683,170 +600,16 @@ function TemporadasControl({ capitulos }) {
             <li key={t.id}>
               <span>{t.nombre}</span>
               <button onClick={() => eliminar(t)}>Eliminar</button>
->>>>>>> 5c3fce0 (Conectar ruta de temporada y agregar estilos faltantes)
             </li>
           ))}
         </ul>
       ) : (
-<<<<<<< HEAD
-        <p className="admin-empty">Todavía no hay capítulos destacados.</p>
-=======
         <p className="admin-empty">Todavía no hay temporadas creadas.</p>
->>>>>>> 5c3fce0 (Conectar ruta de temporada y agregar estilos faltantes)
       )}
     </div>
   )
 }
 
-<<<<<<< HEAD
-// ---------- Carpetas de estreno: agrupan varios capítulos bajo una
-// misma fecha/hora, para que se estrenen todos juntos ----------
-function CarpetasControl({ capitulos }) {
-  const [carpetas, setCarpetas] = useState([])
-  const [nombre, setNombre] = useState('')
-  const [fechaHora, setFechaHora] = useState('')
-  const [agregarPorCarpeta, setAgregarPorCarpeta] = useState({})
-
-  useEffect(() => {
-    const unsub = onValue(ref(db, 'carpetas'), (snap) => {
-      const val = snap.val() || {}
-      setCarpetas(Object.entries(val).map(([id, c]) => ({ id, ...c })))
-    })
-    return () => unsub()
-  }, [])
-
-  const crearCarpeta = async (e) => {
-    e.preventDefault()
-    if (!nombre.trim() || !fechaHora) return
-    const nuevaRef = push(ref(db, 'carpetas'))
-    await set(nuevaRef, {
-      nombre: nombre.trim(),
-      fechaHora: new Date(fechaHora).getTime(),
-    })
-    setNombre('')
-    setFechaHora('')
-  }
-
-  const eliminarCarpeta = async (carpeta) => {
-    const miembros = capitulos.filter((c) => c.carpetaId === carpeta.id)
-    await Promise.all(
-      miembros.map((c) =>
-        set(ref(db, `capitulos/${c.id}`), { ...c, carpetaId: null, estrenoEn: null })
-      )
-    )
-    await remove(ref(db, `carpetas/${carpeta.id}`))
-  }
-
-  const cambiarFecha = async (carpeta, nuevaFechaHoraStr) => {
-    if (!nuevaFechaHoraStr) return
-    const nuevoTs = new Date(nuevaFechaHoraStr).getTime()
-    await set(ref(db, `carpetas/${carpeta.id}/fechaHora`), nuevoTs)
-    const miembros = capitulos.filter((c) => c.carpetaId === carpeta.id)
-    await Promise.all(
-      miembros.map((c) => set(ref(db, `capitulos/${c.id}/estrenoEn`), nuevoTs))
-    )
-  }
-
-  const agregarCapituloACarpeta = async (carpeta) => {
-    const capId = agregarPorCarpeta[carpeta.id]
-    if (!capId) return
-    await set(ref(db, `capitulos/${capId}/carpetaId`), carpeta.id)
-    await set(ref(db, `capitulos/${capId}/estrenoEn`), carpeta.fechaHora)
-    setAgregarPorCarpeta((prev) => ({ ...prev, [carpeta.id]: '' }))
-  }
-
-  const quitarDeCarpeta = async (capId) => {
-    await set(ref(db, `capitulos/${capId}/carpetaId`), null)
-    await set(ref(db, `capitulos/${capId}/estrenoEn`), null)
-  }
-
-  return (
-    <div className="admin-form-block">
-      <p className="admin-hint">
-        Crea una carpeta con una fecha y hora, y agrégale los capítulos que
-        quieras que se estrenen todos juntos en ese momento. Si cambias la
-        fecha de la carpeta, se actualiza en todos los capítulos que tenga
-        adentro.
-      </p>
-
-      <form onSubmit={crearCarpeta} className="admin-form admin-form-stacked">
-        <input
-          placeholder="Nombre de la carpeta (ej. Estreno de temporada 3)"
-          value={nombre}
-          onChange={(e) => setNombre(e.target.value)}
-        />
-        <input
-          type="datetime-local"
-          value={fechaHora}
-          onChange={(e) => setFechaHora(e.target.value)}
-        />
-        <button type="submit">Crear carpeta</button>
-      </form>
-
-      {carpetas.length === 0 && (
-        <p className="admin-empty">Todavía no hay carpetas de estreno.</p>
-      )}
-
-      {carpetas.map((carpeta) => {
-        const miembros = capitulos.filter((c) => c.carpetaId === carpeta.id)
-        const disponibles = capitulos.filter((c) => c.carpetaId !== carpeta.id)
-        return (
-          <div key={carpeta.id} className="admin-carpeta">
-            <div className="admin-carpeta-head">
-              <strong>{carpeta.nombre}</strong>
-              <button className="admin-cancel" onClick={() => eliminarCarpeta(carpeta)}>
-                Eliminar carpeta
-              </button>
-            </div>
-            <div className="admin-form-row">
-              <input
-                type="datetime-local"
-                defaultValue={timestampAInput(carpeta.fechaHora)}
-                onBlur={(e) => cambiarFecha(carpeta, e.target.value)}
-              />
-              <span className="admin-hint">{formatFechaEstreno(carpeta.fechaHora)}</span>
-            </div>
-
-            <div className="admin-form-row">
-              <select
-                value={agregarPorCarpeta[carpeta.id] || ''}
-                onChange={(e) =>
-                  setAgregarPorCarpeta((prev) => ({ ...prev, [carpeta.id]: e.target.value }))
-                }
-              >
-                <option value="">— Elegir capítulo para agregar —</option>
-                {disponibles.map((c) => (
-                  <option key={c.id} value={c.id}>
-                    {c.titulo}
-                  </option>
-                ))}
-              </select>
-              <button type="button" onClick={() => agregarCapituloACarpeta(carpeta)}>
-                Agregar
-              </button>
-            </div>
-
-            {miembros.length > 0 ? (
-              <ul className="admin-list">
-                {miembros.map((c) => (
-                  <li key={c.id}>
-                    <span>{c.titulo}</span>
-                    <button onClick={() => quitarDeCarpeta(c.id)}>Quitar</button>
-                  </li>
-                ))}
-              </ul>
-            ) : (
-              <p className="admin-empty">Esta carpeta todavía no tiene capítulos.</p>
-            )}
-          </div>
-        )
-      })}
-    </div>
-  )
-}
-
-=======
->>>>>>> 5c3fce0 (Conectar ruta de temporada y agregar estilos faltantes)
 // ---------- Lista con botones de editar/eliminar, reutilizable ----------
 function ListaConEliminar({ path, items, renderLabel, onEdit }) {
   const eliminar = (id) => remove(ref(db, `${path}/${id}`))
@@ -960,18 +723,6 @@ function Panel({ user }) {
           En Vivo
         </button>
         <button
-          className={tab === 'destacados' ? 'active' : ''}
-          onClick={() => setTab('destacados')}
-        >
-          Destacados
-        </button>
-        <button
-          className={tab === 'carpetas' ? 'active' : ''}
-          onClick={() => setTab('carpetas')}
-        >
-          Carpetas
-        </button>
-        <button
           className={tab === 'comentarios' ? 'active' : ''}
           onClick={() => setTab('comentarios')}
         >
@@ -1036,18 +787,6 @@ function Panel({ user }) {
       {tab === 'envivo' && (
         <section>
           <EnVivoControl capitulos={capitulos} />
-        </section>
-      )}
-
-      {tab === 'destacados' && (
-        <section>
-          <DestacadosControl capitulos={capitulos} />
-        </section>
-      )}
-
-      {tab === 'carpetas' && (
-        <section>
-          <CarpetasControl capitulos={capitulos} />
         </section>
       )}
 

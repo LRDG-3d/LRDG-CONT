@@ -797,8 +797,6 @@ body.dark-mode .empty-state{
     word-break:break-word;
   }
 }
-<<<<<<< HEAD
-=======
 
 /* Botones de temporadas en el inicio */
 .temporadas-botones{
@@ -862,4 +860,3 @@ body.dark-mode .empty-state{
   color:var(--blue);
   font-weight:600;
 }
->>>>>>> 5c3fce0 (Conectar ruta de temporada y agregar estilos faltantes)
