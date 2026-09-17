@@ -4,6 +4,10 @@ import Watch from './Watch.jsx'
 import Noticia from './Noticia.jsx'
 import Capitulos from './Capitulos.jsx'
 import Noticias from './Noticias.jsx'
+<<<<<<< HEAD
+=======
+import Temporada from './Temporada.jsx'
+>>>>>>> 5c3fce0 (Conectar ruta de temporada y agregar estilos faltantes)
 import Admin from './Admin.jsx'
 
 export default function App() {
@@ -15,6 +19,10 @@ export default function App() {
         <Route path="/noticia/:id" element={<Noticia />} />
         <Route path="/capitulos" element={<Capitulos />} />
         <Route path="/noticias" element={<Noticias />} />
+<<<<<<< HEAD
+=======
+        <Route path="/temporada/:id" element={<Temporada />} />
+>>>>>>> 5c3fce0 (Conectar ruta de temporada y agregar estilos faltantes)
         <Route path="/admin" element={<Admin />} />
       </Routes>
     </HashRouter>

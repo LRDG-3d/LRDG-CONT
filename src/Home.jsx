@@ -7,7 +7,11 @@ import VideoPlayer from './VideoPlayer.jsx'
 import { getLiveState } from './liveSchedule.js'
 import { NewsCard, EpisodeCard } from './Cards.jsx'
 import SiteHeader from './SiteHeader.jsx'
+<<<<<<< HEAD
 import { yaEstrenado, formatFechaEstreno } from './estreno.js'
+=======
+import { formatFechaEstreno } from './estreno.js'
+>>>>>>> 5c3fce0 (Conectar ruta de temporada y agregar estilos faltantes)
 
 function toArray(obj) {
   if (!obj) return []
@@ -17,7 +21,11 @@ function toArray(obj) {
 export default function Home() {
   const [noticias, setNoticias] = useState([])
   const [capitulos, setCapitulos] = useState([])
+<<<<<<< HEAD
   const [destacadosIds, setDestacadosIds] = useState([])
+=======
+  const [temporadas, setTemporadas] = useState([])
+>>>>>>> 5c3fce0 (Conectar ruta de temporada y agregar estilos faltantes)
   const [enVivo, setEnVivo] = useState(null)
   const [liveState, setLiveState] = useState(null)
   const [esAdmin, setEsAdmin] = useState(false)
@@ -34,8 +42,14 @@ export default function Home() {
     const unsubCapitulos = onValue(ref(db, 'capitulos'), (snap) => {
       setCapitulos(toArray(snap.val()))
     })
+<<<<<<< HEAD
     const unsubDestacados = onValue(ref(db, 'destacados'), (snap) => {
       setDestacadosIds(snap.val() || [])
+=======
+    const unsubTemporadas = onValue(ref(db, 'temporadas'), (snap) => {
+      const val = snap.val() || {}
+      setTemporadas(Object.entries(val).map(([id, t]) => ({ id, ...t })))
+>>>>>>> 5c3fce0 (Conectar ruta de temporada y agregar estilos faltantes)
     })
     const unsubEnVivo = onValue(ref(db, 'enVivo'), (snap) => {
       setEnVivo(snap.val())
@@ -44,7 +58,11 @@ export default function Home() {
     return () => {
       unsubNoticias()
       unsubCapitulos()
+<<<<<<< HEAD
       unsubDestacados()
+=======
+      unsubTemporadas()
+>>>>>>> 5c3fce0 (Conectar ruta de temporada y agregar estilos faltantes)
       unsubEnVivo()
     }
   }, [])
@@ -64,6 +82,7 @@ export default function Home() {
     return () => clearInterval(interval)
   }, [enVivo, capitulos])
 
+<<<<<<< HEAD
   // Los IDs que genera Firebase (push) se pueden ordenar como texto y
   // quedan en orden cronológico, así que sirven para saber cuáles son
   // los capítulos más nuevos sin necesitar un campo de fecha aparte.
@@ -85,6 +104,8 @@ export default function Home() {
   const idsRecientes = new Set(recientes.map((c) => c.id))
   const yMas = ordenados.filter((c) => !idsRecientes.has(c.id)).slice(0, 10)
 
+=======
+>>>>>>> 5c3fce0 (Conectar ruta de temporada y agregar estilos faltantes)
   // Solo para administradores con sesión iniciada: capítulos programados
   // que todavía no son públicos, ordenados por el más próximo a salir.
   const proximamente = [...capitulos]
@@ -142,6 +163,7 @@ export default function Home() {
         </section>
       )}
 
+<<<<<<< HEAD
       {recientes.length > 0 && (
         <section>
           <div className="section-head">
@@ -181,6 +203,22 @@ export default function Home() {
           </div>
         ) : (
           <div className="empty-state">Aún no hay capítulos agregados.</div>
+=======
+      <section id="temporadas">
+        <div className="section-head">
+          <h2>TEMPORADAS</h2>
+        </div>
+        {temporadas.length > 0 ? (
+          <div className="temporadas-botones">
+            {temporadas.map((t) => (
+              <Link key={t.id} to={`/temporada/${t.id}`} className="temporada-btn">
+                {t.nombre}
+              </Link>
+            ))}
+          </div>
+        ) : (
+          <div className="empty-state">Aún no hay temporadas creadas.</div>
+>>>>>>> 5c3fce0 (Conectar ruta de temporada y agregar estilos faltantes)
         )}
       </section>
 

@@ -797,3 +797,69 @@ body.dark-mode .empty-state{
     word-break:break-word;
   }
 }
+<<<<<<< HEAD
+=======
+
+/* Botones de temporadas en el inicio */
+.temporadas-botones{
+  display:flex;
+  flex-wrap:wrap;
+  gap:12px;
+}
+.temporada-btn{
+  padding:14px 24px;
+  background:var(--black);
+  color:var(--on-dark);
+  border-radius:6px;
+  font-family:'Helvetica Neue', Arial, sans-serif;
+  font-size:0.9rem;
+  font-weight:600;
+  text-decoration:none;
+  transition:transform .2s ease, background .2s ease;
+}
+.temporada-btn:hover{
+  background:linear-gradient(90deg, var(--blue), var(--pink));
+  transform:translateY(-2px);
+}
+
+/* Fila horizontal de episodios dentro de una temporada:
+   número, título, duración */
+.ep-bar-list{
+  display:flex;
+  flex-direction:column;
+  gap:2px;
+}
+.ep-bar{
+  display:flex;
+  align-items:center;
+  gap:14px;
+  padding:12px 14px;
+  border-bottom:1px solid var(--line);
+  text-decoration:none;
+  color:inherit;
+  font-family:'Helvetica Neue', Arial, sans-serif;
+  transition:background .15s ease;
+}
+.ep-bar:hover{
+  background:var(--line);
+}
+.ep-bar-num{
+  flex-shrink:0;
+  width:28px;
+  text-align:center;
+  font-weight:700;
+  color:var(--pink);
+  font-size:0.9rem;
+}
+.ep-bar-titulo{
+  flex:1;
+  font-size:0.92rem;
+  color:var(--ink);
+}
+.ep-bar-duracion{
+  flex-shrink:0;
+  font-size:0.82rem;
+  color:var(--blue);
+  font-weight:600;
+}
+>>>>>>> 5c3fce0 (Conectar ruta de temporada y agregar estilos faltantes)

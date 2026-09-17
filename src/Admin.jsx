@@ -213,6 +213,19 @@ function CapituloForm({ editing, onDone }) {
   const [guardando, setGuardando] = useState(false)
   const [identifierIA, setIdentifierIA] = useState('')
   const [subiendoIA, setSubiendoIA] = useState(false)
+<<<<<<< HEAD
+=======
+  const [temporadaId, setTemporadaId] = useState('')
+  const [temporadas, setTemporadas] = useState([])
+
+  useEffect(() => {
+    const unsub = onValue(ref(db, 'temporadas'), (snap) => {
+      const val = snap.val() || {}
+      setTemporadas(Object.entries(val).map(([id, t]) => ({ id, ...t })))
+    })
+    return () => unsub()
+  }, [])
+>>>>>>> 5c3fce0 (Conectar ruta de temporada y agregar estilos faltantes)
 
   useEffect(() => {
     setTitulo(editing?.titulo || '')
@@ -222,6 +235,10 @@ function CapituloForm({ editing, onDone }) {
     setDuracion(editing?.duracion || '')
     setTipo(editing?.tipo || 'Capítulo')
     setEstrenoEn(timestampAInput(editing?.estrenoEn))
+<<<<<<< HEAD
+=======
+    setTemporadaId(editing?.temporadaId || '')
+>>>>>>> 5c3fce0 (Conectar ruta de temporada y agregar estilos faltantes)
     setErrorCaptura('')
   }, [editing])
 
@@ -295,6 +312,10 @@ function CapituloForm({ editing, onDone }) {
       tipo,
       creadoEn: editing?.creadoEn || Date.now(),
       estrenoEn: estrenoEn ? new Date(estrenoEn).getTime() : null,
+<<<<<<< HEAD
+=======
+      temporadaId: temporadaId || null,
+>>>>>>> 5c3fce0 (Conectar ruta de temporada y agregar estilos faltantes)
     }
 
     try {
@@ -312,6 +333,10 @@ function CapituloForm({ editing, onDone }) {
       setDuracion('')
       setTipo('Capítulo')
       setEstrenoEn('')
+<<<<<<< HEAD
+=======
+      setTemporadaId('')
+>>>>>>> 5c3fce0 (Conectar ruta de temporada y agregar estilos faltantes)
       onDone?.()
     } catch (err) {
       setErrorCaptura('No se pudo guardar el capítulo. Intenta de nuevo.')
@@ -338,6 +363,14 @@ function CapituloForm({ editing, onDone }) {
           <option value="Capítulo">Capítulo</option>
           <option value="Video">Video</option>
           <option value="Promoción">Promoción</option>
+        </select>
+        <select value={temporadaId} onChange={(e) => setTemporadaId(e.target.value)}>
+          <option value="">— Sin temporada —</option>
+          {temporadas.map((t) => (
+            <option key={t.id} value={t.id}>
+              {t.nombre}
+            </option>
+          ))}
         </select>
       </div>
       <input
@@ -530,6 +563,7 @@ function EnVivoControl({ capitulos }) {
   )
 }
 
+<<<<<<< HEAD
 // ---------- Control de "NO TE PIERDAS DE VER ESTOS CAPÍTULOS" (destacados) ----------
 function DestacadosControl({ capitulos }) {
   const [queue, setQueue] = useState([])
@@ -538,10 +572,22 @@ function DestacadosControl({ capitulos }) {
   useEffect(() => {
     const unsub = onValue(ref(db, 'destacados'), (snap) => {
       setQueue(snap.val() || [])
+=======
+// ---------- Control de Temporadas: crear/eliminar temporadas ----------
+function TemporadasControl({ capitulos }) {
+  const [temporadas, setTemporadas] = useState([])
+  const [nombre, setNombre] = useState('')
+
+  useEffect(() => {
+    const unsub = onValue(ref(db, 'temporadas'), (snap) => {
+      const val = snap.val() || {}
+      setTemporadas(Object.entries(val).map(([id, t]) => ({ id, ...t })))
+>>>>>>> 5c3fce0 (Conectar ruta de temporada y agregar estilos faltantes)
     })
     return () => unsub()
   }, [])
 
+<<<<<<< HEAD
   const guardar = (nueva) => set(ref(db, 'destacados'), nueva)
 
   const agregarCapitulo = () => {
@@ -600,16 +646,59 @@ function DestacadosControl({ capitulos }) {
                 </button>
                 <button onClick={() => quitar(i)}>Quitar</button>
               </span>
+=======
+  const crear = async (e) => {
+    e.preventDefault()
+    if (!nombre.trim()) return
+    const nuevaRef = push(ref(db, 'temporadas'))
+    await set(nuevaRef, { nombre: nombre.trim(), creadoEn: Date.now() })
+    setNombre('')
+  }
+
+  const eliminar = async (temporada) => {
+    const miembros = capitulos.filter((c) => c.temporadaId === temporada.id)
+    await Promise.all(
+      miembros.map((c) => set(ref(db, `capitulos/${c.id}/temporadaId`), null))
+    )
+    await remove(ref(db, `temporadas/${temporada.id}`))
+  }
+
+  return (
+    <div className="admin-form-block">
+      <p className="admin-hint">
+        Crea las temporadas aquí; luego, al agregar o editar un capítulo,
+        eliges a cuál pertenece.
+      </p>
+      <form onSubmit={crear} className="admin-form-row">
+        <input
+          placeholder="Nombre de la temporada (ej. Temporada 1)"
+          value={nombre}
+          onChange={(e) => setNombre(e.target.value)}
+        />
+        <button type="submit">Crear temporada</button>
+      </form>
+      {temporadas.length > 0 ? (
+        <ul className="admin-list">
+          {temporadas.map((t) => (
+            <li key={t.id}>
+              <span>{t.nombre}</span>
+              <button onClick={() => eliminar(t)}>Eliminar</button>
+>>>>>>> 5c3fce0 (Conectar ruta de temporada y agregar estilos faltantes)
             </li>
           ))}
         </ul>
       ) : (
+<<<<<<< HEAD
         <p className="admin-empty">Todavía no hay capítulos destacados.</p>
+=======
+        <p className="admin-empty">Todavía no hay temporadas creadas.</p>
+>>>>>>> 5c3fce0 (Conectar ruta de temporada y agregar estilos faltantes)
       )}
     </div>
   )
 }
 
+<<<<<<< HEAD
 // ---------- Carpetas de estreno: agrupan varios capítulos bajo una
 // misma fecha/hora, para que se estrenen todos juntos ----------
 function CarpetasControl({ capitulos }) {
@@ -756,6 +845,8 @@ function CarpetasControl({ capitulos }) {
   )
 }
 
+=======
+>>>>>>> 5c3fce0 (Conectar ruta de temporada y agregar estilos faltantes)
 // ---------- Lista con botones de editar/eliminar, reutilizable ----------
 function ListaConEliminar({ path, items, renderLabel, onEdit }) {
   const eliminar = (id) => remove(ref(db, `${path}/${id}`))
@@ -905,6 +996,10 @@ function Panel({ user }) {
 
       {tab === 'capitulos' && (
         <section>
+          <h3 className="admin-subheading">Temporadas</h3>
+          <TemporadasControl capitulos={capitulos} />
+
+          <h3 className="admin-subheading">Agregar / editar capítulo</h3>
           <CapituloForm
             editing={editandoCapitulo}
             onDone={() => setEditandoCapitulo(null)}

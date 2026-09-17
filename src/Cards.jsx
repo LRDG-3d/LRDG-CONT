@@ -47,3 +47,18 @@ export function EpisodeCard({ item, actual, badge }) {
     </Link>
   )
 }
+<<<<<<< HEAD
+=======
+
+// Fila horizontal para el listado de episodios dentro de una temporada:
+// número, título y duración, sin miniatura.
+export function EpisodeBar({ item, numero }) {
+  return (
+    <Link to={`/capitulo/${item.id}`} className="ep-bar">
+      <span className="ep-bar-num">{numero}</span>
+      <span className="ep-bar-titulo">{item.titulo}</span>
+      {item.duracion && <span className="ep-bar-duracion">{item.duracion}</span>}
+    </Link>
+  )
+}
+>>>>>>> 5c3fce0 (Conectar ruta de temporada y agregar estilos faltantes)
