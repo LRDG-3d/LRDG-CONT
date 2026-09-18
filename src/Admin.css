@@ -9,11 +9,15 @@
 .admin-login-card{
   width:320px;
   padding:32px;
-  border:1px solid var(--line);
-  border-radius:6px;
+  border-radius:var(--radius-glass);
   display:flex;
   flex-direction:column;
   gap:14px;
+  background:var(--glass-bg-strong);
+  -webkit-backdrop-filter:blur(var(--glass-blur)) saturate(160%);
+  backdrop-filter:blur(var(--glass-blur)) saturate(160%);
+  border:1px solid var(--glass-border);
+  box-shadow:var(--glass-shadow);
 }
 .admin-login-card h1{
   font-family:'Georgia', serif;
@@ -30,16 +34,19 @@
 .admin-login-card input{
   padding:10px;
   border:1px solid var(--line);
-  border-radius:3px;
+  border-radius:12px;
   font-size:0.9rem;
+  background:rgba(255,255,255,0.6);
 }
 .admin-login-card button{
   margin-top:6px;
   padding:11px;
-  background:var(--black);
+  background:rgba(10,10,10,0.75);
+  -webkit-backdrop-filter:blur(10px);
+  backdrop-filter:blur(10px);
   color:var(--on-dark);
-  border:none;
-  border-radius:3px;
+  border:1px solid rgba(255,255,255,0.12);
+  border-radius:12px;
   cursor:pointer;
   font-size:0.85rem;
 }
@@ -55,34 +62,43 @@
   display:flex;
   justify-content:space-between;
   align-items:center;
-  border-bottom:2px solid var(--ink);
-  padding-bottom:14px;
   margin-bottom:24px;
+  padding:14px 18px;
+  border-radius:var(--radius-glass);
+  background:var(--glass-bg);
+  -webkit-backdrop-filter:blur(var(--glass-blur));
+  backdrop-filter:blur(var(--glass-blur));
+  border:1px solid var(--glass-border);
+  box-shadow:var(--glass-shadow);
 }
 .admin-header h1{ font-family:'Georgia', serif; font-size:1.4rem; }
 .admin-user{ font-size:0.8rem; color:var(--gray); margin-right:12px; }
 .admin-header button{
-  background:transparent;
-  border:1px solid var(--ink);
+  background:rgba(255,255,255,0.3);
+  -webkit-backdrop-filter:blur(8px);
+  backdrop-filter:blur(8px);
+  border:1px solid var(--glass-border);
   padding:8px 14px;
-  border-radius:3px;
+  border-radius:12px;
   cursor:pointer;
   font-size:0.78rem;
 }
 
-.admin-tabs{ display:flex; gap:8px; margin-bottom:24px; }
+.admin-tabs{ display:flex; gap:8px; margin-bottom:24px; flex-wrap:wrap; }
 .admin-tabs button{
-  padding:9px 16px;
+  padding:9px 18px;
   border-radius:20px;
-  border:1px solid var(--line);
-  background:var(--white);
+  border:1px solid var(--glass-border);
+  background:var(--glass-bg);
+  -webkit-backdrop-filter:blur(12px);
+  backdrop-filter:blur(12px);
   cursor:pointer;
   font-size:0.82rem;
 }
 .admin-tabs button.active{
-  background:var(--ink);
-  color:var(--white);
-  border-color:var(--ink);
+  background:linear-gradient(90deg, var(--blue), var(--pink));
+  color:#fff;
+  border-color:transparent;
 }
 
 .admin-form{
@@ -104,20 +120,23 @@
 .admin-form select{
   flex:1;
   min-width:140px;
-  padding:10px;
-  border:1px solid var(--line);
-  border-radius:3px;
+  padding:11px 14px;
+  border:1px solid var(--glass-border);
+  border-radius:14px;
   font-size:0.85rem;
   font-family:inherit;
   resize:vertical;
-  background:var(--white);
+  background:var(--glass-bg);
+  -webkit-backdrop-filter:blur(10px);
+  backdrop-filter:blur(10px);
+  color:var(--ink);
 }
 .admin-form button{
-  padding:10px 18px;
+  padding:11px 20px;
   background:linear-gradient(90deg, var(--blue), var(--pink));
   color:var(--on-dark);
-  border:none;
-  border-radius:3px;
+  border:1px solid rgba(255,255,255,0.2);
+  border-radius:14px;
   cursor:pointer;
   font-size:0.82rem;
 }
@@ -127,8 +146,8 @@
   width:180px;
   aspect-ratio:16/9;
   object-fit:cover;
-  border-radius:4px;
-  border:1px solid var(--line);
+  border-radius:14px;
+  border:1px solid var(--glass-border);
   margin-bottom:10px;
 }
 .admin-hint{
@@ -140,24 +159,27 @@
   display:flex;
   align-items:center;
   justify-content:center;
-  padding:10px 16px;
+  padding:11px 18px;
   background:linear-gradient(90deg, var(--blue), var(--pink));
   color:var(--on-dark);
-  border-radius:3px;
+  border-radius:14px;
   cursor:pointer;
   font-size:0.82rem;
   white-space:nowrap;
 }
 .miniatura-selector{
   margin-bottom:14px;
-  padding:12px;
-  border:1px solid var(--line);
-  border-radius:6px;
+  padding:14px;
+  border-radius:var(--radius-glass);
+  background:var(--glass-bg);
+  -webkit-backdrop-filter:blur(var(--glass-blur));
+  backdrop-filter:blur(var(--glass-blur));
+  border:1px solid var(--glass-border);
 }
 .miniatura-selector video{
   width:100%;
   max-width:360px;
-  border-radius:4px;
+  border-radius:12px;
   display:block;
   margin-bottom:8px;
   background:#000;
@@ -179,11 +201,11 @@
 }
 .admin-status{ font-size:0.9rem; margin-bottom:12px; }
 .admin-danger{
-  background:transparent;
+  background:rgba(224,73,140,0.12);
   border:1px solid var(--pink);
   color:var(--pink);
-  padding:8px 14px;
-  border-radius:3px;
+  padding:9px 16px;
+  border-radius:14px;
   cursor:pointer;
   font-size:0.8rem;
 }
@@ -193,8 +215,13 @@
   display:flex;
   justify-content:space-between;
   align-items:center;
-  padding:10px 0;
-  border-bottom:1px solid var(--line);
+  padding:12px 16px;
+  margin-bottom:8px;
+  border-radius:14px;
+  background:var(--glass-bg);
+  -webkit-backdrop-filter:blur(10px);
+  backdrop-filter:blur(10px);
+  border:1px solid var(--glass-border);
   font-size:0.87rem;
 }
 .admin-list-actions{ display:flex; gap:14px; }
@@ -211,16 +238,23 @@
   color:var(--blue);
 }
 .admin-cancel{
-  background:transparent !important;
-  border:1px solid var(--line) !important;
+  background:rgba(255,255,255,0.25) !important;
+  -webkit-backdrop-filter:blur(8px);
+  backdrop-filter:blur(8px);
+  border:1px solid var(--glass-border) !important;
   color:var(--gray) !important;
+  border-radius:14px;
 }
 .admin-empty{ color:var(--gray); font-size:0.85rem; }
 .admin-carpeta{
-  border:1px solid var(--line);
-  border-radius:6px;
-  padding:14px;
+  border-radius:var(--radius-glass);
+  padding:16px;
   margin-bottom:16px;
+  background:var(--glass-bg);
+  -webkit-backdrop-filter:blur(var(--glass-blur));
+  backdrop-filter:blur(var(--glass-blur));
+  border:1px solid var(--glass-border);
+  box-shadow:var(--glass-shadow);
 }
 .admin-carpeta-head{
   display:flex;
@@ -232,5 +266,5 @@
   font-size:0.9rem;
   margin:20px 0 10px;
   padding-top:14px;
-  border-top:1px solid var(--line);
+  border-top:1px solid var(--glass-border);
 }

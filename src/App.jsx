@@ -5,6 +5,7 @@ import Noticia from './Noticia.jsx'
 import Capitulos from './Capitulos.jsx'
 import Noticias from './Noticias.jsx'
 import Temporada from './Temporada.jsx'
+import Buscar from './Buscar.jsx'
 import Admin from './Admin.jsx'
 
 export default function App() {
@@ -17,6 +18,7 @@ export default function App() {
         <Route path="/capitulos" element={<Capitulos />} />
         <Route path="/noticias" element={<Noticias />} />
         <Route path="/temporada/:id" element={<Temporada />} />
+        <Route path="/buscar" element={<Buscar />} />
         <Route path="/admin" element={<Admin />} />
       </Routes>
     </HashRouter>
