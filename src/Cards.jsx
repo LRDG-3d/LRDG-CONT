@@ -49,13 +49,23 @@ export function EpisodeCard({ item, actual, badge }) {
 }
 
 // Fila horizontal para el listado de episodios dentro de una temporada:
-// número, título y duración, sin miniatura.
+// círculo con ícono de play, número + título, y duración debajo.
 export function EpisodeBar({ item, numero }) {
   return (
     <Link to={`/capitulo/${item.id}`} className="ep-bar">
-      <span className="ep-bar-num">{numero}</span>
-      <span className="ep-bar-titulo">{item.titulo}</span>
-      {item.duracion && <span className="ep-bar-duracion">{item.duracion}</span>}
+      <span className="ep-bar-play">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+          <path d="M8 5v14l11-7z" />
+        </svg>
+      </span>
+      <span className="ep-bar-texto">
+        <span className="ep-bar-titulo">
+          {numero} · {item.titulo}
+        </span>
+        {item.duracion && (
+          <span className="ep-bar-duracion">{item.duracion} MIN</span>
+        )}
+      </span>
     </Link>
   )
 }

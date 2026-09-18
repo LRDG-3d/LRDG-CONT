@@ -555,6 +555,8 @@ function EnVivoControl({ capitulos }) {
 function TemporadasControl({ capitulos }) {
   const [temporadas, setTemporadas] = useState([])
   const [nombre, setNombre] = useState('')
+  const [imagen, setImagen] = useState('')
+  const [descripcion, setDescripcion] = useState('')
 
   useEffect(() => {
     const unsub = onValue(ref(db, 'temporadas'), (snap) => {
@@ -568,8 +570,15 @@ function TemporadasControl({ capitulos }) {
     e.preventDefault()
     if (!nombre.trim()) return
     const nuevaRef = push(ref(db, 'temporadas'))
-    await set(nuevaRef, { nombre: nombre.trim(), creadoEn: Date.now() })
+    await set(nuevaRef, {
+      nombre: nombre.trim(),
+      imagen: imagen.trim(),
+      descripcion: descripcion.trim(),
+      creadoEn: Date.now(),
+    })
     setNombre('')
+    setImagen('')
+    setDescripcion('')
   }
 
   const eliminar = async (temporada) => {
@@ -584,13 +593,25 @@ function TemporadasControl({ capitulos }) {
     <div className="admin-form-block">
       <p className="admin-hint">
         Crea las temporadas aquí; luego, al agregar o editar un capítulo,
-        eliges a cuál pertenece.
+        eliges a cuál pertenece. El título de la temporada se muestra en su
+        página como "La Rosa de Guadalupe {'{nombre}'}".
       </p>
-      <form onSubmit={crear} className="admin-form-row">
+      <form onSubmit={crear} className="admin-form admin-form-stacked">
         <input
           placeholder="Nombre de la temporada (ej. Temporada 1)"
           value={nombre}
           onChange={(e) => setNombre(e.target.value)}
+        />
+        <input
+          placeholder="URL de imagen destacada (opcional)"
+          value={imagen}
+          onChange={(e) => setImagen(e.target.value)}
+        />
+        <textarea
+          placeholder="Descripción de la temporada (opcional)"
+          value={descripcion}
+          onChange={(e) => setDescripcion(e.target.value)}
+          rows={2}
         />
         <button type="submit">Crear temporada</button>
       </form>

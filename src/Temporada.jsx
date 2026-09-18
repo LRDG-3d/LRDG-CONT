@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { useParams } from 'react-router-dom'
+import { useParams, Link } from 'react-router-dom'
 import { ref, onValue } from 'firebase/database'
 import { db } from './firebase'
 import SiteHeader from './SiteHeader.jsx'
@@ -35,13 +35,41 @@ export default function Temporada() {
     .filter((c) => c.temporadaId === id && yaEstrenado(c))
     .sort((a, b) => a.id.localeCompare(b.id))
 
+  const primerEpisodio = episodios[0]
+  const tituloCompleto = temporada ? `La Rosa de Guadalupe ${temporada.nombre}` : 'Cargando…'
+
   return (
     <>
       <SiteHeader />
 
-      <section>
+      <section className="temporada-page">
+        <h1 className="temporada-titulo">{tituloCompleto}</h1>
+        {temporada && (
+          <p className="temporada-meta">{episodios.length} Episodios</p>
+        )}
+
+        <Link
+          to={primerEpisodio ? `/capitulo/${primerEpisodio.id}` : '#'}
+          className="temporada-hero"
+          style={
+            temporada?.imagen
+              ? { backgroundImage: `url(${temporada.imagen})` }
+              : undefined
+          }
+        >
+          <span className="temporada-hero-play">
+            <svg viewBox="0 0 24 24" width="26" height="26" fill="#fff">
+              <path d="M8 5v14l11-7z" />
+            </svg>
+          </span>
+        </Link>
+
+        {temporada?.descripcion && (
+          <p className="temporada-descripcion">{temporada.descripcion}</p>
+        )}
+
         <div className="section-head">
-          <h2>{temporada ? temporada.nombre : 'Cargando…'}</h2>
+          <h2>{temporada ? temporada.nombre.toUpperCase() : ''}</h2>
         </div>
 
         {episodios.length > 0 ? (
