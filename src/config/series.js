@@ -5,16 +5,16 @@
 // -----------------------------------------------------------------------
 const series = {
   // Nombre de la serie, se usa en el header, el hero y el <title>
-  title: "Nombre de tu serie",
+  title: "La Rosa de Guadalupe",
 
   // Frase corta bajo el título (género, país de origen, etc.)
   tagline: "Telenovela · Drama",
 
   // Descripción larga para la sección "Acerca de"
   synopsis:
-    "Escribe aquí la sinopsis de la serie. Este texto aparece en el " +
-    "hero, debajo del título, y presenta la trama a quien entra por " +
-    "primera vez al sitio.",
+    "Cada episodio de sesenta minutos en la serie "La rosa de Guadalupe", " +
+    "incluye la dramatización de un caso de personas comunes que experimentan " +
+    "un milagro verdadero realizado por la Virgen de Guadalupe.",
 
   // Imagen de portada (poster vertical). Pon el archivo en /public
   // y referencia la ruta, ej: "/poster.jpg"
