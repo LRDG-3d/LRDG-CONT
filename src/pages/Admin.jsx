@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useAuth } from "../context/AuthContext.jsx";
 import { useSeasons } from "../context/SeasonsContext.jsx";
 
@@ -65,8 +65,14 @@ function LoginForm() {
 
 function AdminPanel() {
   const { user, logout } = useAuth();
-  const { seasons, loading, addSeason, deleteSeason, addEpisode, removeEpisode } =
-    useSeasons();
+  const {
+    seasons,
+    loading,
+    addSeason,
+    deleteSeason,
+    addEpisode,
+    removeEpisode,
+  } = useSeasons();
 
   return (
     <div className="admin-panel">
@@ -84,15 +90,13 @@ function AdminPanel() {
 
       {loading && <p className="rows__loading">Cargando temporadas…</p>}
 
-      {seasons.map((season) => (
-        <SeasonEditor
-          key={season.id}
-          season={season}
-          onDeleteSeason={() => deleteSeason(season.id)}
-          onAddEpisode={(episode) => addEpisode(season.id, episode)}
-          onRemoveEpisode={(episode) => removeEpisode(season.id, episode)}
-        />
-      ))}
+      <SeasonList seasons={seasons} onDeleteSeason={deleteSeason} />
+
+      <EpisodeManager
+        seasons={seasons}
+        onAddEpisode={addEpisode}
+        onRemoveEpisode={removeEpisode}
+      />
     </div>
   );
 }
@@ -153,43 +157,92 @@ function NewSeasonForm({ onAdd }) {
   );
 }
 
-function SeasonEditor({ season, onDeleteSeason, onAddEpisode, onRemoveEpisode }) {
-  const [open, setOpen] = useState(false);
+// Lista compacta de temporadas existentes, solo para eliminarlas.
+// Agregar episodios se hace desde la sección "Añadir episodios" de abajo.
+function SeasonList({ seasons, onDeleteSeason }) {
+  if (seasons.length === 0) return null;
 
   return (
     <div className="admin-card glass-card">
-      <div className="admin-card__header">
-        <h2>{season.title}</h2>
-        <div className="admin-card__actions">
+      <h2>Temporadas</h2>
+      <ul className="admin-season-list">
+        {seasons.map((season) => (
+          <li key={season.id}>
+            <span>
+              Temporada {season.number} — {season.title}
+              <span className="admin-season-list__count">
+                {" "}
+                ({season.episodes.length}{" "}
+                {season.episodes.length === 1 ? "episodio" : "episodios"})
+              </span>
+            </span>
+            <button
+              className="admin-link-button"
+              onClick={() => onDeleteSeason(season.id)}
+            >
+              Eliminar
+            </button>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
+// Sección única para agregar episodios: una barra para elegir la
+// temporada activa, y debajo el formulario + lista de esa temporada.
+function EpisodeManager({ seasons, onAddEpisode, onRemoveEpisode }) {
+  const [selectedId, setSelectedId] = useState(seasons[0]?.id ?? null);
+
+  useEffect(() => {
+    if (!selectedId && seasons.length > 0) {
+      setSelectedId(seasons[0].id);
+    }
+    if (selectedId && !seasons.some((s) => s.id === selectedId)) {
+      setSelectedId(seasons[0]?.id ?? null);
+    }
+  }, [seasons, selectedId]);
+
+  if (seasons.length === 0) return null;
+
+  const selected = seasons.find((s) => s.id === selectedId) || seasons[0];
+
+  return (
+    <div className="admin-card glass-card">
+      <h2>Añadir episodios</h2>
+
+      <div className="admin-season-picker">
+        {seasons.map((season) => (
           <button
-            className="admin-button admin-button--small"
-            onClick={() => setOpen((o) => !o)}
+            key={season.id}
+            type="button"
+            className={`admin-season-picker__item ${
+              season.id === selected.id
+                ? "admin-season-picker__item--active"
+                : ""
+            }`}
+            onClick={() => setSelectedId(season.id)}
           >
-            {open ? "Cerrar" : "Agregar episodio"}
+            Temporada {season.number}
           </button>
-          <button
-            className="admin-button admin-button--danger"
-            onClick={onDeleteSeason}
-          >
-            Eliminar temporada
-          </button>
-        </div>
+        ))}
       </div>
 
-      {open && (
-        <NewEpisodeForm onAdd={onAddEpisode} onDone={() => setOpen(false)} />
-      )}
+      <NewEpisodeForm
+        key={selected.id}
+        onAdd={(episode) => onAddEpisode(selected.id, episode)}
+      />
 
-      {season.episodes.length > 0 && (
+      {selected.episodes.length > 0 && (
         <ul className="admin-episode-list">
-          {season.episodes.map((ep) => (
+          {selected.episodes.map((ep) => (
             <li key={ep.id}>
               <span>
                 Ep. {ep.number} — {ep.title}
               </span>
               <button
                 className="admin-link-button"
-                onClick={() => onRemoveEpisode(ep)}
+                onClick={() => onRemoveEpisode(selected.id, ep)}
               >
                 Eliminar
               </button>
@@ -201,7 +254,7 @@ function SeasonEditor({ season, onDeleteSeason, onAddEpisode, onRemoveEpisode })
   );
 }
 
-function NewEpisodeForm({ onAdd, onDone }) {
+function NewEpisodeForm({ onAdd }) {
   const [form, setForm] = useState({
     number: "",
     title: "",
@@ -228,8 +281,15 @@ function NewEpisodeForm({ onAdd, onDone }) {
       synopsis: form.synopsis,
       thumbnail: form.thumbnail,
     });
+    setForm({
+      number: "",
+      title: "",
+      videoUrl: "",
+      duration: "",
+      synopsis: "",
+      thumbnail: "",
+    });
     setSaving(false);
-    onDone();
   }
 
   return (

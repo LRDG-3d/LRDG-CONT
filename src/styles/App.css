@@ -339,13 +339,60 @@
   gap: 8px;
 }
 
+.admin-season-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.admin-season-list li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.9rem;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.admin-season-list__count {
+  color: var(--ink-dim);
+  font-size: 0.8rem;
+}
+
+.admin-season-picker {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  margin-bottom: 18px;
+  padding-bottom: 4px;
+}
+
+.admin-season-picker__item {
+  flex: 0 0 auto;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  color: var(--ink-dim);
+  border-radius: 999px;
+  padding: 9px 18px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.admin-season-picker__item--active {
+  background: #2f7ff0;
+  border-color: #2f7ff0;
+  color: #fff;
+}
+
 .admin-episode-form {
   display: flex;
   flex-direction: column;
   gap: 14px;
-  margin-top: 16px;
-  padding-top: 16px;
-  border-top: 1px solid var(--line);
+  padding-top: 4px;
 }
 
 .admin-episode-list {
