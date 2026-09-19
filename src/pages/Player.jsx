@@ -1,5 +1,7 @@
+import { useEffect, useRef } from "react";
 import { Link, useParams } from "react-router-dom";
 import seasons from "../data/seasons.js";
+import { saveProgress, getProgressFor } from "../utils/progress.js";
 
 function isEmbeddable(url) {
   return /youtube\.com|youtu\.be|vimeo\.com/.test(url || "");
@@ -15,6 +17,15 @@ export default function Player() {
   const { seasonId, episodeId } = useParams();
   const season = seasons.find((s) => s.id === seasonId);
   const episode = season?.episodes.find((e) => e.id === episodeId);
+  const videoRef = useRef(null);
+
+  useEffect(() => {
+    if (!season || !episode) return;
+    // Marca el episodio como "empezado" apenas se abre, aunque sea un
+    // embed sin eventos de tiempo disponibles.
+    const existing = getProgressFor(season.id, episode.id);
+    if (existing === 0) saveProgress(season.id, episode.id, 0.02);
+  }, [season, episode]);
 
   if (!season || !episode) {
     return (
@@ -31,9 +42,15 @@ export default function Player() {
   const prev = season.episodes[index - 1];
   const next = season.episodes[index + 1];
 
+  function handleTimeUpdate() {
+    const v = videoRef.current;
+    if (!v || !v.duration) return;
+    saveProgress(season.id, episode.id, v.currentTime / v.duration);
+  }
+
   return (
     <div className="player">
-      <Link to="/#temporadas" className="player__back">
+      <Link to="/" className="player__back">
         ← Volver a episodios
       </Link>
 
@@ -46,18 +63,17 @@ export default function Player() {
               allowFullScreen
             />
           ) : (
-            <video src={episode.videoUrl} controls preload="metadata" />
+            <video
+              ref={videoRef}
+              src={episode.videoUrl}
+              controls
+              preload="metadata"
+              onTimeUpdate={handleTimeUpdate}
+              onEnded={() => saveProgress(season.id, episode.id, 1)}
+            />
           )
         ) : (
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              height: "100%",
-              color: "var(--ink-dim)",
-            }}
-          >
+          <div className="player__frame-empty">
             Agrega un videoUrl en seasons.js para este episodio
           </div>
         )}

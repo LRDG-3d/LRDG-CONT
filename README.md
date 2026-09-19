@@ -8,11 +8,27 @@ capítulos de ejemplo: empieza vacía para que cargues tus propios datos.
 
 ```
 src/
-  config/series.js   -> identidad del sitio (título, sinopsis, poster...)
-  data/seasons.js     -> AQUÍ agregas tus temporadas y episodios (vacío)
-  components/         -> Header, Hero, tarjetas de episodio, etc.
-  pages/               -> Home.jsx (inicio) y Player.jsx (reproductor)
+  config/series.js     -> identidad del sitio (título, sinopsis, poster,
+                           heroSlides, enlaces para "Más")
+  data/seasons.js       -> AQUÍ agregas tus temporadas y episodios (vacío)
+  utils/progress.js     -> guarda el avance de "Continuar viendo" (localStorage)
+  components/
+    Hero.jsx             -> carrusel de portada tipo Blim (con puntos)
+    BottomNav.jsx         -> barra inferior Inicio / Buscar / Más
+    ContinueWatching.jsx   -> fila "Continuar viendo" con barra de progreso
+    SeasonRows.jsx          -> filas horizontales por temporada
+    About.jsx                -> sección de sinopsis
+  pages/
+    Home.jsx    -> arma Hero + Continuar viendo + Temporadas + Acerca de
+    Player.jsx  -> reproductor, guarda progreso mientras se ve
+    Search.jsx  -> buscador de episodios/temporadas
+    More.jsx    -> ficha de la serie + enlaces (pestaña "Más")
 ```
+
+El diseño imita la estructura de apps de streaming tipo Blim TV: hero a
+pantalla completa con carrusel, fila "Continuar viendo", filas de
+episodios por temporada y una barra de navegación inferior — todo con
+tarjetas de vidrio esmerilado (`glass-card`, `backdrop-filter: blur`).
 
 ## 1. Instalar dependencias (en Termux o cualquier entorno con Node)
 
@@ -59,3 +75,9 @@ configuración adicional de servidor.
   `src/styles/index.css` (`:root`).
 - Las imágenes (poster, backdrop, miniaturas) van en la carpeta
   `public/` y se referencian con rutas como `/poster.jpg`.
+- "Continuar viendo" se guarda en el `localStorage` del navegador de
+  cada visitante (no hay cuentas ni backend); si usas videos `.mp4`
+  el progreso avanza en tiempo real, y con embeds de YouTube/Vimeo se
+  marca el episodio como "empezado" al abrirlo.
+- Puedes definir varias diapositivas para el hero en
+  `heroSlides` dentro de `series.js`, como el carrusel de Blim.
