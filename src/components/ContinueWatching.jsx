@@ -1,8 +1,9 @@
 import { Link } from "react-router-dom";
-import seasons from "../data/seasons.js";
+import { useSeasons } from "../context/SeasonsContext.jsx";
 import { getProgressList } from "../utils/progress.js";
 
 export default function ContinueWatching() {
+  const { seasons } = useSeasons();
   const progress = getProgressList();
   if (progress.length === 0) return null;
 

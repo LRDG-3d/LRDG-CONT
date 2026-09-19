@@ -1,8 +1,9 @@
 import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
-import seasons from "../data/seasons.js";
+import { useSeasons } from "../context/SeasonsContext.jsx";
 
 export default function Search() {
+  const { seasons } = useSeasons();
   const [query, setQuery] = useState("");
 
   const allEpisodes = useMemo(
@@ -10,7 +11,7 @@ export default function Search() {
       seasons.flatMap((season) =>
         season.episodes.map((episode) => ({ season, episode }))
       ),
-    []
+    [seasons]
   );
 
   const results = useMemo(() => {

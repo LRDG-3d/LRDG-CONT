@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react";
 import { Link, useParams } from "react-router-dom";
-import seasons from "../data/seasons.js";
+import { useSeasons } from "../context/SeasonsContext.jsx";
 import { saveProgress, getProgressFor } from "../utils/progress.js";
 
 function isEmbeddable(url) {
@@ -15,17 +15,20 @@ function toEmbedUrl(url) {
 
 export default function Player() {
   const { seasonId, episodeId } = useParams();
+  const { seasons, loading } = useSeasons();
   const season = seasons.find((s) => s.id === seasonId);
   const episode = season?.episodes.find((e) => e.id === episodeId);
   const videoRef = useRef(null);
 
   useEffect(() => {
     if (!season || !episode) return;
-    // Marca el episodio como "empezado" apenas se abre, aunque sea un
-    // embed sin eventos de tiempo disponibles.
     const existing = getProgressFor(season.id, episode.id);
     if (existing === 0) saveProgress(season.id, episode.id, 0.02);
   }, [season, episode]);
+
+  if (loading) {
+    return <div className="player">Cargando…</div>;
+  }
 
   if (!season || !episode) {
     return (
@@ -74,7 +77,7 @@ export default function Player() {
           )
         ) : (
           <div className="player__frame-empty">
-            Agrega un videoUrl en seasons.js para este episodio
+            Este episodio todavía no tiene URL de video.
           </div>
         )}
       </div>

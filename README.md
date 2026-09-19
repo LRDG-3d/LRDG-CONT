@@ -1,83 +1,123 @@
 # Mi Serie — plantilla de streaming de una sola serie
 
-Plantilla lista para usar con **React + Vite**, pensada para publicar un
-sitio de streaming dedicado a **una sola serie/telenovela**. No trae
-capítulos de ejemplo: empieza vacía para que cargues tus propios datos.
+Plantilla con **React + Vite**, pensada para un sitio de streaming
+dedicado a **una sola serie/telenovela**, con panel de administración
+protegido y datos guardados en **Firebase (Auth + Firestore)**.
 
 ## Estructura clave
 
 ```
 src/
-  config/series.js     -> identidad del sitio (título, sinopsis, poster,
-                           heroSlides, enlaces para "Más")
-  data/seasons.js       -> AQUÍ agregas tus temporadas y episodios (vacío)
-  utils/progress.js     -> guarda el avance de "Continuar viendo" (localStorage)
+  firebase.js            -> configuración de tu proyecto de Firebase
+  config/series.js        -> identidad del sitio (título, sinopsis, poster,
+                              heroSlides, enlaces para "Más")
+  context/
+    AuthContext.jsx        -> sesión del administrador (Firebase Auth)
+    SeasonsContext.jsx      -> temporadas/episodios en tiempo real (Firestore)
+  utils/progress.js       -> guarda el avance de "Continuar viendo" (localStorage)
   components/
-    Hero.jsx             -> carrusel de portada tipo Blim (con puntos)
-    BottomNav.jsx         -> barra inferior Inicio / Buscar / Más
-    ContinueWatching.jsx   -> fila "Continuar viendo" con barra de progreso
-    SeasonRows.jsx          -> filas horizontales por temporada
-    About.jsx                -> sección de sinopsis
+    Hero.jsx                -> carrusel de portada
+    TopBar.jsx               -> barra superior fija con el logo
+    BottomNav.jsx             -> barra inferior Inicio / Buscar / Más
+    ContinueWatching.jsx       -> fila "Continuar viendo" con progreso
+    SeasonRows.jsx               -> filas horizontales por temporada
   pages/
     Home.jsx    -> arma Hero + Continuar viendo + Temporadas + Acerca de
     Player.jsx  -> reproductor, guarda progreso mientras se ve
     Search.jsx  -> buscador de episodios/temporadas
-    More.jsx    -> ficha de la serie + enlaces (pestaña "Más")
+    More.jsx    -> ficha de la serie + enlaces
+    Admin.jsx   -> login + panel para agregar temporadas/episodios
 ```
 
-El diseño imita la estructura de apps de streaming tipo Blim TV: hero a
-pantalla completa con carrusel, fila "Continuar viendo", filas de
-episodios por temporada y una barra de navegación inferior — todo con
-tarjetas de vidrio esmerilado (`glass-card`, `backdrop-filter: blur`).
+Las temporadas y episodios **ya no viven en un archivo del proyecto**:
+se guardan en Firestore y se agregan desde `/#/admin`.
 
-## 1. Instalar dependencias (en Termux o cualquier entorno con Node)
+## 1. Crear el proyecto de Firebase
+
+1. Ve a [console.firebase.google.com](https://console.firebase.google.com)
+   y crea un proyecto nuevo (gratis, plan Spark).
+2. En **Build → Authentication → Sign-in method**, habilita
+   **Correo electrónico/contraseña**.
+3. En **Authentication → Users**, agrega manualmente al (o los)
+   administrador(es): correo + contraseña. Esas son las credenciales
+   con las que entrarás a `/#/admin`. No hay registro público, solo tú
+   puedes crear cuentas desde la consola.
+4. En **Build → Firestore Database**, crea la base de datos (modo
+   producción).
+5. En la pestaña **Reglas** de Firestore, pega esto y publica:
+
+   ```
+   rules_version = '2';
+   service cloud.firestore {
+     match /databases/{database}/documents {
+       match /seasons/{seasonId} {
+         allow read: if true;
+         allow write: if request.auth != null;
+       }
+     }
+   }
+   ```
+
+   Esto permite que cualquiera **lea** las temporadas (para que el
+   sitio funcione), pero solo un usuario **autenticado** (o sea, un
+   admin que creaste tú) pueda **escribir**.
+
+6. En **⚙️ Configuración del proyecto → Tus apps**, crea una app web
+   (ícono `</>`) y copia el objeto `firebaseConfig` que te muestra.
+
+## 2. Pegar tu configuración en el proyecto
+
+Abre `src/firebase.js` y reemplaza los valores de `firebaseConfig`
+con los que copiaste de Firebase.
+
+## 3. Instalar dependencias (en Termux o cualquier entorno con Node)
 
 ```bash
 npm install
 ```
 
-## 2. Editar la identidad de la serie
+## 4. Editar la identidad de la serie
 
 Abre `src/config/series.js` y rellena título, sinopsis, poster, etc.
+(esto sigue siendo estático, no va en Firestore).
 
-## 3. Cargar temporadas y episodios
-
-Abre `src/data/seasons.js` y agrega objetos siguiendo el esquema
-comentado en el propio archivo. `videoUrl` acepta un enlace directo a
-`.mp4`/`.m3u8` o un enlace de YouTube/Vimeo (se convierte a embed
-automáticamente).
-
-## 4. Probar en local
+## 5. Probar en local
 
 ```bash
 npm run dev
 ```
 
-## 5. Publicar en GitHub Pages
+Entra a `http://localhost:5173/#/admin`, inicia sesión con el correo y
+contraseña que creaste en el paso 1.3, y agrega tus temporadas y
+episodios (nombre, número, URL del video, duración, miniatura y
+sinopsis).
 
-1. Sube este proyecto a un repositorio nuevo en GitHub.
-2. En `vite.config.js`, cambia `base` para que coincida **exactamente**
-   con el nombre de tu repositorio (ej. `/streaming-la-rosa/`).
+## 6. Publicar en GitHub Pages
+
+1. Sube este proyecto a tu repositorio en GitHub.
+2. En `vite.config.js`, confirma que `base` coincide con el nombre de
+   tu repositorio.
 3. En GitHub, ve a **Settings → Pages** y en "Build and deployment"
    elige **GitHub Actions** como fuente.
 4. Haz push a la rama `main`: el workflow en
-   `.github/workflows/deploy.yml` construye el sitio y lo publica
-   automáticamente.
+   `.github/workflows/deploy.yml` construye y publica el sitio.
 
-El sitio usa `HashRouter`, así que las rutas de episodio
-(`/#/episodio/t1/t1e1`) funcionan directo en GitHub Pages sin
-configuración adicional de servidor.
+El panel de administración queda accesible en
+`https://tu-usuario.github.io/tu-repo/#/admin` — no aparece en ningún
+menú visible, así que solo quien conozca la URL (y tenga cuenta) puede
+entrar.
 
 ## Notas
 
-- El diseño es un punto de partida (tema oscuro, tipografía Fraunces +
-  Inter, acentos vino/dorado); puedes ajustar los colores en
-  `src/styles/index.css` (`:root`).
-- Las imágenes (poster, backdrop, miniaturas) van en la carpeta
-  `public/` y se referencian con rutas como `/poster.jpg`.
-- "Continuar viendo" se guarda en el `localStorage` del navegador de
-  cada visitante (no hay cuentas ni backend); si usas videos `.mp4`
-  el progreso avanza en tiempo real, y con embeds de YouTube/Vimeo se
-  marca el episodio como "empezado" al abrirlo.
-- Puedes definir varias diapositivas para el hero en
-  `heroSlides` dentro de `series.js`, como el carrusel de Blim.
+- El diseño usa tema oscuro, tipografía Fraunces + Inter, acentos
+  vino/dorado y tarjetas de vidrio esmerilado; ajustable en
+  `src/styles/index.css` (`:root`) y `src/styles/App.css`.
+- "Continuar viendo" se guarda en el `localStorage` de cada
+  visitante (no depende de Firebase); con video `.mp4` el progreso
+  avanza en tiempo real, con embeds de YouTube/Vimeo se marca como
+  "empezado" al abrirlo.
+- Puedes definir varias diapositivas para el hero en `heroSlides`
+  dentro de `series.js`.
+- Las claves de `firebase.js` no son secretas (se usan en el
+  cliente); lo que realmente protege tus datos son las reglas de
+  Firestore del paso 1.5.

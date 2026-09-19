@@ -1,8 +1,18 @@
 import { Link } from "react-router-dom";
-import seasons from "../data/seasons.js";
+import { useSeasons } from "../context/SeasonsContext.jsx";
 import EmptyState from "./EmptyState.jsx";
 
 export default function SeasonRows() {
+  const { seasons, loading } = useSeasons();
+
+  if (loading) {
+    return (
+      <section id="temporadas" className="rows">
+        <p className="rows__loading">Cargando temporadas…</p>
+      </section>
+    );
+  }
+
   if (seasons.length === 0) {
     return (
       <section id="temporadas" className="rows">

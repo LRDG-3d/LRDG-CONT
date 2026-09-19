@@ -5,6 +5,7 @@ import Home from "./pages/Home.jsx";
 import Player from "./pages/Player.jsx";
 import Search from "./pages/Search.jsx";
 import More from "./pages/More.jsx";
+import Admin from "./pages/Admin.jsx";
 import "./styles/App.css";
 
 export default function App() {
@@ -17,6 +18,7 @@ export default function App() {
           <Route path="/episodio/:seasonId/:episodeId" element={<Player />} />
           <Route path="/buscar" element={<Search />} />
           <Route path="/mas" element={<More />} />
+          <Route path="/admin" element={<Admin />} />
         </Routes>
       </div>
       <BottomNav />
