@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { useSeasons } from "../context/SeasonsContext.jsx";
 import series from "../config/series.js";
@@ -76,20 +77,7 @@ export default function SeasonPage() {
 
       <div className="season-pill">▲ TEMPORADA {season.number}</div>
 
-      <ul className="episode-list">
-        {season.episodes.map((episode) => (
-          <li key={episode.id}>
-            <Link
-              to={`/episodio/${season.id}/${episode.id}`}
-              className="episode-row"
-            >
-              <span className="episode-row__play">▶</span>
-              <span className="episode-row__number">EP {episode.number}</span>
-              <span className="episode-row__title">{episode.title}</span>
-            </Link>
-          </li>
-        ))}
-      </ul>
+      <EpisodeList seasonId={season.id} episodes={season.episodes} />
 
       {season.episodes.length === 0 && (
         <p className="rows__loading">
@@ -97,5 +85,49 @@ export default function SeasonPage() {
         </p>
       )}
     </div>
+  );
+}
+
+function EpisodeList({ seasonId, episodes }) {
+  const [expandedId, setExpandedId] = useState(null);
+
+  return (
+    <ul className="episode-list">
+      {episodes.map((episode) => {
+        const isOpen = expandedId === episode.id;
+        return (
+          <li key={episode.id}>
+            <button
+              type="button"
+              className="episode-row"
+              onClick={() => setExpandedId(isOpen ? null : episode.id)}
+              aria-expanded={isOpen}
+            >
+              <span className="episode-row__number">EP {episode.number}</span>
+              <span className="episode-row__title">{episode.title}</span>
+            </button>
+
+            {isOpen && (
+              <div className="episode-details">
+                {episode.duration && (
+                  <p className="episode-details__duration">
+                    {episode.duration}
+                  </p>
+                )}
+                <p className="episode-details__synopsis">
+                  {episode.synopsis || "Sin descripción disponible."}
+                </p>
+                <Link
+                  to={`/episodio/${seasonId}/${episode.id}`}
+                  className="episode-details__watch"
+                >
+                  VER AHORA
+                </Link>
+              </div>
+            )}
+          </li>
+        );
+      })}
+    </ul>
   );
 }
