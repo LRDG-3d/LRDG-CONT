@@ -200,8 +200,9 @@ function timestampAInput(ts) {
   )}:${pad(d.getMinutes())}`
 }
 
-function CapituloForm({ editing, onDone }) {
+function CapituloForm({ editing, onDone, temporadaPredeterminada }) {
   const [titulo, setTitulo] = useState('')
+  const [numeroEpisodio, setNumeroEpisodio] = useState('')
   const [descripcion, setDescripcion] = useState('')
   const [miniatura, setMiniatura] = useState('')
   const [video, setVideo] = useState('')
@@ -226,15 +227,16 @@ function CapituloForm({ editing, onDone }) {
 
   useEffect(() => {
     setTitulo(editing?.titulo || '')
+    setNumeroEpisodio(editing?.numeroEpisodio || '')
     setDescripcion(editing?.descripcion || '')
     setMiniatura(editing?.miniatura || '')
     setVideo(editing?.video || '')
     setDuracion(editing?.duracion || '')
     setTipo(editing?.tipo || 'Capítulo')
     setEstrenoEn(timestampAInput(editing?.estrenoEn))
-    setTemporadaId(editing?.temporadaId || '')
+    setTemporadaId(editing?.temporadaId || temporadaPredeterminada || '')
     setErrorCaptura('')
-  }, [editing])
+  }, [editing, temporadaPredeterminada])
 
   // Detecta la duración real del video leyendo sus metadatos, sin
   // necesidad de que la persona la escriba a mano.
@@ -299,6 +301,7 @@ function CapituloForm({ editing, onDone }) {
 
     const datos = {
       titulo,
+      numeroEpisodio: numeroEpisodio.toString().trim(),
       descripcion: descripcion.trim(),
       miniatura: miniatura.trim(),
       video: video.trim(),
@@ -318,13 +321,14 @@ function CapituloForm({ editing, onDone }) {
       }
 
       setTitulo('')
+      setNumeroEpisodio('')
       setDescripcion('')
       setMiniatura('')
       setVideo('')
       setDuracion('')
       setTipo('Capítulo')
       setEstrenoEn('')
-      setTemporadaId('')
+      setTemporadaId(temporadaPredeterminada || '')
       onDone?.()
     } catch (err) {
       setErrorCaptura('No se pudo guardar el capítulo. Intenta de nuevo.')
@@ -335,11 +339,18 @@ function CapituloForm({ editing, onDone }) {
 
   return (
     <form onSubmit={handleSubmit} className="admin-form admin-form-stacked">
-      <input
-        placeholder="Título del capítulo"
-        value={titulo}
-        onChange={(e) => setTitulo(e.target.value)}
-      />
+      <div className="admin-form-row">
+        <input
+          placeholder="Título del capítulo"
+          value={titulo}
+          onChange={(e) => setTitulo(e.target.value)}
+        />
+        <input
+          placeholder="N° de episodio (ej. 5)"
+          value={numeroEpisodio}
+          onChange={(e) => setNumeroEpisodio(e.target.value)}
+        />
+      </div>
       <textarea
         placeholder="Descripción del capítulo"
         value={descripcion}
@@ -702,17 +713,44 @@ function Panel({ user }) {
   const [tab, setTab] = useState('noticias')
   const [noticias, setNoticias] = useState([])
   const [capitulos, setCapitulos] = useState([])
+  const [temporadas, setTemporadas] = useState([])
   const [editandoNoticia, setEditandoNoticia] = useState(null)
   const [editandoCapitulo, setEditandoCapitulo] = useState(null)
+  const [temporadaSeleccionada, setTemporadaSeleccionada] = useState('')
+  const [modalAbierto, setModalAbierto] = useState(false)
 
   useEffect(() => {
     const unsubN = onValue(ref(db, 'noticias'), (s) => setNoticias(toArray(s.val())))
     const unsubC = onValue(ref(db, 'capitulos'), (s) => setCapitulos(toArray(s.val())))
+    const unsubT = onValue(ref(db, 'temporadas'), (s) => {
+      const val = s.val() || {}
+      setTemporadas(Object.entries(val).map(([id, t]) => ({ id, ...t })))
+    })
     return () => {
       unsubN()
       unsubC()
+      unsubT()
     }
   }, [])
+
+  const abrirNuevo = () => {
+    setEditandoCapitulo(null)
+    setModalAbierto(true)
+  }
+
+  const abrirEdicion = (item) => {
+    setEditandoCapitulo(item)
+    setModalAbierto(true)
+  }
+
+  const cerrarModal = () => {
+    setEditandoCapitulo(null)
+    setModalAbierto(false)
+  }
+
+  const capitulosFiltrados = temporadaSeleccionada
+    ? capitulos.filter((c) => c.temporadaId === temporadaSeleccionada)
+    : capitulos
 
   return (
     <div className="admin-panel">
@@ -771,24 +809,54 @@ function Panel({ user }) {
           <h3 className="admin-subheading">Temporadas</h3>
           <TemporadasControl capitulos={capitulos} />
 
-          <h3 className="admin-subheading">Agregar / editar capítulo</h3>
-          <CapituloForm
-            editing={editandoCapitulo}
-            onDone={() => setEditandoCapitulo(null)}
-          />
+          <h3 className="admin-subheading">Episodios</h3>
+          <div className="admin-form-row admin-season-bar">
+            <select
+              value={temporadaSeleccionada}
+              onChange={(e) => setTemporadaSeleccionada(e.target.value)}
+            >
+              <option value="">Todas las temporadas</option>
+              {temporadas.map((t) => (
+                <option key={t.id} value={t.id}>
+                  {t.nombre}
+                </option>
+              ))}
+            </select>
+            <button type="button" className="admin-add-btn" onClick={abrirNuevo}>
+              + Añadir episodio
+            </button>
+          </div>
 
-          {capitulos.some((c) => c.estrenoEn && c.estrenoEn > Date.now()) && (
+          {modalAbierto && (
+            <div className="admin-modal-overlay" onClick={cerrarModal}>
+              <div className="admin-modal" onClick={(e) => e.stopPropagation()}>
+                <button className="admin-modal-close" onClick={cerrarModal}>
+                  ✕
+                </button>
+                <h3 className="admin-subheading" style={{ marginTop: 0 }}>
+                  {editandoCapitulo ? 'Editar episodio' : 'Nuevo episodio'}
+                </h3>
+                <CapituloForm
+                  editing={editandoCapitulo}
+                  onDone={cerrarModal}
+                  temporadaPredeterminada={temporadaSeleccionada}
+                />
+              </div>
+            </div>
+          )}
+
+          {capitulosFiltrados.some((c) => c.estrenoEn && c.estrenoEn > Date.now()) && (
             <>
               <h3 className="admin-subheading">
                 🕒 Próximamente (solo visible aquí, no en el sitio público)
               </h3>
               <ListaConEliminar
                 path="capitulos"
-                items={capitulos.filter((c) => c.estrenoEn && c.estrenoEn > Date.now())}
+                items={capitulosFiltrados.filter((c) => c.estrenoEn && c.estrenoEn > Date.now())}
                 renderLabel={(c) =>
-                  `${c.titulo} — Se estrena: ${formatFechaEstreno(c.estrenoEn)}`
+                  `${c.numeroEpisodio ? `#${c.numeroEpisodio} ` : ''}${c.titulo} — Se estrena: ${formatFechaEstreno(c.estrenoEn)}`
                 }
-                onEdit={setEditandoCapitulo}
+                onEdit={abrirEdicion}
               />
             </>
           )}
@@ -796,11 +864,11 @@ function Panel({ user }) {
           <h3 className="admin-subheading">Publicados</h3>
           <ListaConEliminar
             path="capitulos"
-            items={capitulos.filter((c) => !c.estrenoEn || c.estrenoEn <= Date.now())}
+            items={capitulosFiltrados.filter((c) => !c.estrenoEn || c.estrenoEn <= Date.now())}
             renderLabel={(c) =>
-              `${c.titulo} — ${c.tipo || 'Capítulo'}${c.duracion ? ' · ' + c.duracion : ''}${c.video ? ' 🎬' : ''}${c.miniatura ? ' 🖼️' : ''}`
+              `${c.numeroEpisodio ? `#${c.numeroEpisodio} ` : ''}${c.titulo} — ${c.tipo || 'Capítulo'}${c.duracion ? ' · ' + c.duracion : ''}${c.video ? ' 🎬' : ''}${c.miniatura ? ' 🖼️' : ''}`
             }
-            onEdit={setEditandoCapitulo}
+            onEdit={abrirEdicion}
           />
         </section>
       )}

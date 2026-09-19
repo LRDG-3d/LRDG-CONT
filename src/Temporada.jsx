@@ -75,7 +75,7 @@ export default function Temporada() {
         {episodios.length > 0 ? (
           <div className="ep-bar-list">
             {episodios.map((item, i) => (
-              <EpisodeBar key={item.id} item={item} numero={i + 1} />
+              <EpisodeBar key={item.id} item={item} numero={item.numeroEpisodio || i + 1} />
             ))}
           </div>
         ) : (
