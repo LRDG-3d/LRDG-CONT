@@ -1,26 +1,21 @@
-import { HashRouter, Routes, Route } from 'react-router-dom'
-import Home from './Home.jsx'
-import Watch from './Watch.jsx'
-import Noticia from './Noticia.jsx'
-import Capitulos from './Capitulos.jsx'
-import Noticias from './Noticias.jsx'
-import Temporada from './Temporada.jsx'
-import Buscar from './Buscar.jsx'
-import Admin from './Admin.jsx'
+import { Routes, Route } from "react-router-dom";
+import Header from "./components/Header.jsx";
+import Home from "./pages/Home.jsx";
+import Player from "./pages/Player.jsx";
+import series from "./config/series.js";
+import "./styles/App.css";
 
 export default function App() {
   return (
-    <HashRouter>
+    <div className="site">
+      <Header />
       <Routes>
         <Route path="/" element={<Home />} />
-        <Route path="/capitulo/:id" element={<Watch />} />
-        <Route path="/noticia/:id" element={<Noticia />} />
-        <Route path="/capitulos" element={<Capitulos />} />
-        <Route path="/noticias" element={<Noticias />} />
-        <Route path="/temporada/:id" element={<Temporada />} />
-        <Route path="/buscar" element={<Buscar />} />
-        <Route path="/admin" element={<Admin />} />
+        <Route path="/episodio/:seasonId/:episodeId" element={<Player />} />
       </Routes>
-    </HashRouter>
-  )
+      <footer className="footer">
+        {series.title} — sitio no oficial, sin fines de lucro.
+      </footer>
+    </div>
+  );
 }

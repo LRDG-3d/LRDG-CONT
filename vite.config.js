@@ -1,11 +1,12 @@
-import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react'
+import { defineConfig } from "vite";
+import react from "@vitejs/plugin-react";
 
-// base: '/LRDG-CONT/' apunta al nombre del repositorio en GitHub Pages
-// (https://<usuario>.github.io/LRDG-CONT/). Si algún día usas un dominio
-// propio o publicas en la raíz de un repo user/org (usuario.github.io),
-// cambia esto de nuevo a './'.
+// IMPORTANTE: cambia "mi-serie-streaming" por el nombre EXACTO de tu
+// repositorio de GitHub. Si tu repo se llama "streaming-la-rosa",
+// entonces base debe ser "/streaming-la-rosa/".
+// Si vas a usar un dominio propio (CNAME) o publicas en <usuario>.github.io,
+// deja base en "/".
 export default defineConfig({
   plugins: [react()],
-  base: '/LRDG-CONT/',
-})
+  base: "/LRDG-CONT/",
+});
