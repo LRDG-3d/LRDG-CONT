@@ -23,57 +23,55 @@ export default function SeasonPage() {
   }
 
   const pageTitle = `${series.title} Temporada ${season.number}`;
+  const banner = season.banner || series.backdrop || series.poster || "";
 
   return (
     <div className="season-page">
-      <Link to="/" className="player__back">
+      <Link to="/" className="player__back season-page__back">
         ← Volver
       </Link>
 
-      <div className="season-header glass-card">
-        <div className="season-header__poster">
-          {series.poster ? (
-            <img src={series.poster} alt={series.title} />
-          ) : (
-            <span>{series.shortName}</span>
-          )}
-        </div>
+      <div className="season-banner">
+        {banner ? (
+          <img src={banner} alt={pageTitle} />
+        ) : (
+          <span>{series.shortName}</span>
+        )}
+      </div>
 
-        <div className="season-header__info">
-          <h1 className="season-header__title">{pageTitle}</h1>
+      <div className="season-info">
+        <h1 className="season-info__title">{pageTitle}</h1>
 
-          {series.rating > 0 && (
-            <div className="season-header__stars" aria-label={`${series.rating} de 5 estrellas`}>
-              {Array.from({ length: 5 }).map((_, i) => (
-                <span
-                  key={i}
-                  className={
-                    i < series.rating
-                      ? "star star--filled"
-                      : "star"
-                  }
-                >
-                  ★
-                </span>
-              ))}
-            </div>
-          )}
-
-          <div className="season-header__badges">
-            <span className="badge">
-              {season.episodes.length}{" "}
-              {season.episodes.length === 1 ? "episodio" : "episodios"}
-            </span>
-            {series.year && <span className="badge">{series.year}</span>}
-            {series.contentRating && (
-              <span className="badge badge--outline">{series.contentRating}</span>
-            )}
+        {series.rating > 0 && (
+          <div
+            className="season-info__stars"
+            aria-label={`${series.rating} de 5 estrellas`}
+          >
+            {Array.from({ length: 5 }).map((_, i) => (
+              <span
+                key={i}
+                className={i < series.rating ? "star star--filled" : "star"}
+              >
+                ★
+              </span>
+            ))}
           </div>
+        )}
 
-          <p className="season-header__synopsis">
-            {season.synopsis || series.synopsis}
-          </p>
+        <div className="season-info__badges">
+          <span className="badge">
+            {season.episodes.length}{" "}
+            {season.episodes.length === 1 ? "episodio" : "episodios"}
+          </span>
+          {series.year && <span className="badge">{series.year}</span>}
+          {series.contentRating && (
+            <span className="badge badge--outline">{series.contentRating}</span>
+          )}
         </div>
+
+        <p className="season-info__synopsis">
+          {season.synopsis || series.synopsis}
+        </p>
       </div>
 
       <div className="season-pill">▲ TEMPORADA {season.number}</div>

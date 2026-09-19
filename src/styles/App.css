@@ -59,45 +59,57 @@
   margin: 0 auto;
 }
 
-.season-header {
-  display: flex;
-  gap: 22px;
-  padding: 22px;
-  margin: 16px 0 22px;
+.season-page__back {
+  display: block;
+  margin-bottom: 14px;
 }
 
-.season-header__poster {
-  flex: 0 0 auto;
-  width: 120px;
-  aspect-ratio: 2 / 3;
-  border-radius: 10px;
+.season-banner {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  border-radius: 14px;
   overflow: hidden;
   background: var(--bg-raised);
   display: flex;
   align-items: center;
   justify-content: center;
   font-family: var(--font-display);
-  font-size: 0.8rem;
   color: var(--ink-dim);
-  text-align: center;
-  padding: 8px;
+  margin-bottom: 20px;
 }
 
-.season-header__poster img {
+.season-banner img {
   width: 100%;
   height: 100%;
   object-fit: cover;
 }
 
-.season-header__title {
+.season-info {
+  margin-bottom: 22px;
+}
+
+.season-info__title {
   font-family: var(--font-display);
   font-size: 1.35rem;
   line-height: 1.15;
   margin: 0 0 10px;
 }
 
-.season-header__stars {
+.season-info__stars {
   margin-bottom: 12px;
+}
+
+.season-info__badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.season-info__synopsis {
+  color: var(--ink-dim);
+  font-size: 0.9rem;
+  max-width: 62ch;
 }
 
 .star {
@@ -108,13 +120,6 @@
 
 .star--filled {
   color: var(--gold);
-}
-
-.season-header__badges {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin-bottom: 14px;
 }
 
 .badge {
@@ -129,12 +134,6 @@
 .badge--outline {
   background: none;
   border: 1px solid rgba(255, 255, 255, 0.28);
-}
-
-.season-header__synopsis {
-  color: var(--ink-dim);
-  font-size: 0.88rem;
-  max-width: 60ch;
 }
 
 .season-pill {
@@ -343,18 +342,38 @@
   list-style: none;
   padding: 0;
   margin: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
 }
 
-.admin-season-list li {
+.admin-season-list__item {
+  padding: 8px 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.admin-season-list__row {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 10px;
   font-size: 0.9rem;
-  padding: 8px 0;
-  border-bottom: 1px solid var(--line);
+}
+
+.admin-season-list__actions {
+  display: flex;
+  gap: 14px;
+  flex: 0 0 auto;
+}
+
+.admin-link-button--danger {
+  color: #e07a7a;
+}
+
+.admin-inline-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px dashed var(--line);
 }
 
 .admin-season-list__count {

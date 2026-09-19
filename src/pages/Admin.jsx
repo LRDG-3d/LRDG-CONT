@@ -69,6 +69,7 @@ function AdminPanel() {
     seasons,
     loading,
     addSeason,
+    updateSeason,
     deleteSeason,
     addEpisode,
     removeEpisode,
@@ -90,7 +91,11 @@ function AdminPanel() {
 
       {loading && <p className="rows__loading">Cargando temporadas…</p>}
 
-      <SeasonList seasons={seasons} onDeleteSeason={deleteSeason} />
+      <SeasonList
+        seasons={seasons}
+        onUpdateSeason={updateSeason}
+        onDeleteSeason={deleteSeason}
+      />
 
       <EpisodeManager
         seasons={seasons}
@@ -105,16 +110,18 @@ function NewSeasonForm({ onAdd }) {
   const [number, setNumber] = useState("");
   const [title, setTitle] = useState("");
   const [synopsis, setSynopsis] = useState("");
+  const [banner, setBanner] = useState("");
   const [saving, setSaving] = useState(false);
 
   async function handleSubmit(e) {
     e.preventDefault();
     if (!number || !title) return;
     setSaving(true);
-    await onAdd({ number: Number(number), title, synopsis });
+    await onAdd({ number: Number(number), title, synopsis, banner });
     setNumber("");
     setTitle("");
     setSynopsis("");
+    setBanner("");
     setSaving(false);
   }
 
@@ -143,6 +150,15 @@ function NewSeasonForm({ onAdd }) {
         </label>
       </div>
       <label className="admin-field">
+        <span>Miniatura de la temporada (URL, opcional)</span>
+        <input
+          type="url"
+          value={banner}
+          onChange={(e) => setBanner(e.target.value)}
+          placeholder="https://..."
+        />
+      </label>
+      <label className="admin-field">
         <span>Sinopsis de la temporada (opcional)</span>
         <textarea
           value={synopsis}
@@ -157,9 +173,12 @@ function NewSeasonForm({ onAdd }) {
   );
 }
 
-// Lista compacta de temporadas existentes, solo para eliminarlas.
-// Agregar episodios se hace desde la sección "Añadir episodios" de abajo.
-function SeasonList({ seasons, onDeleteSeason }) {
+// Lista de temporadas existentes: cada una se puede editar (miniatura,
+// título, sinopsis) o eliminar. Agregar episodios se hace en la
+// sección "Añadir episodios" de abajo.
+function SeasonList({ seasons, onUpdateSeason, onDeleteSeason }) {
+  const [editingId, setEditingId] = useState(null);
+
   if (seasons.length === 0) return null;
 
   return (
@@ -167,25 +186,95 @@ function SeasonList({ seasons, onDeleteSeason }) {
       <h2>Temporadas</h2>
       <ul className="admin-season-list">
         {seasons.map((season) => (
-          <li key={season.id}>
-            <span>
-              Temporada {season.number} — {season.title}
-              <span className="admin-season-list__count">
-                {" "}
-                ({season.episodes.length}{" "}
-                {season.episodes.length === 1 ? "episodio" : "episodios"})
+          <li key={season.id} className="admin-season-list__item">
+            <div className="admin-season-list__row">
+              <span>
+                Temporada {season.number} — {season.title}
+                <span className="admin-season-list__count">
+                  {" "}
+                  ({season.episodes.length}{" "}
+                  {season.episodes.length === 1 ? "episodio" : "episodios"})
+                </span>
               </span>
-            </span>
-            <button
-              className="admin-link-button"
-              onClick={() => onDeleteSeason(season.id)}
-            >
-              Eliminar
-            </button>
+              <div className="admin-season-list__actions">
+                <button
+                  className="admin-link-button"
+                  onClick={() =>
+                    setEditingId((id) => (id === season.id ? null : season.id))
+                  }
+                >
+                  {editingId === season.id ? "Cerrar" : "Editar"}
+                </button>
+                <button
+                  className="admin-link-button admin-link-button--danger"
+                  onClick={() => onDeleteSeason(season.id)}
+                >
+                  Eliminar
+                </button>
+              </div>
+            </div>
+
+            {editingId === season.id && (
+              <EditSeasonForm
+                season={season}
+                onSave={(updates) => {
+                  onUpdateSeason(season.id, updates);
+                  setEditingId(null);
+                }}
+              />
+            )}
           </li>
         ))}
       </ul>
     </div>
+  );
+}
+
+function EditSeasonForm({ season, onSave }) {
+  const [title, setTitle] = useState(season.title);
+  const [banner, setBanner] = useState(season.banner || "");
+  const [synopsis, setSynopsis] = useState(season.synopsis || "");
+  const [saving, setSaving] = useState(false);
+
+  async function handleSubmit(e) {
+    e.preventDefault();
+    setSaving(true);
+    await onSave({ title, banner, synopsis });
+    setSaving(false);
+  }
+
+  return (
+    <form className="admin-inline-form" onSubmit={handleSubmit}>
+      <label className="admin-field">
+        <span>Título</span>
+        <input
+          type="text"
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+          required
+        />
+      </label>
+      <label className="admin-field">
+        <span>Miniatura de la temporada (URL)</span>
+        <input
+          type="url"
+          value={banner}
+          onChange={(e) => setBanner(e.target.value)}
+          placeholder="https://..."
+        />
+      </label>
+      <label className="admin-field">
+        <span>Sinopsis de la temporada</span>
+        <textarea
+          value={synopsis}
+          onChange={(e) => setSynopsis(e.target.value)}
+          rows={3}
+        />
+      </label>
+      <button className="admin-button admin-button--small" type="submit" disabled={saving}>
+        {saving ? "Guardando…" : "Guardar cambios"}
+      </button>
+    </form>
   );
 }
 
