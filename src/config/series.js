@@ -24,7 +24,7 @@ const series = {
   year: "",
 
   // Nombre corto para el logo de texto en el header
-  shortName: "TU SERIE",
+  shortName: "LRDG TV",
 
   // Diapositivas del hero (como el carrusel de portada de Blim).
   // Cada slide: { image, title, subtitle }. Dejar vacío usa un solo

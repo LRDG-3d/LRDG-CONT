@@ -32,12 +32,6 @@ export default function Hero() {
     >
       <div className="hero__scrim" />
 
-      <div className="hero__topbar">
-        <span className="hero__logo">
-          {series.shortName || series.title}
-        </span>
-      </div>
-
       <div className="hero__content">
         <h1 className="hero__title">{slide.title || series.title}</h1>
         {slide.subtitle && <p className="hero__subtitle">{slide.subtitle}</p>}
