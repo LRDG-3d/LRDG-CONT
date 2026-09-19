@@ -100,15 +100,17 @@ function AdminPanel() {
 function NewSeasonForm({ onAdd }) {
   const [number, setNumber] = useState("");
   const [title, setTitle] = useState("");
+  const [synopsis, setSynopsis] = useState("");
   const [saving, setSaving] = useState(false);
 
   async function handleSubmit(e) {
     e.preventDefault();
     if (!number || !title) return;
     setSaving(true);
-    await onAdd({ number: Number(number), title });
+    await onAdd({ number: Number(number), title, synopsis });
     setNumber("");
     setTitle("");
+    setSynopsis("");
     setSaving(false);
   }
 
@@ -136,6 +138,14 @@ function NewSeasonForm({ onAdd }) {
           />
         </label>
       </div>
+      <label className="admin-field">
+        <span>Sinopsis de la temporada (opcional)</span>
+        <textarea
+          value={synopsis}
+          onChange={(e) => setSynopsis(e.target.value)}
+          rows={3}
+        />
+      </label>
       <button className="admin-button" type="submit" disabled={saving}>
         {saving ? "Guardando…" : "Agregar temporada"}
       </button>

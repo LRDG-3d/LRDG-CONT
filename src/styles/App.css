@@ -19,6 +19,179 @@
   border-radius: 18px;
 }
 
+/* Selector de temporadas (tarjetas/botones) ------------------------------ */
+.season-card {
+  flex: 0 0 auto;
+  width: 170px;
+  scroll-snap-align: start;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  text-decoration: none;
+  color: inherit;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 14px;
+  padding: 20px 18px;
+}
+
+.season-card__number {
+  font-family: var(--font-display);
+  font-size: 1.05rem;
+  font-weight: 600;
+}
+
+.season-card__title {
+  color: var(--ink-dim);
+  font-size: 0.85rem;
+}
+
+.season-card__count {
+  color: var(--gold);
+  font-size: 0.78rem;
+  margin-top: 8px;
+}
+
+/* Página de temporada ----------------------------------------------------- */
+.season-page {
+  padding: 78px clamp(18px, 5vw, 48px) 60px;
+  max-width: 860px;
+  margin: 0 auto;
+}
+
+.season-header {
+  display: flex;
+  gap: 22px;
+  padding: 22px;
+  margin: 16px 0 22px;
+}
+
+.season-header__poster {
+  flex: 0 0 auto;
+  width: 120px;
+  aspect-ratio: 2 / 3;
+  border-radius: 10px;
+  overflow: hidden;
+  background: var(--bg-raised);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-display);
+  font-size: 0.8rem;
+  color: var(--ink-dim);
+  text-align: center;
+  padding: 8px;
+}
+
+.season-header__poster img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.season-header__title {
+  font-family: var(--font-display);
+  font-size: 1.35rem;
+  line-height: 1.15;
+  margin: 0 0 10px;
+}
+
+.season-header__stars {
+  margin-bottom: 12px;
+}
+
+.star {
+  color: rgba(255, 255, 255, 0.2);
+  font-size: 1rem;
+  margin-right: 2px;
+}
+
+.star--filled {
+  color: var(--gold);
+}
+
+.season-header__badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.badge {
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 6px;
+  padding: 5px 10px;
+  font-size: 0.75rem;
+  color: var(--ink-dim);
+  font-weight: 600;
+}
+
+.badge--outline {
+  background: none;
+  border: 1px solid rgba(255, 255, 255, 0.28);
+}
+
+.season-header__synopsis {
+  color: var(--ink-dim);
+  font-size: 0.88rem;
+  max-width: 60ch;
+}
+
+.season-pill {
+  background: #2f7ff0;
+  color: #fff;
+  text-align: center;
+  font-weight: 700;
+  font-size: 0.85rem;
+  letter-spacing: 0.03em;
+  padding: 14px;
+  border-radius: 999px;
+  margin-bottom: 18px;
+}
+
+.episode-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.episode-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 4px;
+  text-decoration: none;
+  color: inherit;
+  border-bottom: 1px solid var(--line);
+}
+
+.episode-row__play {
+  flex: 0 0 auto;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.7rem;
+  color: var(--ink);
+}
+
+.episode-row__number {
+  flex: 0 0 auto;
+  color: var(--gold);
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+.episode-row__title {
+  font-size: 0.92rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 /* Panel de administración ------------------------------------------------ */
 .admin-page {
   padding: 78px clamp(18px, 5vw, 48px) 60px;

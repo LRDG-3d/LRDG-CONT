@@ -23,6 +23,12 @@ const series = {
   // Año(s) de emisión, para mostrar junto al tagline
   year: "",
 
+  // Calificación en estrellas (0 a 5) para la ficha de temporada
+  rating: 4,
+
+  // Clasificación de contenido, ej. "A", "B", "C" (opcional)
+  contentRating: "",
+
   // Nombre corto para el logo de texto en el header
   shortName: "LRDG TV",
 

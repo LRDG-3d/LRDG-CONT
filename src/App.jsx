@@ -6,6 +6,7 @@ import Player from "./pages/Player.jsx";
 import Search from "./pages/Search.jsx";
 import More from "./pages/More.jsx";
 import Admin from "./pages/Admin.jsx";
+import SeasonPage from "./pages/SeasonPage.jsx";
 import "./styles/App.css";
 
 export default function App() {
@@ -15,6 +16,7 @@ export default function App() {
       <div className="site__scroll">
         <Routes>
           <Route path="/" element={<Home />} />
+          <Route path="/temporada/:seasonId" element={<SeasonPage />} />
           <Route path="/episodio/:seasonId/:episodeId" element={<Player />} />
           <Route path="/buscar" element={<Search />} />
           <Route path="/mas" element={<More />} />
