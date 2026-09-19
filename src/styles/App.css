@@ -66,22 +66,26 @@
 
 .season-banner {
   width: 100%;
-  aspect-ratio: 4 / 3;
   border-radius: 14px;
   overflow: hidden;
   background: var(--bg-raised);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-family: var(--font-display);
-  color: var(--ink-dim);
   margin-bottom: 20px;
 }
 
 .season-banner img {
   width: 100%;
-  height: 100%;
-  object-fit: cover;
+  height: auto;
+  display: block;
+}
+
+.season-banner:empty,
+.season-banner:not(:has(img)) {
+  aspect-ratio: 16 / 9;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-display);
+  color: var(--ink-dim);
 }
 
 .season-info {
