@@ -12,9 +12,12 @@ const series = {
 
   // Descripción larga para la sección "Acerca de"
   synopsis:
-    "Cada episodio de sesenta minutos en la serie "La rosa de Guadalupe", " +
-    "incluye la dramatización de un caso de personas comunes que experimentan " +
-    "un milagro verdadero realizado por la Virgen de Guadalupe.",
+    "Cada episodio de sesenta minutos en la serie \"La Rosa de Guadalupe\", " +
+    "incluye la dramatización de un caso de personas comunes que " +
+    "experimentan un milagro verdadero realizado por la Virgen de " +
+    "Guadalupe. Las historias relatadas en el programa son una fuente de " +
+    "inspiración y esperanza para las personas que estén atravesando por " +
+    "un problema, el misterio de la fe hecho parte de la vida cotidiana.",
 
   // Imagen de portada (poster vertical). Pon el archivo en /public
   // y referencia la ruta, ej: "/poster.jpg"
