@@ -103,17 +103,21 @@ function EpisodeList({ seasonId, episodes }) {
               onClick={() => setExpandedId(isOpen ? null : episode.id)}
               aria-expanded={isOpen}
             >
-              <span className="episode-row__number">EP {episode.number}</span>
-              <span className="episode-row__title">{episode.title}</span>
+              <span className="episode-row__play">▶</span>
+              <span className="episode-row__text">
+                <span className="episode-row__title">
+                  {episode.number} · {episode.title}
+                </span>
+                {episode.duration && (
+                  <span className="episode-row__duration">
+                    {episode.duration}
+                  </span>
+                )}
+              </span>
             </button>
 
             {isOpen && (
               <div className="episode-details">
-                {episode.duration && (
-                  <p className="episode-details__duration">
-                    {episode.duration}
-                  </p>
-                )}
                 <p className="episode-details__synopsis">
                   {episode.synopsis || "Sin descripción disponible."}
                 </p>
