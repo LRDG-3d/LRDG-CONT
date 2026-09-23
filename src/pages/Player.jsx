@@ -1,6 +1,7 @@
-import { useEffect, useRef } from "react";
-import { Link, useParams } from "react-router-dom";
+import { useEffect } from "react";
+import { Link, useParams, useNavigate } from "react-router-dom";
 import { useSeasons } from "../context/SeasonsContext.jsx";
+import VideoPlayer from "../components/VideoPlayer.jsx";
 import { saveProgress, getProgressFor } from "../utils/progress.js";
 
 function isEmbeddable(url) {
@@ -15,10 +16,10 @@ function toEmbedUrl(url) {
 
 export default function Player() {
   const { seasonId, episodeId } = useParams();
+  const navigate = useNavigate();
   const { seasons, loading } = useSeasons();
   const season = seasons.find((s) => s.id === seasonId);
   const episode = season?.episodes.find((e) => e.id === episodeId);
-  const videoRef = useRef(null);
 
   useEffect(() => {
     if (!season || !episode) return;
@@ -27,81 +28,70 @@ export default function Player() {
   }, [season, episode]);
 
   if (loading) {
-    return <div className="player">Cargando…</div>;
+    return <div className="player-full player-full--message">Cargando…</div>;
   }
 
   if (!season || !episode) {
     return (
-      <div className="player">
-        <Link to="/" className="player__back">
+      <div className="player-full player-full--message">
+        <p>No se encontró ese episodio.</p>
+        <Link to="/" className="player-full__back">
           ← Volver
         </Link>
-        <p>No se encontró ese episodio.</p>
       </div>
     );
   }
 
-  const index = season.episodes.findIndex((e) => e.id === episodeId);
-  const prev = season.episodes[index - 1];
-  const next = season.episodes[index + 1];
+  if (!episode.videoUrl) {
+    return (
+      <div className="player-full player-full--message">
+        <p className="player-full__empty">
+          Este episodio todavía no tiene URL de video.
+        </p>
+        <Link to="/" className="player-full__back">
+          ← Volver
+        </Link>
+      </div>
+    );
+  }
 
-  function handleTimeUpdate() {
-    const v = videoRef.current;
-    if (!v || !v.duration) return;
-    saveProgress(season.id, episode.id, v.currentTime / v.duration);
+  if (isEmbeddable(episode.videoUrl)) {
+    return (
+      <div className="player-full">
+        <div className="vp__topbar vp__topbar--embed">
+          <button
+            type="button"
+            className="vp__back"
+            onClick={() => navigate(-1)}
+          >
+            ← <span className="vp__title">{episode.title}</span>
+          </button>
+          <span className="vp__episode-tag">Episodio {episode.number}</span>
+        </div>
+        <iframe
+          className="player-full__media"
+          src={toEmbedUrl(episode.videoUrl)}
+          title={episode.title}
+          allowFullScreen
+        />
+      </div>
+    );
   }
 
   return (
-    <div className="player">
-      <Link to="/" className="player__back">
-        ← Volver a episodios
-      </Link>
-
-      <div className="player__frame">
-        {episode.videoUrl ? (
-          isEmbeddable(episode.videoUrl) ? (
-            <iframe
-              src={toEmbedUrl(episode.videoUrl)}
-              title={episode.title}
-              allowFullScreen
-            />
-          ) : (
-            <video
-              ref={videoRef}
-              src={episode.videoUrl}
-              controls
-              preload="metadata"
-              onTimeUpdate={handleTimeUpdate}
-              onEnded={() => saveProgress(season.id, episode.id, 1)}
-            />
-          )
-        ) : (
-          <div className="player__frame-empty">
-            Este episodio todavía no tiene URL de video.
-          </div>
-        )}
-      </div>
-
-      <h1 className="player__title">
-        {season.title} · Episodio {episode.number} — {episode.title}
-      </h1>
-      {episode.duration && <p className="player__meta">{episode.duration}</p>}
-      {episode.synopsis && (
-        <p className="player__synopsis">{episode.synopsis}</p>
-      )}
-
-      <div className="player__nav">
-        {prev ? (
-          <Link to={`/episodio/${season.id}/${prev.id}`}>← {prev.title}</Link>
-        ) : (
-          <span />
-        )}
-        {next ? (
-          <Link to={`/episodio/${season.id}/${next.id}`}>{next.title} →</Link>
-        ) : (
-          <span />
-        )}
-      </div>
+    <div className="player-full">
+      <VideoPlayer
+        src={episode.videoUrl}
+        title={episode.title}
+        episodeNumber={episode.number}
+        onBack={() => navigate(-1)}
+        onEpisodeList={() => navigate(`/temporada/${season.id}`)}
+        onTimeUpdate={(currentTime, duration) => {
+          if (!duration) return;
+          saveProgress(season.id, episode.id, currentTime / duration);
+        }}
+        onEnded={() => saveProgress(season.id, episode.id, 1)}
+      />
     </div>
   );
 }

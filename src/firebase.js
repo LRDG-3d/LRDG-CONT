@@ -2,14 +2,20 @@ import { initializeApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 
+// -----------------------------------------------------------------------
+// Reemplaza estos valores con los de TU proyecto de Firebase:
+// Firebase console -> ⚙️ Configuración del proyecto -> "Tus apps" ->
+// selecciona la app web (o crea una) -> "SDK setup and configuration".
+// Estas claves NO son secretas (van en el cliente); lo que protege tus
+// datos son las reglas de Firestore/Auth (ver README).
+// -----------------------------------------------------------------------
 const firebaseConfig = {
-  apiKey: "AIzaSyClpc5dBi_QQclvlCA9KjRYy0lSJgTjDFc",
-  authDomain: "lrdg-cont.firebaseapp.com",
-  databaseURL: "https://lrdg-cont-default-rtdb.firebaseio.com",
-  projectId: "lrdg-cont",
-  storageBucket: "lrdg-cont.firebasestorage.app",
-  messagingSenderId: "37780270749",
-  appId: "1:37780270749:web:fe96932d269c0abbb7ae74"
+  apiKey: "TU_API_KEY",
+  authDomain: "TU_PROYECTO.firebaseapp.com",
+  projectId: "TU_PROYECTO",
+  storageBucket: "TU_PROYECTO.appspot.com",
+  messagingSenderId: "TU_SENDER_ID",
+  appId: "TU_APP_ID",
 };
 
 const app = initializeApp(firebaseConfig);

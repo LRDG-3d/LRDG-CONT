@@ -969,13 +969,236 @@
   font-size: 0.78rem;
 }
 
-/* Reproductor ---------------------------------------------------------- */
-.player {
-  padding: 78px clamp(18px, 5vw, 48px) 40px;
-  max-width: 1000px;
-  margin: 0 auto;
+/* Reproductor con controles personalizados (estilo Blim) ---------------- */
+.vp {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  background: #000;
 }
 
+.vp__video {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  background: #000;
+}
+
+.vp__overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  pointer-events: none;
+  transition: opacity 0.25s ease;
+  opacity: 1;
+}
+
+.vp__overlay--hidden {
+  opacity: 0;
+}
+
+.vp__topbar,
+.vp__controls {
+  pointer-events: auto;
+}
+
+.vp__topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: max(18px, env(safe-area-inset-top)) 20px 40px;
+  background: linear-gradient(to bottom, rgba(0, 0, 0, 0.75), transparent);
+}
+
+.vp__back {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: none;
+  border: none;
+  color: #eee;
+  font-size: 1.05rem;
+  cursor: pointer;
+  padding: 0;
+  min-width: 0;
+}
+
+.vp__title {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 60vw;
+}
+
+.vp__episode-tag {
+  flex: 0 0 auto;
+  color: #aaa;
+  font-size: 1rem;
+}
+
+.vp__controls {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 40px 20px max(18px, env(safe-area-inset-bottom));
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.8), transparent);
+}
+
+.vp__progress {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.vp__time {
+  flex: 0 0 auto;
+  color: #ccc;
+  font-size: 0.78rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.vp__range {
+  flex: 1;
+  -webkit-appearance: none;
+  appearance: none;
+  height: 4px;
+  border-radius: 2px;
+  background: linear-gradient(
+    to right,
+    #fff var(--vp-progress, 0%),
+    rgba(255, 255, 255, 0.3) var(--vp-progress, 0%)
+  );
+  cursor: pointer;
+}
+
+.vp__range::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  background: #fff;
+  cursor: pointer;
+}
+
+.vp__range::-moz-range-thumb {
+  width: 15px;
+  height: 15px;
+  border: none;
+  border-radius: 50%;
+  background: #fff;
+  cursor: pointer;
+}
+
+.vp__range::-moz-range-track {
+  height: 4px;
+  border-radius: 2px;
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.vp__range::-moz-range-progress {
+  height: 4px;
+  border-radius: 2px;
+  background: #fff;
+}
+
+.vp__buttons {
+  display: flex;
+  align-items: center;
+  gap: 22px;
+}
+
+.vp__icon-btn {
+  background: none;
+  border: none;
+  color: #eee;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
+  cursor: pointer;
+}
+
+.vp__spacer {
+  flex: 1;
+}
+
+.vp__topbar--embed {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 2;
+}
+
+
+.player-full {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100dvh;
+  background: #000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 50;
+}
+
+.player-full__media {
+  width: 100%;
+  height: 100%;
+  border: none;
+  object-fit: contain;
+  background: #000;
+}
+
+.player-full__empty {
+  color: var(--ink-dim);
+  text-align: center;
+  padding: 0 24px;
+  font-size: 0.92rem;
+}
+
+.player-full--message {
+  flex-direction: column;
+  gap: 16px;
+  color: var(--ink-dim);
+}
+
+.player-full > .player-full__back {
+  position: absolute;
+  top: max(16px, env(safe-area-inset-top));
+  left: 16px;
+  z-index: 51;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.55);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #fff;
+  font-size: 1.1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.player-full--message .player-full__back {
+  position: static;
+  background: none;
+  border: none;
+  width: auto;
+  height: auto;
+  border-radius: 0;
+  color: var(--ink-dim);
+  text-decoration: none;
+  font-size: 0.9rem;
+}
+
+/* Enlace "← Volver" usado en la página de temporada */
 .player__back {
   display: inline-flex;
   align-items: center;
@@ -990,62 +1213,4 @@
   color: var(--ink);
 }
 
-.player__frame {
-  width: 100%;
-  aspect-ratio: 16 / 9;
-  background: #000;
-  border-radius: 14px;
-  overflow: hidden;
-}
 
-.player__frame video,
-.player__frame iframe {
-  width: 100%;
-  height: 100%;
-  border: none;
-}
-
-.player__frame-empty {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 100%;
-  color: var(--ink-dim);
-  padding: 0 20px;
-  text-align: center;
-}
-
-.player__title {
-  font-family: var(--font-display);
-  font-size: 1.5rem;
-  margin: 22px 0 8px;
-}
-
-.player__meta {
-  color: var(--ink-dim);
-  font-size: 0.9rem;
-  margin: 0 0 14px;
-}
-
-.player__synopsis {
-  color: var(--ink-dim);
-  max-width: 65ch;
-}
-
-.player__nav {
-  display: flex;
-  justify-content: space-between;
-  margin-top: 32px;
-  border-top: 1px solid var(--line);
-  padding-top: 20px;
-}
-
-.player__nav a {
-  color: var(--ink-dim);
-  text-decoration: none;
-  font-size: 0.9rem;
-}
-
-.player__nav a:hover {
-  color: var(--ink);
-}
