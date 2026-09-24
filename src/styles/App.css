@@ -37,13 +37,13 @@
 /* Layout base ------------------------------------------------------- */
 .site {
   min-height: 100vh;
+  min-height: 100dvh;
   display: flex;
   flex-direction: column;
 }
 
 .site__scroll {
   flex: 1;
-  padding-bottom: 92px; /* deja espacio para la barra inferior */
 }
 
 /* Utilidad glass ------------------------------------------------------ */
@@ -921,10 +921,9 @@
 
 /* Barra de navegación inferior (glass) --------------------------------- */
 .bottom-nav {
-  position: fixed;
-  left: 0;
-  right: 0;
+  position: sticky;
   bottom: 0;
+  flex-shrink: 0;
   z-index: 20;
   display: flex;
   justify-content: space-around;
