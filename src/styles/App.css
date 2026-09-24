@@ -44,6 +44,7 @@
 
 .site__scroll {
   flex: 1;
+  padding-bottom: 92px; /* deja espacio para la barra inferior fija */
 }
 
 /* Utilidad glass ------------------------------------------------------ */
@@ -921,9 +922,10 @@
 
 /* Barra de navegación inferior (glass) --------------------------------- */
 .bottom-nav {
-  position: sticky;
+  position: fixed;
+  left: 0;
+  right: 0;
   bottom: 0;
-  flex-shrink: 0;
   z-index: 20;
   display: flex;
   justify-content: space-around;
