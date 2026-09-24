@@ -5,11 +5,11 @@ import About from "../components/About.jsx";
 
 export default function Home() {
   return (
-    <>
+    <div className="page-enter">
       <Hero />
       <ContinueWatching />
       <SeasonSelector />
       <About />
-    </>
+    </div>
   );
 }

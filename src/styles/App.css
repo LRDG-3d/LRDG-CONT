@@ -1,3 +1,39 @@
+/* Animaciones -------------------------------------------------------- */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes expandIn {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.page-enter {
+  animation: fadeInUp 0.4s ease both;
+}
+
 /* Layout base ------------------------------------------------------- */
 .site {
   min-height: 100vh;
@@ -17,6 +53,7 @@
   backdrop-filter: blur(18px);
   -webkit-backdrop-filter: blur(18px);
   border-radius: 18px;
+  transition: transform 0.2s ease, background 0.2s ease;
 }
 
 /* Selector de temporadas (tarjetas/botones) ------------------------------ */
@@ -33,6 +70,13 @@
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 14px;
   padding: 20px 18px;
+  transition: transform 0.2s ease, background 0.2s ease, border-color 0.2s ease;
+}
+
+.season-card:hover {
+  transform: translateY(-3px);
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.2);
 }
 
 .season-card__number {
@@ -214,6 +258,7 @@
 .episode-details {
   padding: 4px 4px 20px;
   border-bottom: 1px solid var(--line);
+  animation: expandIn 0.22s ease both;
 }
 
 .episode-details__synopsis {
@@ -472,15 +517,6 @@
   gap: 8px;
 }
 
-.admin-episode-list li {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-size: 0.88rem;
-  padding: 8px 0;
-  border-bottom: 1px solid var(--line);
-}
-
 .admin-link-button {
   background: none;
   border: none;
@@ -488,6 +524,26 @@
   font-size: 0.8rem;
   cursor: pointer;
   padding: 0;
+}
+
+.admin-hint {
+  color: var(--ink-dim);
+  font-size: 0.76rem;
+  line-height: 1.4;
+}
+
+.admin-episode-list__item {
+  padding: 8px 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.admin-episode-list__row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.88rem;
+  padding: 4px 0;
 }
 
 .rows__loading {
@@ -674,6 +730,12 @@
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 14px;
   overflow: hidden;
+  transition: transform 0.2s ease, background 0.2s ease;
+}
+
+.episode-card:hover {
+  transform: translateY(-3px);
+  background: rgba(255, 255, 255, 0.08);
 }
 
 .episode-card__thumb {
@@ -733,6 +795,11 @@
   scroll-snap-align: start;
   text-decoration: none;
   color: inherit;
+  transition: transform 0.2s ease;
+}
+
+.continue-card:hover {
+  transform: translateY(-3px);
 }
 
 .continue-card__thumb {

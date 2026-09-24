@@ -63,6 +63,15 @@ export function SeasonsProvider({ children }) {
     });
   }
 
+  async function updateEpisode(seasonId, episodeId, updates) {
+    const season = seasons.find((s) => s.id === seasonId);
+    if (!season) return;
+    const episodes = season.episodes.map((ep) =>
+      ep.id === episodeId ? { ...ep, ...updates } : ep
+    );
+    await updateDoc(doc(db, "seasons", seasonId), { episodes });
+  }
+
   async function removeEpisode(seasonId, episode) {
     await updateDoc(doc(db, "seasons", seasonId), {
       episodes: arrayRemove(episode),
@@ -78,6 +87,7 @@ export function SeasonsProvider({ children }) {
         updateSeason,
         deleteSeason,
         addEpisode,
+        updateEpisode,
         removeEpisode,
       }}
     >

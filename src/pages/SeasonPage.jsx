@@ -9,12 +9,12 @@ export default function SeasonPage() {
   const season = seasons.find((s) => s.id === seasonId);
 
   if (loading) {
-    return <div className="season-page">Cargando…</div>;
+    return <div className="season-page page-enter">Cargando…</div>;
   }
 
   if (!season) {
     return (
-      <div className="season-page">
+      <div className="season-page page-enter">
         <Link to="/" className="player__back">
           ← Volver
         </Link>
@@ -27,7 +27,7 @@ export default function SeasonPage() {
   const banner = season.banner || series.backdrop || series.poster || "";
 
   return (
-    <div className="season-page">
+    <div className="season-page page-enter">
       <Link to="/" className="player__back season-page__back">
         ← Volver
       </Link>

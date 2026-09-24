@@ -2,7 +2,7 @@ import series from "../config/series.js";
 
 export default function More() {
   return (
-    <div className="more-page">
+    <div className="more-page page-enter">
       <div className="more-page__header glass-card">
         {series.poster ? (
           <img className="more-page__poster" src={series.poster} alt={series.title} />

@@ -25,7 +25,7 @@ export default function Search() {
   }, [query, allEpisodes]);
 
   return (
-    <div className="search-page">
+    <div className="search-page page-enter">
       <h1 className="search-page__title">Buscar</h1>
       <input
         className="search-page__input glass-card"
