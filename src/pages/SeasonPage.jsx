@@ -27,7 +27,10 @@ export default function SeasonPage() {
   const banner = season.banner || series.backdrop || series.poster || "";
 
   return (
-    <div className="season-page page-enter">
+    <div
+      className="season-page page-enter"
+      style={{ "--season-backdrop": banner ? `url(${banner})` : "none" }}
+    >
       <Link to="/" className="player__back season-page__back">
         ← Volver
       </Link>
