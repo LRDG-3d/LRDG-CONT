@@ -2,6 +2,9 @@ import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import { VitePWA } from "vite-plugin-pwa";
 
+// IMPORTANTE: "base" debe coincidir con el nombre EXACTO de tu
+// repositorio de GitHub. Si tu repo se llama "LRDG-CONT",
+// entonces base debe ser "/LRDG-CONT/".
 export default defineConfig({
   base: "/LRDG-CONT/",
   plugins: [
@@ -10,7 +13,8 @@ export default defineConfig({
       registerType: "autoUpdate",
       includeAssets: ["icon-192.png", "icon-512.png"],
       workbox: {
-        mode: "development", // evita minificar el SW con terser (falla en Termux)
+        // evita minificar el service worker con terser (falla en Termux)
+        mode: "development",
       },
       manifest: {
         name: "La Rosa de Guadalupe",

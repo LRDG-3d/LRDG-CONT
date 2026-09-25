@@ -107,6 +107,32 @@ El panel de administración queda accesible en
 menú visible, así que solo quien conozca la URL (y tenga cuenta) puede
 entrar.
 
+## Instalar como app (PWA)
+
+El sitio ya está configurado como PWA (Progressive Web App): al publicarlo,
+el navegador le ofrece a quien lo visita la opción de "Instalar app" /
+"Agregar a pantalla de inicio", y se abre sin la barra de direcciones,
+como una app normal.
+
+1. `npm install` (instala también `vite-plugin-pwa`, ya está en
+   `package.json`).
+2. `npm run build` — el plugin genera el manifest y el service worker
+   automáticamente dentro de `dist/`.
+3. Publica como siempre (push a `main`, el workflow de GitHub Actions
+   hace el resto).
+4. En el celular, entra al sitio con Chrome → menú (⋮) → **"Instalar
+   app"**.
+
+Los íconos están en `public/icon-192.png` y `public/icon-512.png` —
+reemplázalos por los tuyos (mismo nombre y tamaño) si quieres un ícono
+distinto. El nombre y colores de la app se configuran en el bloque
+`manifest` dentro de `vite.config.js`.
+
+Si alguna vez el sitio se queda "atascado" mostrando una versión vieja
+después de actualizar (típico de los Service Workers), hay que borrar
+los datos/caché del sitio en el navegador para forzar la versión
+nueva — con `registerType: "autoUpdate"` esto normalmente pasa solo.
+
 ## Notas
 
 - El diseño usa tema oscuro, tipografía Fraunces + Inter, acentos
