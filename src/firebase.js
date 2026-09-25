@@ -4,13 +4,13 @@ import { getFirestore } from "firebase/firestore";
 
 // Configuración de tu proyecto de Firebase (lrdg-cont)
 const firebaseConfig = {
-  apiKey: "AIzaSyClpc5dBi_QQclvlCA9KjRYy0lSJgTjDFc",
-  authDomain: "lrdg-cont.firebaseapp.com",
-  databaseURL: "https://lrdg-cont-default-rtdb.firebaseio.com",
-  projectId: "lrdg-cont",
-  storageBucket: "lrdg-cont.firebasestorage.app",
-  messagingSenderId: "37780270749",
-  appId: "1:37780270749:web:fe96932d269c0abbb7ae74",
+  apiKey: "AIzaSyD9ToIdm8xFU2DUSbhnONSlrhWILSA7iIY",
+  authDomain: "lrdg-cont-efc2d.firebaseapp.com",
+  projectId: "lrdg-cont-efc2d",
+  storageBucket: "lrdg-cont-efc2d.firebasestorage.app",
+  messagingSenderId: "712241478945",
+  appId: "1:712241478945:web:abb3abcea39edb12ef1260",
+  measurementId: "G-LLQ1YQ4NFH"
 };
 
 const app = initializeApp(firebaseConfig);
