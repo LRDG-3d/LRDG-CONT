@@ -1,0 +1,12 @@
+{
+  "name": "La Rosa de Guadalupe",
+  "short_name": "LRDG TV",
+  "start_url": "/LRDG-CONT/",
+  "display": "standalone",
+  "background_color": "#0c0a0d",
+  "theme_color": "#0c0a0d",
+  "icons": [
+    { "src": "/LRDG-CONT/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "/LRDG-CONT/icon-512.png", "sizes": "512x512", "type": "image/png" }
+  ]
+}
