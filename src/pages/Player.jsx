@@ -48,16 +48,28 @@ export default function Player() {
     })();
 
     return () => {
-      try {
-        screen.orientation?.unlock?.();
-      } catch {
-        /* no-op */
-      }
-      try {
-        if (document.fullscreenElement) document.exitFullscreen();
-      } catch {
-        /* no-op */
-      }
+      (async () => {
+        try {
+          // primero fuerza un salto a vertical al salir...
+          if (screen.orientation?.lock) {
+            await screen.orientation.lock("portrait");
+          }
+        } catch {
+          /* no-op */
+        }
+        try {
+          // ...y luego libera el bloqueo, para que si el usuario tiene
+          // rotación automática activada, el teléfono vuelva a seguirla.
+          screen.orientation?.unlock?.();
+        } catch {
+          /* no-op */
+        }
+        try {
+          if (document.fullscreenElement) await document.exitFullscreen();
+        } catch {
+          /* no-op */
+        }
+      })();
     };
   }, [episode?.videoUrl]);
 
