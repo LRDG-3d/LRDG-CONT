@@ -47,6 +47,10 @@
   padding-bottom: 92px; /* deja espacio para la barra inferior fija */
 }
 
+.site__scroll--no-nav {
+  padding-bottom: 0;
+}
+
 /* Utilidad glass ------------------------------------------------------ */
 .glass-card {
   background: rgba(255, 255, 255, 0.055);

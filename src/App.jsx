@@ -12,6 +12,7 @@ import "./styles/App.css";
 export default function App() {
   const { pathname } = useLocation();
   const isPlayerRoute = pathname.startsWith("/episodio/");
+  const hideBottomNav = pathname.startsWith("/temporada/");
 
   if (isPlayerRoute) {
     // El reproductor ocupa toda la pantalla, sin barra superior ni inferior.
@@ -25,7 +26,9 @@ export default function App() {
   return (
     <div className="site">
       <TopBar />
-      <div className="site__scroll">
+      <div
+        className={`site__scroll ${hideBottomNav ? "site__scroll--no-nav" : ""}`}
+      >
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/temporada/:seasonId" element={<SeasonPage />} />
@@ -34,7 +37,7 @@ export default function App() {
           <Route path="/admin" element={<Admin />} />
         </Routes>
       </div>
-      <BottomNav />
+      {!hideBottomNav && <BottomNav />}
     </div>
   );
 }
