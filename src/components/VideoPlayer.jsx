@@ -28,6 +28,8 @@ export default function VideoPlayer({
   const [muted, setMuted] = useState(false);
   const [controlsVisible, setControlsVisible] = useState(true);
   const [isFullscreen, setIsFullscreen] = useState(false);
+  const [flashIcon, setFlashIcon] = useState(null);
+  const flashTimer = useRef(null);
 
   function scheduleHide() {
     clearTimeout(hideTimer.current);
@@ -67,6 +69,16 @@ export default function VideoPlayer({
       setPlaying(false);
     }
     showControls();
+  }
+
+  function handleCenterTap() {
+    const v = videoRef.current;
+    if (!v) return;
+    const willPlay = v.paused;
+    togglePlay();
+    setFlashIcon(willPlay ? "play" : "pause");
+    clearTimeout(flashTimer.current);
+    flashTimer.current = setTimeout(() => setFlashIcon(null), 550);
   }
 
   function skip(seconds) {
@@ -113,7 +125,7 @@ export default function VideoPlayer({
       ref={containerRef}
       onClick={(e) => {
         if (e.target === containerRef.current || e.target.tagName === "VIDEO") {
-          controlsVisible ? togglePlay() : showControls();
+          showControls();
         }
       }}
       onMouseMove={showControls}
@@ -134,6 +146,22 @@ export default function VideoPlayer({
         onPause={() => setPlaying(false)}
         onEnded={onEnded}
       />
+
+      <button
+        type="button"
+        className="vp__center-zone"
+        onClick={(e) => {
+          e.stopPropagation();
+          handleCenterTap();
+        }}
+        aria-label={playing ? "Pausar" : "Reproducir"}
+      />
+
+      {flashIcon && (
+        <div className="vp__center-flash">
+          {flashIcon === "play" ? <PlayIcon /> : <PauseIcon />}
+        </div>
+      )}
 
       <div className={`vp__overlay ${controlsVisible ? "" : "vp__overlay--hidden"}`}>
         <div className="vp__topbar">

@@ -2,7 +2,7 @@ import { initializeApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 
-// Configuración de tu proyecto de Firebase (lrdg-cont)
+// Configuración de tu proyecto de Firebase (lrdg-cont-efc2d)
 const firebaseConfig = {
   apiKey: "AIzaSyD9ToIdm8xFU2DUSbhnONSlrhWILSA7iIY",
   authDomain: "lrdg-cont-efc2d.firebaseapp.com",
@@ -10,7 +10,7 @@ const firebaseConfig = {
   storageBucket: "lrdg-cont-efc2d.firebasestorage.app",
   messagingSenderId: "712241478945",
   appId: "1:712241478945:web:abb3abcea39edb12ef1260",
-  measurementId: "G-LLQ1YQ4NFH"
+  measurementId: "G-LLQ1YQ4NFH",
 };
 
 const app = initializeApp(firebaseConfig);
