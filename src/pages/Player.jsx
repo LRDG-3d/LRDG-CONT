@@ -27,6 +27,40 @@ export default function Player() {
     if (existing === 0) saveProgress(season.id, episode.id, 0.02);
   }, [season, episode]);
 
+  useEffect(() => {
+    if (!episode?.videoUrl) return;
+
+    const el = document.documentElement;
+
+    (async () => {
+      try {
+        if (el.requestFullscreen) await el.requestFullscreen();
+      } catch {
+        // el navegador no lo permitió (normal fuera de la app instalada)
+      }
+      try {
+        if (screen.orientation && screen.orientation.lock) {
+          await screen.orientation.lock("landscape");
+        }
+      } catch {
+        // el bloqueo de orientación no está disponible en este navegador
+      }
+    })();
+
+    return () => {
+      try {
+        screen.orientation?.unlock?.();
+      } catch {
+        /* no-op */
+      }
+      try {
+        if (document.fullscreenElement) document.exitFullscreen();
+      } catch {
+        /* no-op */
+      }
+    };
+  }, [episode?.videoUrl]);
+
   if (loading) {
     return <div className="player-full player-full--message">Cargando…</div>;
   }
