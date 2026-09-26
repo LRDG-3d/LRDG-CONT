@@ -36,14 +36,11 @@
 
 /* Layout base ------------------------------------------------------- */
 .site {
-  min-height: 100vh;
-  min-height: 100dvh;
   display: flex;
   flex-direction: column;
 }
 
 .site__scroll {
-  flex: 1;
   padding-bottom: 92px; /* deja espacio para la barra inferior fija */
 }
 
