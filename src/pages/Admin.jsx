@@ -163,7 +163,7 @@ function NewSeasonForm({ onAdd }) {
           placeholder="https://..."
         />
         <small className="admin-hint">
-          Se usa en la tarjeta de la temporada en Inicio.
+          Se usa en la tarjeta de la temporada en Inicio. Vertical, tipo póster de película (ej. 1080x1440).
         </small>
       </label>
       <label className="admin-field">
@@ -285,7 +285,7 @@ function EditSeasonForm({ season, onSave }) {
           placeholder="https://..."
         />
         <small className="admin-hint">
-          Se usa en la tarjeta de la temporada en Inicio.
+          Se usa en la tarjeta de la temporada en Inicio. Vertical, tipo póster de película (ej. 1080x1440).
         </small>
       </label>
       <label className="admin-field">

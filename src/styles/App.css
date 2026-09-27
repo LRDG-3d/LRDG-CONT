@@ -62,8 +62,8 @@
 .season-card {
   position: relative;
   flex: 0 0 auto;
-  width: 220px;
-  aspect-ratio: 16 / 10;
+  width: 165px;
+  aspect-ratio: 3 / 4;
   scroll-snap-align: start;
   overflow: hidden;
   text-decoration: none;
