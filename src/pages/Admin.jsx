@@ -114,17 +114,19 @@ function NewSeasonForm({ onAdd }) {
   const [title, setTitle] = useState("");
   const [synopsis, setSynopsis] = useState("");
   const [banner, setBanner] = useState("");
+  const [poster, setPoster] = useState("");
   const [saving, setSaving] = useState(false);
 
   async function handleSubmit(e) {
     e.preventDefault();
     if (!number || !title) return;
     setSaving(true);
-    await onAdd({ number: Number(number), title, synopsis, banner });
+    await onAdd({ number: Number(number), title, synopsis, banner, poster });
     setNumber("");
     setTitle("");
     setSynopsis("");
     setBanner("");
+    setPoster("");
     setSaving(false);
   }
 
@@ -153,6 +155,18 @@ function NewSeasonForm({ onAdd }) {
         </label>
       </div>
       <label className="admin-field">
+        <span>Portada (URL, opcional)</span>
+        <input
+          type="url"
+          value={poster}
+          onChange={(e) => setPoster(e.target.value)}
+          placeholder="https://..."
+        />
+        <small className="admin-hint">
+          Se usa en la tarjeta de la temporada en Inicio.
+        </small>
+      </label>
+      <label className="admin-field">
         <span>Miniatura de la temporada (URL, opcional)</span>
         <input
           type="url"
@@ -160,6 +174,10 @@ function NewSeasonForm({ onAdd }) {
           onChange={(e) => setBanner(e.target.value)}
           placeholder="https://..."
         />
+        <small className="admin-hint">
+          Se usa arriba en la página de la temporada (y de fondo borroso en
+          móvil).
+        </small>
       </label>
       <label className="admin-field">
         <span>Sinopsis de la temporada (opcional)</span>
@@ -236,13 +254,14 @@ function SeasonList({ seasons, onUpdateSeason, onDeleteSeason }) {
 function EditSeasonForm({ season, onSave }) {
   const [title, setTitle] = useState(season.title);
   const [banner, setBanner] = useState(season.banner || "");
+  const [poster, setPoster] = useState(season.poster || "");
   const [synopsis, setSynopsis] = useState(season.synopsis || "");
   const [saving, setSaving] = useState(false);
 
   async function handleSubmit(e) {
     e.preventDefault();
     setSaving(true);
-    await onSave({ title, banner, synopsis });
+    await onSave({ title, banner, poster, synopsis });
     setSaving(false);
   }
 
@@ -258,6 +277,18 @@ function EditSeasonForm({ season, onSave }) {
         />
       </label>
       <label className="admin-field">
+        <span>Portada (URL)</span>
+        <input
+          type="url"
+          value={poster}
+          onChange={(e) => setPoster(e.target.value)}
+          placeholder="https://..."
+        />
+        <small className="admin-hint">
+          Se usa en la tarjeta de la temporada en Inicio.
+        </small>
+      </label>
+      <label className="admin-field">
         <span>Miniatura de la temporada (URL)</span>
         <input
           type="url"
@@ -265,6 +296,10 @@ function EditSeasonForm({ season, onSave }) {
           onChange={(e) => setBanner(e.target.value)}
           placeholder="https://..."
         />
+        <small className="admin-hint">
+          Se usa arriba en la página de la temporada (y de fondo borroso en
+          móvil).
+        </small>
       </label>
       <label className="admin-field">
         <span>Sinopsis de la temporada</span>

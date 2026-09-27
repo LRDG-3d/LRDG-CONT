@@ -31,14 +31,28 @@ export default function SeasonSelector() {
             to={`/temporada/${season.id}`}
             className="season-card"
           >
-            <span className="season-card__number">
-              Temporada {season.number}
-            </span>
-            <span className="season-card__title">{season.title}</span>
-            <span className="season-card__count">
-              {season.episodes.length}{" "}
-              {season.episodes.length === 1 ? "episodio" : "episodios"}
-            </span>
+            {season.poster ? (
+              <img
+                className="season-card__poster"
+                src={season.poster}
+                alt={season.title}
+              />
+            ) : (
+              <div className="season-card__poster season-card__poster--placeholder">
+                Temporada {season.number}
+              </div>
+            )}
+            <div className="season-card__scrim" />
+            <div className="season-card__text">
+              <span className="season-card__number">
+                Temporada {season.number}
+              </span>
+              <span className="season-card__title">{season.title}</span>
+              <span className="season-card__count">
+                {season.episodes.length}{" "}
+                {season.episodes.length === 1 ? "episodio" : "episodios"}
+              </span>
+            </div>
           </Link>
         ))}
       </div>

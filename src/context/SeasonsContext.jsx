@@ -39,12 +39,13 @@ export function SeasonsProvider({ children }) {
     return unsubscribe;
   }, []);
 
-  async function addSeason({ number, title, synopsis, banner }) {
+  async function addSeason({ number, title, synopsis, banner, poster }) {
     await addDoc(collection(db, "seasons"), {
       number,
       title,
       synopsis: synopsis || "",
       banner: banner || "",
+      poster: poster || "",
       episodes: [],
     });
   }
