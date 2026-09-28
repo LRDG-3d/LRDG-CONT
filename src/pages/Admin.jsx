@@ -1,7 +1,9 @@
 import { useEffect, useState } from "react";
+import { addDoc, collection, serverTimestamp } from "firebase/firestore";
 import { useAuth } from "../context/AuthContext.jsx";
 import { useSeasons } from "../context/SeasonsContext.jsx";
 import { detectVideoDuration } from "../utils/detectDuration.js";
+import { db } from "../firebase.js";
 
 export default function Admin() {
   const { user, checking } = useAuth();
@@ -91,6 +93,8 @@ function AdminPanel() {
 
       <NewSeasonForm onAdd={addSeason} />
 
+      <NotificationForm />
+
       {loading && <p className="rows__loading">Cargando temporadas…</p>}
 
       <SeasonList
@@ -106,6 +110,54 @@ function AdminPanel() {
         onRemoveEpisode={removeEpisode}
       />
     </div>
+  );
+}
+
+function NotificationForm() {
+  const [message, setMessage] = useState("");
+  const [saving, setSaving] = useState(false);
+  const [sent, setSent] = useState(false);
+
+  async function handleSubmit(e) {
+    e.preventDefault();
+    if (!message.trim()) return;
+    setSaving(true);
+    try {
+      await addDoc(collection(db, "notifications"), {
+        message: message.trim(),
+        createdAt: serverTimestamp(),
+      });
+      setMessage("");
+      setSent(true);
+      setTimeout(() => setSent(false), 2500);
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  return (
+    <form className="admin-card glass-card" onSubmit={handleSubmit}>
+      <h2>Enviar aviso</h2>
+      <p className="admin-hint">
+        Aparece como un banner dentro de la app, solo para quienes la
+        tengan instalada en su celular (no es una notificación push del
+        sistema, y no llega si el sitio está abierto en una pestaña normal
+        del navegador).
+      </p>
+      <label className="admin-field">
+        <span>Mensaje</span>
+        <textarea
+          value={message}
+          onChange={(e) => setMessage(e.target.value)}
+          rows={2}
+          placeholder="Ej. ¡Nuevo episodio disponible!"
+          required
+        />
+      </label>
+      <button className="admin-button" type="submit" disabled={saving}>
+        {saving ? "Enviando…" : sent ? "Enviado ✓" : "Enviar aviso"}
+      </button>
+    </form>
   );
 }
 

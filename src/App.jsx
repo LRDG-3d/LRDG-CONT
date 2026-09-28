@@ -1,6 +1,7 @@
 import { Routes, Route, useLocation } from "react-router-dom";
 import TopBar from "./components/TopBar.jsx";
 import BottomNav from "./components/BottomNav.jsx";
+import NotificationBanner from "./components/NotificationBanner.jsx";
 import Home from "./pages/Home.jsx";
 import Player from "./pages/Player.jsx";
 import Search from "./pages/Search.jsx";
@@ -25,6 +26,7 @@ export default function App() {
 
   return (
     <div className="site">
+      <NotificationBanner />
       <TopBar />
       <div
         className={`site__scroll ${hideBottomNav ? "site__scroll--no-nav" : ""}`}

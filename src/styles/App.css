@@ -34,6 +34,46 @@
   animation: fadeInUp 0.4s ease both;
 }
 
+/* Aro de carga -------------------------------------------------------- */
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.spinner {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  border: 3px solid rgba(255, 255, 255, 0.15);
+  border-top-color: #3fc8f2;
+  animation: spin 0.8s linear infinite;
+}
+
+.spinner--small {
+  width: 24px;
+  height: 24px;
+  border-width: 2.5px;
+}
+
+.spinner-screen {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 40vh;
+}
+
+.spinner-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.25);
+  pointer-events: none;
+  z-index: 4;
+}
+
 /* Layout base ------------------------------------------------------- */
 .site {
   display: flex;
@@ -626,6 +666,36 @@
   padding: 0 clamp(18px, 5vw, 48px);
   font-size: 0.9rem;
 }
+.notification-banner {
+  position: sticky;
+  top: 0;
+  z-index: 25;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  padding-top: max(12px, env(safe-area-inset-top));
+  background: linear-gradient(90deg, #2f7ff0, #7c1f2e);
+  color: #fff;
+}
+
+.notification-banner__text {
+  flex: 1;
+  font-size: 0.85rem;
+  margin: 0;
+}
+
+.notification-banner__close {
+  flex: 0 0 auto;
+  background: none;
+  border: none;
+  color: #fff;
+  font-size: 1.3rem;
+  line-height: 1;
+  cursor: pointer;
+  padding: 0 4px;
+}
+
 .top-bar {
   position: fixed;
   top: 0;

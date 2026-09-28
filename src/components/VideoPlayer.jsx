@@ -32,6 +32,7 @@ export default function VideoPlayer({
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [flashIcon, setFlashIcon] = useState(null);
   const flashTimer = useRef(null);
+  const [videoLoading, setVideoLoading] = useState(true);
 
   function scheduleHide() {
     clearTimeout(hideTimer.current);
@@ -147,7 +148,17 @@ export default function VideoPlayer({
         onPlay={() => setPlaying(true)}
         onPause={() => setPlaying(false)}
         onEnded={onEnded}
+        onWaiting={() => setVideoLoading(true)}
+        onPlaying={() => setVideoLoading(false)}
+        onCanPlay={() => setVideoLoading(false)}
+        onLoadStart={() => setVideoLoading(true)}
       />
+
+      {videoLoading && (
+        <div className="spinner-overlay">
+          <div className="spinner" />
+        </div>
+      )}
 
       <button
         type="button"

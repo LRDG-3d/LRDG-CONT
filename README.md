@@ -54,6 +54,10 @@ se guardan en Firestore y se agregan desde `/#/admin`.
          allow read: if true;
          allow write: if request.auth != null;
        }
+       match /notifications/{notificationId} {
+         allow read: if true;
+         allow write: if request.auth != null;
+       }
      }
    }
    ```

@@ -20,6 +20,7 @@ export default function Player() {
   const navigate = useNavigate();
   const { seasons, loading } = useSeasons();
   const [shareMessage, setShareMessage] = useState("");
+  const [iframeLoading, setIframeLoading] = useState(true);
 
   const episodeNumber = parseEpisodeNumberFromSlug(slug);
   const season = seasons.find((s) =>
@@ -108,7 +109,11 @@ export default function Player() {
   }
 
   if (loading) {
-    return <div className="player-full player-full--message">Cargando…</div>;
+    return (
+      <div className="player-full player-full--message spinner-screen">
+        <div className="spinner" />
+      </div>
+    );
   }
 
   if (!season || !episode) {
@@ -159,11 +164,17 @@ export default function Player() {
           </div>
         </div>
         {shareMessage && <div className="vp__toast">{shareMessage}</div>}
+        {iframeLoading && (
+          <div className="spinner-overlay">
+            <div className="spinner" />
+          </div>
+        )}
         <iframe
           className="player-full__media"
           src={toEmbedUrl(episode.videoUrl)}
           title={episode.title}
           allowFullScreen
+          onLoad={() => setIframeLoading(false)}
         />
       </div>
     );
