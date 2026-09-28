@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { useSeasons } from "../context/SeasonsContext.jsx";
 import { getProgressList } from "../utils/progress.js";
+import { buildEpisodeSlug } from "../utils/episodeSlug.js";
 
 export default function ContinueWatching() {
   const { seasons } = useSeasons();
@@ -26,7 +27,7 @@ export default function ContinueWatching() {
         {items.map(({ season, episode, percent }) => (
           <Link
             key={episode.id}
-            to={`/episodio/${season.id}/${episode.id}`}
+            to={`/episodio/${buildEpisodeSlug(episode)}`}
             className="continue-card"
           >
             <div className="continue-card__thumb">

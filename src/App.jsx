@@ -18,7 +18,7 @@ export default function App() {
     // El reproductor ocupa toda la pantalla, sin barra superior ni inferior.
     return (
       <Routes>
-        <Route path="/episodio/:seasonId/:episodeId" element={<Player />} />
+        <Route path="/episodio/:slug" element={<Player />} />
       </Routes>
     );
   }

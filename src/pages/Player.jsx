@@ -1,8 +1,9 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Link, useParams, useNavigate } from "react-router-dom";
 import { useSeasons } from "../context/SeasonsContext.jsx";
 import VideoPlayer from "../components/VideoPlayer.jsx";
 import { saveProgress, getProgressFor } from "../utils/progress.js";
+import { parseEpisodeNumberFromSlug } from "../utils/episodeSlug.js";
 
 function isEmbeddable(url) {
   return /youtube\.com|youtu\.be|vimeo\.com/.test(url || "");
@@ -15,11 +16,16 @@ function toEmbedUrl(url) {
 }
 
 export default function Player() {
-  const { seasonId, episodeId } = useParams();
+  const { slug } = useParams();
   const navigate = useNavigate();
   const { seasons, loading } = useSeasons();
-  const season = seasons.find((s) => s.id === seasonId);
-  const episode = season?.episodes.find((e) => e.id === episodeId);
+  const [shareMessage, setShareMessage] = useState("");
+
+  const episodeNumber = parseEpisodeNumberFromSlug(slug);
+  const season = seasons.find((s) =>
+    s.episodes.some((e) => e.number === episodeNumber)
+  );
+  const episode = season?.episodes.find((e) => e.number === episodeNumber);
 
   useEffect(() => {
     if (!season || !episode) return;
@@ -73,6 +79,34 @@ export default function Player() {
     };
   }, [episode?.videoUrl]);
 
+  async function handleShare() {
+    const url = window.location.href;
+    const shareData = {
+      title: episode.title,
+      text: `${episode.title} — Episodio ${episode.number}`,
+      url,
+    };
+
+    try {
+      if (navigator.share) {
+        await navigator.share(shareData);
+        return;
+      }
+    } catch {
+      // el usuario canceló el share nativo, no hacemos nada más
+      return;
+    }
+
+    try {
+      await navigator.clipboard.writeText(url);
+      setShareMessage("Enlace copiado");
+      setTimeout(() => setShareMessage(""), 1800);
+    } catch {
+      setShareMessage("No se pudo copiar el enlace");
+      setTimeout(() => setShareMessage(""), 1800);
+    }
+  }
+
   if (loading) {
     return <div className="player-full player-full--message">Cargando…</div>;
   }
@@ -112,8 +146,19 @@ export default function Player() {
           >
             ← <span className="vp__title">{episode.title}</span>
           </button>
-          <span className="vp__episode-tag">Episodio {episode.number}</span>
+          <div className="vp__topbar-right">
+            <button
+              type="button"
+              className="vp__icon-btn"
+              onClick={handleShare}
+              aria-label="Compartir episodio"
+            >
+              <ShareIcon />
+            </button>
+            <span className="vp__episode-tag">Episodio {episode.number}</span>
+          </div>
         </div>
+        {shareMessage && <div className="vp__toast">{shareMessage}</div>}
         <iframe
           className="player-full__media"
           src={toEmbedUrl(episode.videoUrl)}
@@ -132,6 +177,8 @@ export default function Player() {
         episodeNumber={episode.number}
         onBack={() => navigate(-1)}
         onEpisodeList={() => navigate(`/temporada/${season.id}`)}
+        onShare={handleShare}
+        shareMessage={shareMessage}
         onTimeUpdate={(currentTime, duration) => {
           if (!duration) return;
           saveProgress(season.id, episode.id, currentTime / duration);
@@ -139,5 +186,21 @@ export default function Player() {
         onEnded={() => saveProgress(season.id, episode.id, 1)}
       />
     </div>
+  );
+}
+
+function ShareIcon() {
+  return (
+    <svg viewBox="0 0 24 24" width="21" height="21" fill="none">
+      <circle cx="18" cy="5" r="2.5" stroke="currentColor" strokeWidth="1.6" />
+      <circle cx="6" cy="12" r="2.5" stroke="currentColor" strokeWidth="1.6" />
+      <circle cx="18" cy="19" r="2.5" stroke="currentColor" strokeWidth="1.6" />
+      <path
+        d="m8.2 10.8 7.6-4.1M8.2 13.2l7.6 4.1"
+        stroke="currentColor"
+        strokeWidth="1.6"
+        strokeLinecap="round"
+      />
+    </svg>
   );
 }

@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { useSeasons } from "../context/SeasonsContext.jsx";
+import { buildEpisodeSlug } from "../utils/episodeSlug.js";
 
 export default function Search() {
   const { seasons } = useSeasons();
@@ -44,7 +45,7 @@ export default function Search() {
         {results.map(({ season, episode }) => (
           <Link
             key={episode.id}
-            to={`/episodio/${season.id}/${episode.id}`}
+            to={`/episodio/${buildEpisodeSlug(episode)}`}
             className="episode-card episode-card--list"
           >
             <div className="episode-card__thumb">

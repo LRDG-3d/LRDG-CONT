@@ -15,6 +15,8 @@ export default function VideoPlayer({
   episodeNumber,
   onBack,
   onEpisodeList,
+  onShare,
+  shareMessage,
   onTimeUpdate,
   onEnded,
 }) {
@@ -169,10 +171,24 @@ export default function VideoPlayer({
             <ChevronLeft />
             <span className="vp__title">{title}</span>
           </button>
-          {episodeNumber != null && (
-            <span className="vp__episode-tag">Episodio {episodeNumber}</span>
-          )}
+          <div className="vp__topbar-right">
+            {onShare && (
+              <button
+                type="button"
+                className="vp__icon-btn"
+                onClick={onShare}
+                aria-label="Compartir episodio"
+              >
+                <ShareIcon />
+              </button>
+            )}
+            {episodeNumber != null && (
+              <span className="vp__episode-tag">Episodio {episodeNumber}</span>
+            )}
+          </div>
         </div>
+
+        {shareMessage && <div className="vp__toast">{shareMessage}</div>}
 
         <div className="vp__controls">
           <div className="vp__progress">
@@ -260,6 +276,22 @@ export default function VideoPlayer({
 }
 
 /* Íconos --------------------------------------------------------------- */
+
+function ShareIcon() {
+  return (
+    <svg viewBox="0 0 24 24" width="21" height="21" fill="none">
+      <circle cx="18" cy="5" r="2.5" stroke="currentColor" strokeWidth="1.6" />
+      <circle cx="6" cy="12" r="2.5" stroke="currentColor" strokeWidth="1.6" />
+      <circle cx="18" cy="19" r="2.5" stroke="currentColor" strokeWidth="1.6" />
+      <path
+        d="m8.2 10.8 7.6-4.1M8.2 13.2l7.6 4.1"
+        stroke="currentColor"
+        strokeWidth="1.6"
+        strokeLinecap="round"
+      />
+    </svg>
+  );
+}
 
 function ChevronLeft() {
   return (

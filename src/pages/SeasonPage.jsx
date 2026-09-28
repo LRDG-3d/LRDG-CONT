@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { useSeasons } from "../context/SeasonsContext.jsx";
 import series from "../config/series.js";
+import { buildEpisodeSlug } from "../utils/episodeSlug.js";
 
 export default function SeasonPage() {
   const { seasonId } = useParams();
@@ -125,7 +126,7 @@ function EpisodeList({ seasonId, episodes }) {
                   {episode.synopsis || "Sin descripción disponible."}
                 </p>
                 <Link
-                  to={`/episodio/${seasonId}/${episode.id}`}
+                  to={`/episodio/${buildEpisodeSlug(episode)}`}
                   className="episode-details__watch"
                 >
                   VER AHORA

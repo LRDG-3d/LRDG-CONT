@@ -1181,6 +1181,27 @@
   font-size: 1rem;
 }
 
+.vp__topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex: 0 0 auto;
+}
+
+.vp__toast {
+  position: absolute;
+  top: 66px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0, 0, 0, 0.75);
+  color: #fff;
+  font-size: 0.82rem;
+  padding: 8px 16px;
+  border-radius: 999px;
+  z-index: 3;
+  animation: fadeIn 0.2s ease both;
+}
+
 .vp__controls {
   display: flex;
   flex-direction: column;
