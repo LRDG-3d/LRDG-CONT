@@ -36,6 +36,9 @@ export default function Player() {
 
   useEffect(() => {
     if (!episode?.videoUrl) return;
+    // En pantallas grandes (PC/tablet) no forzamos pantalla completa ni
+    // horizontal — eso solo tiene sentido en celular.
+    if (window.innerWidth >= 1024) return;
 
     const el = document.documentElement;
 

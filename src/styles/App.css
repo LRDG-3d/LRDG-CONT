@@ -1501,3 +1501,92 @@
 }
 
 
+/* =========================================================================
+   Pantallas grandes (PC / tablet) — todo lo de abajo solo aplica desde
+   1024px de ancho; en celular no cambia nada de lo anterior.
+   ========================================================================= */
+@media (min-width: 1024px) {
+  /* Menú horizontal en la barra de arriba, reemplaza a la barra inferior */
+  .top-bar__nav {
+    display: flex;
+    gap: 28px;
+  }
+
+  .top-bar__link {
+    color: var(--ink-dim);
+    text-decoration: none;
+    font-size: 0.92rem;
+    font-weight: 500;
+  }
+
+  .top-bar__link--active {
+    color: var(--ink);
+  }
+
+  .bottom-nav {
+    display: none;
+  }
+
+  .site__scroll,
+  .site__scroll--no-nav {
+    padding-bottom: 0;
+  }
+
+  /* Filas de deslizar (temporadas, continuar viendo, episodios) -> cuadrícula */
+  .row__scroller {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+    overflow: visible;
+  }
+
+  .season-card,
+  .episode-card,
+  .continue-card {
+    width: auto;
+  }
+
+  /* Página de temporada: miniatura + info lado a lado, episodios en cuadrícula */
+  .season-page {
+    max-width: 1100px;
+    display: grid;
+    grid-template-columns: 320px 1fr;
+    column-gap: 36px;
+    align-items: start;
+  }
+
+  .season-page__back,
+  .season-pill,
+  .rows__loading {
+    grid-column: 1 / -1;
+  }
+
+  .season-banner {
+    grid-column: 1;
+    margin-bottom: 0;
+  }
+
+  .season-info {
+    grid-column: 2;
+  }
+
+  .episode-list {
+    grid-column: 1 / -1;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 10px;
+  }
+
+  .episode-row {
+    border-bottom: none;
+    background: rgba(255, 255, 255, 0.04);
+    border-radius: 10px;
+  }
+
+  /* Páginas angostas: centrarlas con un ancho cómodo en vez de pegadas
+     a la izquierda */
+  .search-page,
+  .more-page {
+    max-width: 900px;
+    margin: 0 auto;
+  }
+}
