@@ -3,6 +3,8 @@ import { addDoc, collection, serverTimestamp } from "firebase/firestore";
 import { useAuth } from "../context/AuthContext.jsx";
 import { useSeasons } from "../context/SeasonsContext.jsx";
 import { detectVideoDuration } from "../utils/detectDuration.js";
+import { parseBulkEpisodes } from "../utils/bulkEpisodes.js";
+import { downloadSeasonsBackup } from "../utils/backup.js";
 import { db } from "../firebase.js";
 
 export default function Admin() {
@@ -88,6 +90,23 @@ function AdminPanel() {
         </div>
         <button className="admin-button admin-button--ghost" onClick={logout}>
           Cerrar sesión
+        </button>
+      </div>
+
+      <div className="admin-card glass-card">
+        <h2>Copia de seguridad</h2>
+        <p className="admin-hint">
+          Descarga un archivo .json con todas tus temporadas y episodios
+          tal como están ahora mismo en Firestore. Guárdalo en tu celular
+          de vez en cuando, por si algo se pierde o se borra sin querer.
+        </p>
+        <button
+          className="admin-button"
+          type="button"
+          disabled={seasons.length === 0}
+          onClick={() => downloadSeasonsBackup(seasons)}
+        >
+          Descargar copia de seguridad
         </button>
       </div>
 
@@ -373,6 +392,7 @@ function EditSeasonForm({ season, onSave }) {
 function EpisodeManager({ seasons, onAddEpisode, onUpdateEpisode, onRemoveEpisode }) {
   const [selectedId, setSelectedId] = useState(seasons[0]?.id ?? null);
   const [editingEpisodeId, setEditingEpisodeId] = useState(null);
+  const [mode, setMode] = useState("uno"); // "uno" | "lote"
 
   useEffect(() => {
     if (!selectedId && seasons.length > 0) {
@@ -411,10 +431,38 @@ function EpisodeManager({ seasons, onAddEpisode, onUpdateEpisode, onRemoveEpisod
         ))}
       </div>
 
-      <NewEpisodeForm
-        key={selected.id}
-        onAdd={(episode) => onAddEpisode(selected.id, episode)}
-      />
+      <div className="admin-mode-toggle">
+        <button
+          type="button"
+          className={`admin-mode-toggle__item ${
+            mode === "uno" ? "admin-mode-toggle__item--active" : ""
+          }`}
+          onClick={() => setMode("uno")}
+        >
+          Uno por uno
+        </button>
+        <button
+          type="button"
+          className={`admin-mode-toggle__item ${
+            mode === "lote" ? "admin-mode-toggle__item--active" : ""
+          }`}
+          onClick={() => setMode("lote")}
+        >
+          En lote
+        </button>
+      </div>
+
+      {mode === "uno" ? (
+        <NewEpisodeForm
+          key={selected.id}
+          onAdd={(episode) => onAddEpisode(selected.id, episode)}
+        />
+      ) : (
+        <BulkEpisodeForm
+          key={selected.id}
+          onAdd={(episode) => onAddEpisode(selected.id, episode)}
+        />
+      )}
 
       {selected.episodes.length > 0 && (
         <ul className="admin-episode-list">
@@ -564,6 +612,139 @@ function NewEpisodeForm({ onAdd }) {
           : "Guardar episodio"}
       </button>
     </form>
+  );
+}
+
+function BulkEpisodeForm({ onAdd }) {
+  const [text, setText] = useState("");
+  const [parsed, setParsed] = useState(null);
+  const [saving, setSaving] = useState(false);
+  const [progress, setProgress] = useState(null);
+  const [done, setDone] = useState(false);
+
+  function handlePreview() {
+    setDone(false);
+    setParsed(parseBulkEpisodes(text));
+  }
+
+  function handleEditAgain() {
+    setParsed(null);
+  }
+
+  async function handleConfirm() {
+    const valid = parsed.filter((ep) => ep.errors.length === 0);
+    setSaving(true);
+    for (let i = 0; i < valid.length; i++) {
+      const ep = valid[i];
+      setProgress({ current: i + 1, total: valid.length });
+      const duration = await detectVideoDuration(ep.videoUrl);
+      await onAdd({
+        number: ep.number,
+        title: ep.title,
+        videoUrl: ep.videoUrl,
+        duration: duration || "",
+        thumbnail: ep.thumbnail,
+        synopsis: ep.synopsis,
+      });
+    }
+    setSaving(false);
+    setProgress(null);
+    setParsed(null);
+    setText("");
+    setDone(true);
+    setTimeout(() => setDone(false), 2500);
+  }
+
+  if (parsed) {
+    const valid = parsed.filter((ep) => ep.errors.length === 0);
+    const invalid = parsed.filter((ep) => ep.errors.length > 0);
+
+    return (
+      <div className="admin-bulk-preview">
+        <p className="admin-hint">
+          Vista previa — se van a guardar <strong>{valid.length}</strong>{" "}
+          episodio(s){invalid.length > 0 && <> · {invalid.length} con error, no se guardarán</>}.
+        </p>
+
+        <ul className="admin-bulk-preview__list">
+          {parsed.map((ep) => (
+            <li
+              key={ep.line}
+              className={`admin-bulk-preview__item ${
+                ep.errors.length > 0 ? "admin-bulk-preview__item--error" : ""
+              }`}
+            >
+              <span className="admin-bulk-preview__line">L{ep.line}</span>
+              <span>
+                {ep.errors.length > 0 ? (
+                  <>⚠ {ep.errors.join(", ")} — "{ep.raw}"</>
+                ) : (
+                  <>
+                    Ep. {ep.number} — {ep.title}
+                  </>
+                )}
+              </span>
+            </li>
+          ))}
+        </ul>
+
+        {progress && (
+          <p className="admin-hint">
+            Guardando {progress.current} de {progress.total}…
+          </p>
+        )}
+
+        <div className="admin-row">
+          <button
+            className="admin-button admin-button--ghost"
+            type="button"
+            onClick={handleEditAgain}
+            disabled={saving}
+          >
+            Editar de nuevo
+          </button>
+          <button
+            className="admin-button"
+            type="button"
+            onClick={handleConfirm}
+            disabled={saving || valid.length === 0}
+          >
+            {saving ? "Guardando…" : `Confirmar y guardar ${valid.length}`}
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="admin-episode-form">
+      <label className="admin-field">
+        <span>Pega varios episodios, uno por línea</span>
+        <textarea
+          value={text}
+          onChange={(e) => setText(e.target.value)}
+          rows={6}
+          placeholder={
+            "925|La mujer alada|https://.../video.mp4|https://.../miniatura.jpg|Sinopsis opcional\n" +
+            "934|Una alerta de esperanza|https://.../video2.mp4"
+          }
+        />
+        <small className="admin-hint">
+          Formato por línea: <code>número | título | URL del video |
+          miniatura (opcional) | sinopsis (opcional)</code>. La duración se
+          detecta sola, igual que al agregar uno solo.
+        </small>
+      </label>
+      <button
+        className="admin-button"
+        type="button"
+        onClick={handlePreview}
+        disabled={!text.trim()}
+      >
+        Vista previa
+      </button>
+      {done && <p className="admin-hint">✓ Episodios guardados.</p>}
+    </div>
   );
 }
 

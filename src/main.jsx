@@ -4,6 +4,7 @@ import { HashRouter } from "react-router-dom";
 import App from "./App.jsx";
 import { AuthProvider } from "./context/AuthContext.jsx";
 import { SeasonsProvider } from "./context/SeasonsContext.jsx";
+import { SettingsProvider } from "./context/SettingsContext.jsx";
 import "./styles/index.css";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
@@ -11,7 +12,9 @@ ReactDOM.createRoot(document.getElementById("root")).render(
     <HashRouter>
       <AuthProvider>
         <SeasonsProvider>
-          <App />
+          <SettingsProvider>
+            <App />
+          </SettingsProvider>
         </SeasonsProvider>
       </AuthProvider>
     </HashRouter>

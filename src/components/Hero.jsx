@@ -1,17 +1,20 @@
 import { useEffect, useMemo, useState } from "react";
 import series from "../config/series.js";
+import { useSettings } from "../context/SettingsContext.jsx";
 
 export default function Hero() {
+  const { settings } = useSettings();
+
   const slides = useMemo(() => {
     if (series.heroSlides?.length) return series.heroSlides;
     return [
       {
-        image: series.backdrop || series.poster || "",
+        image: settings?.heroImage || series.backdrop || series.poster || "",
         title: series.title,
         subtitle: series.tagline,
       },
     ];
-  }, []);
+  }, [settings?.heroImage]);
 
   const [index, setIndex] = useState(0);
 
