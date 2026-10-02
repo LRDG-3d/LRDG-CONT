@@ -33,6 +33,8 @@ export default function VideoPlayer({
   const [flashIcon, setFlashIcon] = useState(null);
   const flashTimer = useRef(null);
   const [videoLoading, setVideoLoading] = useState(true);
+  const [videoError, setVideoError] = useState(false);
+  const [retryKey, setRetryKey] = useState(0);
 
   function scheduleHide() {
     clearTimeout(hideTimer.current);
@@ -134,29 +136,60 @@ export default function VideoPlayer({
       onMouseMove={showControls}
       onTouchStart={showControls}
     >
-      <video
-        ref={videoRef}
-        className="vp__video"
-        src={src}
-        autoPlay
-        playsInline
-        onTimeUpdate={(e) => {
-          setCurrentTime(e.target.currentTime);
-          onTimeUpdate?.(e.target.currentTime, e.target.duration);
-        }}
-        onLoadedMetadata={(e) => setDuration(e.target.duration)}
-        onPlay={() => setPlaying(true)}
-        onPause={() => setPlaying(false)}
-        onEnded={onEnded}
-        onWaiting={() => setVideoLoading(true)}
-        onPlaying={() => setVideoLoading(false)}
-        onCanPlay={() => setVideoLoading(false)}
-        onLoadStart={() => setVideoLoading(true)}
-      />
+      {!videoError && (
+        <video
+          key={retryKey}
+          ref={videoRef}
+          className="vp__video"
+          src={src}
+          autoPlay
+          playsInline
+          onTimeUpdate={(e) => {
+            setCurrentTime(e.target.currentTime);
+            onTimeUpdate?.(e.target.currentTime, e.target.duration);
+          }}
+          onLoadedMetadata={(e) => setDuration(e.target.duration)}
+          onPlay={() => setPlaying(true)}
+          onPause={() => setPlaying(false)}
+          onEnded={onEnded}
+          onWaiting={() => setVideoLoading(true)}
+          onPlaying={() => setVideoLoading(false)}
+          onCanPlay={() => setVideoLoading(false)}
+          onLoadStart={() => {
+            setVideoLoading(true);
+            setVideoError(false);
+          }}
+          onError={() => {
+            setVideoLoading(false);
+            setVideoError(true);
+          }}
+        />
+      )}
 
-      {videoLoading && (
+      {videoLoading && !videoError && (
         <div className="spinner-overlay">
           <div className="spinner" />
+        </div>
+      )}
+
+      {videoError && (
+        <div className="vp__error">
+          <p className="vp__error__title">No se pudo cargar el video</p>
+          <p className="vp__error__text">
+            Puede que la página donde está alojado el video esté caída o que
+            el enlace ya no funcione.
+          </p>
+          <button
+            type="button"
+            className="admin-button"
+            onClick={() => {
+              setVideoError(false);
+              setVideoLoading(true);
+              setRetryKey((k) => k + 1);
+            }}
+          >
+            Reintentar
+          </button>
         </div>
       )}
 
