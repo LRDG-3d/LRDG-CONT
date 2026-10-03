@@ -239,9 +239,14 @@
   }
 
   .season-info,
-  .episode-list,
   .episode-details {
     background: transparent;
+  }
+
+  .episode-list {
+    background: rgba(0, 0, 0, 0.5);
+    border-radius: 14px;
+    overflow: hidden;
   }
 }
 
@@ -352,7 +357,7 @@
   padding: 16px;
   text-decoration: none;
   color: inherit;
-  background: rgba(0, 0, 0, 0.28);
+  background: none;
   border: none;
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
   font-family: inherit;
